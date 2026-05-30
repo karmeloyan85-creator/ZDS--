@@ -7,36 +7,42 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a1f2e;
-  --card:rgba(45,212,191,0.08);
-  --card-solid:#0e2a3d;
-  --border:rgba(45,212,191,0.15);
-  --accent:#2dd4bf;
-  --accent-dark:#0d9488;
-  --green:#34d399;
+  --bg:linear-gradient(135deg,#0c1929 0%,#132f4c 100%);
+  --bg-solid:#0c1929;
+  --card:rgba(255,255,255,0.04);
+  --card-solid:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.08);
+  --accent:#38bdf8;
+  --accent-dark:#0284c7;
+  --accent-light:#7dd3fc;
+  --green:#4ade80;
   --yellow:#fbbf24;
   --red:#f87171;
-  --text:#e2e8f0;
+  --text:#f1f5f9;
   --text2:#94a3b8;
-  --input-bg:rgba(255,255,255,0.06);
-  --radius:5px;
+  --input-bg:rgba(255,255,255,0.05);
+  --radius:10px;
+  --radius-sm:6px;
+  --radius-btn:8px;
+  --shadow:0 2px 8px rgba(0,0,0,0.2);
 }
-body{font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+body{font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--bg-solid);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;background-image:var(--bg);background-attachment:fixed}
 
 /* Login */
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-.login-box{background:var(--card-solid);border:1px solid var(--border);border-radius:var(--radius);padding:32px;width:100%;max-width:360px}
-.login-box h2{text-align:center;margin-bottom:20px;color:var(--accent);font-size:18px;font-weight:600}
-.login-box input{width:100%;padding:10px 12px;margin:8px 0;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px}
+.login-box{background:rgba(255,255,255,0.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:40px 32px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.login-box h2{text-align:center;margin-bottom:8px;color:var(--accent);font-size:22px;font-weight:700}
+.login-box .login-sub{text-align:center;margin-bottom:24px;color:var(--text2);font-size:13px}
+.login-box input{width:100%;padding:12px 14px;margin:8px 0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);color:var(--text);font-size:14px;transition:border .2s}
 .login-box input:focus{outline:none;border-color:var(--accent)}
-.login-box button{width:100%;padding:12px;margin-top:12px;background:var(--accent);color:#0a1f2e;border:none;border-radius:var(--radius);cursor:pointer;font-size:15px;font-weight:600;transition:background .2s}
-.login-box button:hover{background:var(--accent-dark)}
+.login-box button{width:100%;padding:14px;margin-top:16px;background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;border:none;border-radius:var(--radius-btn);cursor:pointer;font-size:15px;font-weight:600;transition:opacity .2s;box-shadow:0 4px 12px rgba(56,189,248,0.3)}
+.login-box button:hover{opacity:.9}
 
 /* Header */
-.header{background:var(--card-solid);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.header h1{font-size:15px;color:var(--accent);font-weight:600}
+.header{background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,0.08);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.header h1{font-size:16px;color:var(--accent);font-weight:700;letter-spacing:.3px}
 .header .user-info{color:var(--text2);font-size:13px;display:flex;align-items:center;gap:10px}
-.header button{background:none;border:1px solid var(--border);color:var(--text2);padding:5px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px;transition:all .2s}
+.header button{background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text2);padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;transition:all .2s}
 .header button:hover{border-color:var(--accent);color:var(--accent)}
 
 /* Tabs */
@@ -46,10 +52,10 @@ body{font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--bg);c
 .tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
 
 /* Content */
-.content{padding:20px;max-width:1200px;margin:0 auto}
+.content{padding:20px;max-width:960px;margin:0 auto}
 
 /* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .card h3{margin-bottom:10px;color:var(--accent);font-size:14px;font-weight:600}
 .card h4{margin-bottom:8px;color:var(--text);font-size:13px;font-weight:600}
 
@@ -68,13 +74,13 @@ textarea{resize:vertical;min-height:60px}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 
 /* Buttons */
-.btn{padding:7px 14px;border:none;border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
-.btn-primary{background:var(--accent);color:#0a1f2e}
-.btn-primary:hover{background:var(--accent-dark)}
-.btn-success{background:var(--green);color:#0a1f2e}
-.btn-danger{background:var(--red);color:#fff}
-.btn-warning{background:var(--yellow);color:#0a1f2e}
-.btn-sm{padding:4px 10px;font-size:12px}
+.btn{padding:8px 18px;border:none;border-radius:var(--radius-btn);cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;box-shadow:0 2px 8px rgba(56,189,248,0.25)}
+.btn-primary:hover{opacity:.9}
+.btn-success{background:#4ade80;color:#052e16}
+.btn-danger{background:#f87171;color:#fff}
+.btn-warning{background:#fbbf24;color:#422006}
+.btn-sm{padding:5px 12px;font-size:12px}
 .btn-outline{background:none;border:1px solid var(--border);color:var(--text2)}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
 
@@ -85,7 +91,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .month-nav span{font-size:15px;font-weight:600;min-width:160px;text-align:center}
 
 /* Employee cards */
-.emp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.emp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s}
+.emp-card:hover{border-color:rgba(56,189,248,0.2);transform:translateY(-1px)}
 .emp-card .emp-name{font-weight:600;font-size:14px;margin-bottom:3px}
 .emp-card .emp-pos{color:var(--text2);font-size:12px;margin-bottom:8px}
 .emp-card .emp-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px;font-size:13px}
@@ -278,7 +285,8 @@ function render(){
 // ========== LOGIN ==========
 function renderLogin(){
   return `<div class="login-wrap"><div class="login-box">
-    <h2>🏥 Земский доктор</h2>
+    <h2>🦷 Земский доктор</h2>
+    <div class="login-sub">Система управления зарплатами</div>
     <input type="text" id="login-input" placeholder="Логин" autocomplete="username">
     <input type="password" id="pass-input" placeholder="Пароль" autocomplete="current-password">
     <button id="login-btn">Войти</button>
@@ -357,7 +365,7 @@ function getTabs(){
 function renderApp(){
   const tabs=getTabs();
   if(!tabs.find(t=>t.id===state.tab))state.tab=tabs[0].id;
-  let html=`<div class="header"><h1>🏥 Земский доктор-стоматолог</h1><div class="user-info">${roleLabel(state.role)} (${LS.get('zp_session',{}).login||''})<button onclick="logout()">Выйти</button></div></div>`;
+  let html=`<div class="header"><h1>🦷 Земский доктор-стоматолог</h1><div class="user-info">${roleLabel(state.role)} (${LS.get('zp_session',{}).login||''})<button onclick="logout()">Выйти</button></div></div>`;
   html+=`<div class="tabs">`;
   for(const t of tabs){
     html+=`<button class="${t.id===state.tab?'active':''}" data-tab="${t.id}">${t.icon} ${t.label}</button>`;
