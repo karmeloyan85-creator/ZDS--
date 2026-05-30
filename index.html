@@ -261,20 +261,21 @@ select option { background: #0a1628; color: #e0e6f0; }
 <script>
 // ============ ДАННЫЕ ============
 const DEFAULT_EMPLOYEES = [
-  { id: 1, name: 'Баласанян', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 25, active: true },
-  { id: 2, name: 'Кялоян', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 30, active: true },
-  { id: 3, name: 'Громов', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 30, active: true },
-  { id: 4, name: 'Мелоян К.Н.', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 30, active: true },
-  { id: 5, name: 'Сидорейко', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 25, active: true },
-  { id: 6, name: 'Меркулова', position: 'nurse', calcType: 'fixed_day_percent', fixedDay: 1200, fixedMonth: 0, percent: 5, active: true },
-  { id: 7, name: 'Соколова', position: 'admin', calcType: 'fixed_day', fixedDay: 2000, fixedMonth: 0, percent: 0, active: true },
-  { id: 8, name: 'Алферова', position: 'admin', calcType: 'fixed_day', fixedDay: 2000, fixedMonth: 0, percent: 0, active: true },
-  { id: 9, name: 'Белова', position: 'admin', calcType: 'fixed_day', fixedDay: 1500, fixedMonth: 0, percent: 0, active: true },
-  { id: 10, name: 'Максименко', position: 'other', calcType: 'fixed_month', fixedDay: 0, fixedMonth: 12000, percent: 0, active: true },
-  { id: 11, name: 'Москалева', position: 'other', calcType: 'fixed_month', fixedDay: 0, fixedMonth: 30000, percent: 0, active: true },
-  { id: 12, name: 'Азарко О.В.', position: 'manager', calcType: 'fixed_day_percent', fixedDay: 2000, fixedMonth: 30000, percent: 0, active: true },
-  { id: 13, name: 'Киреева И.А.', position: 'admin', calcType: 'fixed_day', fixedDay: 2500, fixedMonth: 0, percent: 0, active: true },
-  { id: 14, name: 'Азим', position: 'other', calcType: 'fixed_day', fixedDay: 5000, fixedMonth: 0, percent: 0, active: true },
+  { id: 1, name: 'Мелоян Карен Наирович', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 30, active: true },
+  { id: 2, name: 'Баласанян Амаля Арамовна', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 25, active: true },
+  { id: 3, name: 'Кялоян Мгер Шаваршович', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 30, active: true },
+  { id: 4, name: 'Сидорейко Илья Михайлович', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 25, active: true },
+  { id: 5, name: 'Громов Ростислав Евгеньевич', position: 'doctor', calcType: 'percent', fixedDay: 0, fixedMonth: 0, percent: 30, active: true },
+  { id: 6, name: 'Меркулова Ангелина Олеговна', position: 'nurse', calcType: 'fixed_day_percent', fixedDay: 1200, fixedMonth: 0, percent: 5, active: true },
+  { id: 7, name: 'Соколова Елизавета Алексеевна', position: 'admin', calcType: 'fixed_day', fixedDay: 2000, fixedMonth: 0, percent: 0, active: true },
+  { id: 8, name: 'Алферова Татьяна Алексеевна', position: 'admin', calcType: 'fixed_day', fixedDay: 2000, fixedMonth: 0, percent: 0, active: true },
+  { id: 9, name: 'Белова Ирина Юрьевна', position: 'admin', calcType: 'fixed_day', fixedDay: 1500, fixedMonth: 0, percent: 0, active: true },
+  { id: 10, name: 'Азарко Оксана Владимировна', position: 'manager', calcType: 'fixed_month', fixedDay: 0, fixedMonth: 30000, percent: 0, active: true },
+  { id: 11, name: 'Киреева Ирина Алексеевна', position: 'admin', calcType: 'fixed_day', fixedDay: 2500, fixedMonth: 0, percent: 0, active: true },
+  { id: 12, name: 'Собиров Азим', position: 'other', calcType: 'fixed_day', fixedDay: 5000, fixedMonth: 0, percent: 0, active: true },
+  { id: 13, name: 'Максименко Надежда Петровна', position: 'other', calcType: 'fixed_month', fixedDay: 0, fixedMonth: 12000, percent: 0, active: true },
+  { id: 14, name: 'Москалева', position: 'other', calcType: 'fixed_month', fixedDay: 0, fixedMonth: 30000, percent: 0, active: true },
+  { id: 15, name: 'Ксюша', position: 'other', calcType: 'fixed_day', fixedDay: 0, fixedMonth: 0, percent: 0, active: false },
 ];
 
 const POSITIONS = { doctor: 'Врач', admin: 'Администратор', manager: 'Управляющий', nurse: 'Медсестра', hygienist: 'Гигиенист', other: 'Другое' };
