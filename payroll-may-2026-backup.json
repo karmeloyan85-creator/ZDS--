@@ -1,0 +1,533 @@
+{
+  "zp_staff": [
+    {
+      "id": "meloyan",
+      "name": "Мелоян К.Н.",
+      "role": "ортопед",
+      "calcType": "percent",
+      "rate": 30,
+      "active": true
+    },
+    {
+      "id": "balasanyan",
+      "name": "Баласанян А.А.",
+      "role": "терапевт",
+      "calcType": "percent",
+      "rate": 25,
+      "active": true
+    },
+    {
+      "id": "kyaloyan",
+      "name": "Кялоян М.Ш.",
+      "role": "хирург",
+      "calcType": "percent",
+      "rate": 30,
+      "active": true
+    },
+    {
+      "id": "sidoreyko",
+      "name": "Сидорейко И.М.",
+      "role": "терапевт",
+      "calcType": "percent",
+      "rate": 25,
+      "active": true
+    },
+    {
+      "id": "gromov",
+      "name": "Громов Р.Е.",
+      "role": "хирург",
+      "calcType": "percent",
+      "rate": 30,
+      "active": true
+    },
+    {
+      "id": "merkulova",
+      "name": "Меркулова А.О.",
+      "role": "ст.ассистент",
+      "calcType": "fix_percent",
+      "fixRate": 1200,
+      "percent": 5,
+      "active": true
+    },
+    {
+      "id": "belova",
+      "name": "Белова И.Ю.",
+      "role": "ассистент",
+      "calcType": "fix_shift",
+      "fixRate": 1500,
+      "active": true
+    },
+    {
+      "id": "alferova",
+      "name": "Алферова Т.А.",
+      "role": "ассистент",
+      "calcType": "fix_shift",
+      "fixRate": 2000,
+      "active": true
+    },
+    {
+      "id": "tityaeva",
+      "name": "Титяева О.Д.",
+      "role": "уч.ассистента",
+      "calcType": "fix_shift",
+      "fixRate": 500,
+      "active": true
+    },
+    {
+      "id": "skobeleva",
+      "name": "Скобелева Ю.С.",
+      "role": "уч.ассистента",
+      "calcType": "fix_shift",
+      "fixRate": 500,
+      "active": true
+    },
+    {
+      "id": "sobirov",
+      "name": "Собиров А.",
+      "role": "ассистент",
+      "calcType": "fix_shift",
+      "fixRate": 5000,
+      "active": true
+    },
+    {
+      "id": "azarco",
+      "name": "Азарко О.В.",
+      "role": "управляющая+админ",
+      "calcType": "monthly_shift",
+      "monthly": 30000,
+      "shiftRate": 2000,
+      "active": true
+    },
+    {
+      "id": "linnikova",
+      "name": "Линникова В.М.",
+      "role": "администратор",
+      "calcType": "fix_shift",
+      "fixRate": 2500,
+      "active": true
+    },
+    {
+      "id": "maximenko",
+      "name": "Максименко Н.П.",
+      "role": "уборщица",
+      "calcType": "monthly",
+      "monthly": 12000,
+      "active": true
+    },
+    {
+      "id": "moskaleva",
+      "name": "Москалева",
+      "role": "SMM",
+      "calcType": "monthly",
+      "monthly": 30000,
+      "active": true
+    }
+  ],
+  "zp_day_2026-05-01": {
+    "date": "2026-05-01",
+    "revenue": 138700,
+    "cash": 105700,
+    "card": 33000,
+    "patients": 13,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "azarco": 1
+    }
+  },
+  "zp_day_2026-05-03": {
+    "date": "2026-05-03",
+    "revenue": 80750,
+    "cash": 59950,
+    "card": 20800,
+    "patients": 10,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "azarco": 1,
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-04": {
+    "date": "2026-05-04",
+    "revenue": 89000,
+    "cash": 63000,
+    "card": 26000,
+    "patients": 10,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "azarco": 1
+    }
+  },
+  "zp_day_2026-05-05": {
+    "date": "2026-05-05",
+    "revenue": 162000,
+    "cash": 101650,
+    "card": 60350,
+    "patients": 14,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "azarco": 1
+    }
+  },
+  "zp_day_2026-05-06": {
+    "date": "2026-05-06",
+    "revenue": 37600,
+    "cash": 16800,
+    "card": 20800,
+    "patients": 12,
+    "shifts": {
+      "balasanyan": 1,
+      "kyaloyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "azarco": 1,
+      "linnikova": 1,
+      "tityaeva": 1
+    }
+  },
+  "zp_day_2026-05-07": {
+    "date": "2026-05-07",
+    "revenue": 3850,
+    "cash": 3850,
+    "card": 0,
+    "patients": 5,
+    "shifts": {
+      "kyaloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "sobirov": 1,
+      "azarco": 1,
+      "linnikova": 1,
+      "tityaeva": 1,
+      "sokolova": 1
+    }
+  },
+  "zp_day_2026-05-08": {
+    "date": "2026-05-08",
+    "revenue": 122150,
+    "cash": 104050,
+    "card": 18100,
+    "patients": 15,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "tityaeva": 1,
+      "sokolova": 1,
+      "azarco": 1,
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-11": {
+    "date": "2026-05-11",
+    "revenue": 47050,
+    "cash": 33500,
+    "card": 13550,
+    "patients": 14,
+    "shifts": {
+      "meloyan": 1,
+      "sidoreyko": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-12": {
+    "date": "2026-05-12",
+    "revenue": 60350,
+    "cash": 21950,
+    "card": 38400,
+    "patients": 15,
+    "shifts": {
+      "kyaloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "skobeleva": 1,
+      "linnikova": 1,
+      "azarco": 1
+    }
+  },
+  "zp_day_2026-05-13": {
+    "date": "2026-05-13",
+    "revenue": 105400,
+    "cash": 90800,
+    "card": 14600,
+    "patients": 15,
+    "shifts": {
+      "balasanyan": 1,
+      "meloyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "linnikova": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-14": {
+    "date": "2026-05-14",
+    "revenue": 101400,
+    "cash": 54500,
+    "card": 46900,
+    "patients": 11,
+    "shifts": {
+      "kyaloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "sobirov": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-15": {
+    "date": "2026-05-15",
+    "revenue": 111850,
+    "cash": 98250,
+    "card": 13600,
+    "patients": 13,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "azarco": 1,
+      "tityaeva": 1,
+      "skobeleva": 1
+    }
+  },
+  "zp_day_2026-05-16": {
+    "date": "2026-05-16",
+    "revenue": 0,
+    "cash": 0,
+    "card": 0,
+    "patients": 0,
+    "shifts": {
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-17": {
+    "date": "2026-05-17",
+    "revenue": 60150,
+    "cash": 17350,
+    "card": 42800,
+    "patients": 12,
+    "shifts": {
+      "sidoreyko": 1,
+      "gromov": 1,
+      "sobirov": 1,
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-18": {
+    "date": "2026-05-18",
+    "revenue": 79950,
+    "cash": 72000,
+    "card": 7950,
+    "patients": 16,
+    "shifts": {
+      "meloyan": 1,
+      "sidoreyko": 1,
+      "merkulova": 1,
+      "alferova": 1,
+      "skobeleva": 1,
+      "tityaeva": 1,
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-19": {
+    "date": "2026-05-19",
+    "revenue": 46300,
+    "cash": 19600,
+    "card": 26700,
+    "patients": 7,
+    "shifts": {
+      "kyaloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-20": {
+    "date": "2026-05-20",
+    "revenue": 140600,
+    "cash": 103250,
+    "card": 37350,
+    "patients": 13,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "belova": 1,
+      "merkulova": 1,
+      "azarco": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-21": {
+    "date": "2026-05-21",
+    "revenue": 38700,
+    "cash": 22050,
+    "card": 16650,
+    "patients": 6,
+    "shifts": {
+      "balasanyan": 1,
+      "alferova": 1,
+      "azarco": 1,
+      "skobeleva": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-22": {
+    "date": "2026-05-22",
+    "revenue": 112350,
+    "cash": 60700,
+    "card": 51650,
+    "patients": 19,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-23": {
+    "date": "2026-05-23",
+    "revenue": 0,
+    "cash": 0,
+    "card": 0,
+    "patients": 0,
+    "shifts": {
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-24": {
+    "date": "2026-05-24",
+    "revenue": 46950,
+    "cash": 19800,
+    "card": 27150,
+    "patients": 9,
+    "shifts": {
+      "gromov": 1,
+      "sidoreyko": 1,
+      "sobirov": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "linnikova": 1
+    }
+  },
+  "zp_day_2026-05-25": {
+    "date": "2026-05-25",
+    "revenue": 39000,
+    "cash": 23500,
+    "card": 15500,
+    "patients": 9,
+    "shifts": {
+      "balasanyan": 1,
+      "sidoreyko": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-26": {
+    "date": "2026-05-26",
+    "revenue": 47500,
+    "cash": 35750,
+    "card": 11750,
+    "patients": 12,
+    "shifts": {
+      "kyaloyan": 1,
+      "balasanyan": 1,
+      "sobirov": 1,
+      "alferova": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-27": {
+    "date": "2026-05-27",
+    "revenue": 125850,
+    "cash": 79300,
+    "card": 46550,
+    "patients": 13,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-28": {
+    "date": "2026-05-28",
+    "revenue": 90800,
+    "cash": 55950,
+    "card": 34850,
+    "patients": 12,
+    "shifts": {
+      "kyaloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "azarco": 1
+    }
+  },
+  "zp_day_2026-05-29": {
+    "date": "2026-05-29",
+    "revenue": 159725,
+    "cash": 130900,
+    "card": 28825,
+    "patients": 17,
+    "shifts": {
+      "meloyan": 1,
+      "balasanyan": 1,
+      "merkulova": 1,
+      "belova": 1,
+      "tityaeva": 1,
+      "skobeleva": 1,
+      "azarco": 1,
+      "maximenko": 1
+    }
+  },
+  "zp_day_2026-05-30": {
+    "date": "2026-05-30",
+    "revenue": 0,
+    "cash": 0,
+    "card": 0,
+    "patients": 0,
+    "shifts": {
+      "linnikova": 1
+    }
+  }
+}
