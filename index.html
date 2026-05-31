@@ -1709,7 +1709,7 @@ function renderSettings(){
         </div>
         <div style="margin-top:12px;padding:10px;background:var(--input-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--text-dim)">
           Статус: <span id="cloud-status-text" style="color:${Cloud.connected?'var(--green)':'var(--yellow)'}">${Cloud.connected?'✅ Подключено':'⚪ Не настроено'}</span>
-          ${Cloud.lastSync?' · Последняя синхронизация: '+new Date(Cloud.lastSync).toLocaleString('ru-RU'):'')}
+          ${Cloud.lastSync?'<span style=color:var(--text-muted)> · Последняя синхронизация: </span>'+new Date(Cloud.lastSync).toLocaleString("ru-RU"):""}
         </div>
         <div class="cc-btns" style="margin-top:12px">
           <button class="btn btn-success btn-sm" id="cloud-pull" ${Cloud.config.url?'':'disabled'}>⬇️ Загрузить из облака</button>
