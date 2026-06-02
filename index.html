@@ -274,15 +274,13 @@ const Cloud={
     }catch(e){toast('☁️ Ошибка сети при загрузке');return null}
   },
 
-  // Сохранить данные в облако
+  // Сохранить данные в облако (через GET чтобы избежать проблем с POST redirect)
   async save(type,data,replace){
     if(!this.config.url)return false;
     try{
       const body={data,replace:!!replace};
-      const r=await fetch(this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key),{
-        method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify(body),signal:AbortSignal.timeout(30000)
-      });
+      const url=this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key)+'&replace='+(replace?'true':'false')+'&data='+encodeURIComponent(JSON.stringify(body.data));
+      const r=await fetch(url,{signal:AbortSignal.timeout(30000)});
       const j=await r.json();
       if(j.status==='ok')return true;
       toast('☁️ Ошибка сохранения: '+j.message);return false;
