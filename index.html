@@ -223,7 +223,7 @@ const LS={
 // ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
 const Cloud={
   config:{
-    url:LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbyDQgCW5ypwGIJTbJ_yOKvRdO6lZU-skpztrET_4PIS7dh8lCOiuBKmajoy0ofqMAfI/exec'),
+    url:LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbxxvu2EwWXpZXXZI7EgupTau6zsB6LZ4QT7KhX5gS-bCM9lOg9fWF6Y4aJmvcLJ8lHs/exec'),
     key:LS.get('zp_cloud_key','zk2026')
   },
   connected:false,
@@ -249,7 +249,7 @@ const Cloud={
 
   // Инициализация
   async init(){
-    this.config.url=LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbyDQgCW5ypwGIJTbJ_yOKvRdO6lZU-skpztrET_4PIS7dh8lCOiuBKmajoy0ofqMAfI/exec');
+    this.config.url=LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbxxvu2EwWXpZXXZI7EgupTau6zsB6LZ4QT7KhX5gS-bCM9lOg9fWF6Y4aJmvcLJ8lHs/exec');
     this.config.key=LS.get('zp_cloud_key','zk2026');
     if(!this.config.url)return;
     const p=await this.ping();
