@@ -222,6 +222,10 @@ const LS={
 
 // ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
 const Cloud={
+  defaults:{
+    url:'https://script.google.com/macros/s/AKfycbxxvu2EwWXpZXXZI7EgupTau6zsB6LZ4QT7KhX5gS-bCM9lOg9fWF6Y4aJmvcLJ8lHs/exec',
+    key:'zk2026'
+  },
   config:{
     url:LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbxxvu2EwWXpZXXZI7EgupTau6zsB6LZ4QT7KhX5gS-bCM9lOg9fWF6Y4aJmvcLJ8lHs/exec'),
     key:LS.get('zp_cloud_key','zk2026')
@@ -1706,6 +1710,7 @@ function renderSettings(){
         <div class="cc-btns">
           <button class="btn btn-outline btn-sm" id="cloud-check">🔍 Проверить</button>
           <button class="btn btn-primary btn-sm" id="cloud-save-config">💾 Сохранить настройки</button>
+          <button class="btn btn-outline btn-sm" id="cloud-reset-config" style="color:var(--red);border-color:var(--red)">🔄 Сбросить по умолчанию</button>
         </div>
         <div style="margin-top:12px;padding:10px;background:var(--input-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--text-dim)">
           Статус: <span id="cloud-status-text" style="color:${Cloud.connected?'var(--green)':'var(--yellow)'}">${Cloud.connected?'✅ Подключено':'⚪ Не настроено'}</span>
@@ -1820,6 +1825,15 @@ function bindSettings(){
       cloudSyncBtn.disabled=false;cloudSyncBtn.textContent='🔄 Синхронизировать';
       if(ok)render();
     });
+  };
+  const cloudReset=document.getElementById('cloud-reset-config');
+  if(cloudReset)cloudReset.onclick=()=>{
+    if(!confirm('Сбросить настройки облака к значениям по умолчанию?'))return;
+    LS.del('zp_cloud_url');LS.del('zp_cloud_key');
+    document.getElementById('cloud-url').value=Cloud.defaults.url;
+    document.getElementById('cloud-key').value=Cloud.defaults.key;
+    Cloud.configure(Cloud.defaults.url,Cloud.defaults.key);
+    toast('Настройки облака сброшены');
   };
 }
 
