@@ -1839,6 +1839,13 @@ function bindSettings(){
 
 window.logout=logout;
 
+// Автоочистка старых настроек облака (одноразовая)
+(function(){
+  const oldUrl='AKfycbyDQgCW5ypwGIJTbJ_yOKvRdO6lZU-skpztrET_4PIS7dh8lCOiuBKmajoy0ofqMAfI';
+  const saved=LS.get('zp_cloud_url','');
+  if(saved && saved.includes(oldUrl)){LS.del('zp_cloud_url');LS.del('zp_cloud_key');console.log('Cloud config auto-cleared')}
+})();
+
 // Инициализация облачного хранилища
 Cloud.init().then(()=>render());
 
