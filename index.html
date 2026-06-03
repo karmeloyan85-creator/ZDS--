@@ -274,13 +274,13 @@ const Cloud={
     }catch(e){toast('☁️ Ошибка сети при загрузке');return null}
   },
 
-  // Сохранить данные в облако (через GET чтобы избежать проблем с POST redirect)
+  // Сохранить данные в облако (POST запрос)
   async save(type,data,replace){
     if(!this.config.url)return false;
     try{
       const body={data,replace:!!replace};
-      const url=this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key)+'&replace='+(replace?'true':'false')+'&data='+encodeURIComponent(JSON.stringify(body.data));
-      const r=await fetch(url,{signal:AbortSignal.timeout(30000)});
+      const url=this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key);
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow',signal:AbortSignal.timeout(30000)});
       const j=await r.json();
       if(j.status==='ok')return true;
       toast('☁️ Ошибка сохранения: '+j.message);return false;
@@ -530,11 +530,32 @@ function initDefaults(){
 }
 initDefaults();
 
+function getLastMonthWithData(){
+  // Проверяем текущий месяц и предыдущие 6 месяцев
+  const d=new Date();
+  for(let i=0;i<=6;i++){
+    const y=d.getFullYear();
+    const m=d.getMonth()+1-i;
+    const mm=((m-1+12)%12)+1;
+    const yy=y-Math.floor((m-1)/12);
+    const key='zp_daily_'+yy+'-'+String(mm).padStart(2,'0')+'-01';
+    const sKey='zp_schedule_'+yy+'_'+String(mm).padStart(2,'0');
+    // Проверяем есть ли данные за этот месяц
+    if(LS.get(sKey,null)){return yy+'-'+String(mm).padStart(2,'0')}
+    // Также проверяем любые zp_daily_ записи за этот месяц
+    for(let j=0;j<localStorage.length;j++){
+      const k=localStorage.key(j);
+      if(k.startsWith('zp_daily_'+yy+'-'+String(mm).padStart(2,'0'))){return yy+'-'+String(mm).padStart(2,'0')}
+    }
+  }
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
 let state={
   role:null,
   empId:null,
   tab:'daily',
-  month:new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0'),
+  month:getLastMonthWithData(),
   reportDate:todayStr()
 };
 
@@ -813,6 +834,7 @@ function bindDaily(){
       if(worked||rev||pat)data[id]={worked,revenue:rev,patients:pat};
     });
     LS.set('zp_daily_'+date,data);
+    cloudSet('zp_daily_'+date,data);
     addHistory('Сохранён ввод за '+date);
     toast('Сохранено за '+date);
   };
@@ -892,6 +914,7 @@ function bindMonthly(){
         const advances=LS.get('zp_advances_'+state.month,{});
         advances[inp.dataset.id]=parseFloat(inp.value)||0;
         LS.set('zp_advances_'+state.month,advances);
+        cloudSet('zp_advances_'+state.month,advances);
         render();
       };
     });
@@ -1137,6 +1160,7 @@ function bindSchedule(){
 
   if(save){
     save.onclick=()=>{
+      cloudSet('zp_schedule_'+state.month.replace('-','_'),LS.get('zp_schedule_'+state.month.replace('-','_'),{}));
       toast('График сохранён');
       addHistory('Сохранён график за '+state.month);
     };
@@ -1347,6 +1371,7 @@ function bindAdminForm(){
       });
     });
     LS.set('zp_report_'+today,data);
+    cloudSet('zp_report_'+today,data);
     addHistory('Сохранён отчёт администратора за '+today);
     toast('Отчёт сохранён');
   };
