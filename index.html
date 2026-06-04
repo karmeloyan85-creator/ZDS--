@@ -1499,7 +1499,7 @@ function renderEmployees(){
       <div class="card" style="background:var(--input-bg)">
         <h4 id="emp-form-title">Новый сотрудник</h4>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:10px">
-          <div><label style="font-size:12px;color:var(--text2)">ФИО</label><input type="text" id="emp-fio"></div>
+          <div><label style="font-size:12px;color:var(--text2)">ФИО</label><input type="text" id="emp-fio" autocomplete="off"></div>
           <div><label style="font-size:12px;color:var(--text2)">Должность</label><select id="emp-position">${positions.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="__new__">+ Новая должность...</option></select><input type="text" id="emp-position-new" style="display:none;margin-top:4px" placeholder="Новая должность"></div>
           <div><label style="font-size:12px;color:var(--text2)">Тип расчёта</label><select id="emp-calc">
             <option value="fixed_day">Фикс за смену</option>
@@ -1513,8 +1513,8 @@ function renderEmployees(){
           <div><label style="font-size:12px;color:var(--text2)">Фикс за месяц ₽</label><input type="number" id="emp-fixed-month" value="0" min="0"></div>
           <div><label style="font-size:12px;color:var(--text2)">Процент %</label><input type="number" id="emp-percent" value="0" min="0" max="100"></div>
           <div><label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="emp-can-login" ${currentRole!=='none'?'checked':''}> Вход в приложение</label></div>
-          <div id="emp-cred-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text2)">Логин</label><input type="text" id="emp-login" value="${currentLogin}" placeholder="Логин"></div>
-          <div id="emp-pass-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text2)">Пароль</label><input type="password" id="emp-pass" value="${currentPass}" placeholder="Пароль"></div>
+          <div id="emp-cred-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text2)">Логин</label><input type="text" id="emp-login" value="${currentLogin}" autocomplete="new-password" placeholder="Логин"></div>
+          <div id="emp-pass-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text2)">Пароль</label><input type="password" id="emp-pass" value="${currentPass}" autocomplete="new-password" placeholder="Пароль"></div>
           <div id="emp-perms-section" style="grid-column:1/-1;${currentRole==='none'?'display:none':''}"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:8px">🔒 Права доступа</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
             <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-salaries" class="emp-perm" data-perm="seeSalaries" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSalaries?'checked':''}> 👁 Видеть зарплаты</label>
             <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-revenue" class="emp-perm" data-perm="seeRevenue" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeRevenue?'checked':''}> 👁 Видеть выручку</label>
