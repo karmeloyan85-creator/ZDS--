@@ -592,6 +592,25 @@ function calcSalary(emp,worked,totalRevenue){
   return salary;
 }
 
+// Расчёт по дням для fixed_day_percent: 5% от выручки клиники за каждый отработанный день
+function calcSalaryByDays(emp,days){
+  const ct=emp.calcType;
+  if(ct!=='fixed_day_percent') return null;
+  let salary=0;
+  for(const day of days){
+    const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});
+    const worked=d.worked||0;
+    if(worked>0){
+      // Считаем общую выручку клиники за этот день (все сотрудники)
+      const dayData=LS.get('zp_daily_'+day,{});
+      let dayClinicRevenue=0;
+      for(const eid in dayData){dayClinicRevenue+=dayData[eid].revenue||0}
+      salary+=Math.round(emp.fixedDay*worked+dayClinicRevenue*emp.percent/100);
+    }
+  }
+  return salary;
+}
+
 function monthDays(ym){
   const[y,m]=ym.split('-').map(Number);
   const days=[];
@@ -863,7 +882,13 @@ function renderMonthly(){
       totalOwnRevenue+=d.revenue||0;
     }
     if(emp.calcType==='fixed_month'){totalWorked=0;totalOwnRevenue=0}
-    const salary=calcSalary({...emp,_ownRevenue:totalOwnRevenue},totalWorked,totalOwnRevenue);
+    // Для fixed_day_percent считаем по дням (5% от выручки клиники за каждый рабочий день)
+    let salary;
+    if(emp.calcType==='fixed_day_percent'){
+      salary=calcSalaryByDays(emp,days)||0;
+    } else {
+      salary=calcSalary({...emp,_ownRevenue:totalOwnRevenue},totalWorked,totalOwnRevenue);
+    }
     const advance=advances[emp.id]||0;
     const toPay=salary-advance;
     totalAll+=toPay;
@@ -974,7 +999,13 @@ function renderMonthReport(){
   for(const emp of emps){
     let tw=0,trv=0;
     for(const day of days){const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});tw+=d.worked||0;trv+=d.revenue||0}
-    const sal=calcSalary({...emp,_ownRevenue:trv},tw,trv);
+    // Для fixed_day_percent считаем по дням отдельно (5% от выручки клиники за каждый рабочий день)
+    let sal;
+    if(emp.calcType==='fixed_day_percent'){
+      sal=calcSalaryByDays(emp,days)||0;
+    } else {
+      sal=calcSalary({...emp,_ownRevenue:trv},tw,trv);
+    }
     const adv=advances[emp.id]||0;
     totalFOT+=sal;
   }
