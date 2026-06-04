@@ -7,107 +7,112 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#17212b;
-  --bg-light:#1e2c3a;
-  --bg-lighter:#233040;
-  --bg-sidebar:#17212b;
+  --bg:#f0f2f5;
+  --bg-light:#ffffff;
+  --bg-lighter:#f7f8fa;
+  --bg-sidebar:#0d1520;
   --surface:#2b5278;
-  --accent:#5eb5f7;
-  --accent-dark:#4a9bd9;
-  --accent-hover:#6bc1ff;
-  --green:#6cc78a;
-  --yellow:#e8c84a;
-  --red:#e85d5d;
-  --text:#f5f5f5;
-  --text-dim:#8b9bab;
-  --text-muted:#6a7b8b;
-  --bubble-out:#2b5278;
-  --bubble-in:#182533;
-  --border:rgba(255,255,255,0.06);
-  --input-bg:#1c2a38;
-  --input-border:#3a4f63;
-  --hover:rgba(255,255,255,0.04);
+  --accent:#4f8cf7;
+  --accent-dark:#3a75d9;
+  --accent-hover:#5e9bff;
+  --green:#22c55e;
+  --yellow:#f59e0b;
+  --red:#ef4444;
+  --text:#1e293b;
+  --text-dim:#64748b;
+  --text-muted:#94a3b8;
+  --text-sidebar:#94a3b8;
+  --text-sidebar-active:#ffffff;
+  --bubble-out:#ffffff;
+  --bubble-in:#f0f2f5;
+  --border:rgba(0,0,0,0.08);
+  --input-bg:#ffffff;
+  --input-border:#d1d9e0;
+  --hover:rgba(0,0,0,0.04);
   --radius:12px;
   --radius-sm:8px;
   --radius-lg:16px;
+  --card-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sidebar-width:250px;
+  --sidebar-collapsed:0px;
   /* Aliases for compatibility */
   --card-solid:var(--bg-light);
   --card:var(--bg-light);
   --text2:var(--text-dim);
-  --shadow:none;
+  --shadow:var(--card-shadow);
   --radius-btn:var(--radius-sm);
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
 
 /* Login */
-.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--bg)}
-.login-box{background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-lg);padding:48px 36px;width:100%;max-width:360px;text-align:center}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#0d1520 0%,#1a2940 50%,#0d1520 100%)}
+.login-box{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:48px 36px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
 .login-box h2{margin-bottom:6px;color:var(--text);font-size:20px;font-weight:600}
 .login-box .login-sub{margin-bottom:28px;color:var(--text-muted);font-size:13px}
-.login-box input{width:100%;padding:14px 16px;margin:8px 0;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;transition:border .2s}
-.login-box input:focus{outline:none;border-color:var(--accent)}
+.login-box input{width:100%;padding:14px 16px;margin:8px 0;background:var(--bg-lighter);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;transition:border .2s}
+.login-box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,247,0.15)}
 .login-box button{width:100%;padding:14px;margin-top:20px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:15px;font-weight:600;transition:background .2s}
 .login-box button:hover{background:var(--accent-hover)}
 
-/* Layout with sidebar */
+/* App Layout */
 .app-layout{display:flex;min-height:100vh}
 
 /* Sidebar */
-.sidebar{width:280px;background:#0d1520;border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform .3s ease}
-.sidebar-logo{padding:24px 26px;border-bottom:1px solid var(--border);font-size:22px;font-weight:600;color:var(--text)}
-.sidebar-logo span{color:var(--accent)}
-.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
-.sidebar-item{display:flex;align-items:center;gap:14px;padding:16px 26px;color:var(--text-dim);font-size:16px;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
-.sidebar-item:hover{color:var(--text);background:var(--hover)}
-.sidebar-item.active{color:var(--accent);background:rgba(94,181,247,0.08);border-left-color:var(--accent);font-weight:600}
-.sidebar-item .si-icon{font-size:22px;width:28px;text-align:center}
-.sidebar-divider{height:1px;background:var(--border);margin:8px 16px}
-.sidebar-user{padding:18px 26px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.sidebar-user .su-avatar{width:42px;height:42px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:18px}
-.sidebar-user .su-info{flex:1}
-.sidebar-user .su-name{font-size:15px;font-weight:600;color:var(--text)}
-.sidebar-user .su-role{font-size:13px;color:var(--text-muted)}
-.sidebar-user .su-logout{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:6px 12px;border-radius:4px;transition:background .15s}
-.sidebar-user .su-logout:hover{background:rgba(232,93,93,0.15)}
+.sidebar{width:var(--sidebar-width);background:var(--bg-sidebar);position:fixed;top:0;left:0;bottom:0;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;overflow-y:auto;overflow-x:hidden}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sidebar-logo .logo-name{color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-sub{color:var(--text-sidebar);font-size:11px;margin-top:4px;padding-left:30px}
+.sidebar-nav{flex:1;padding:12px 0}
+.sidebar-nav .nav-section{padding:8px 20px 6px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.25);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--text-sidebar);font-size:14px;cursor:pointer;transition:all .15s;text-decoration:none;position:relative;border-radius:0;margin:1px 8px;border-radius:var(--radius-sm);width:calc(100% - 16px)}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#d1d5db}
+.nav-item.active{background:rgba(79,140,247,0.15);color:var(--text-sidebar-active);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-item .nav-icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.06)}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sidebar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#818cf8);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sidebar-user-info .su-name{color:#fff;font-size:13px;font-weight:600;line-height:1.3}
+.sidebar-user-info .su-role{color:var(--text-sidebar);font-size:11px}
+.sidebar-logout{display:flex;align-items:center;gap:8px;color:var(--red);font-size:13px;cursor:pointer;padding:8px 12px;border-radius:var(--radius-sm);transition:background .15s;background:none;border:none;width:100%;text-align:left}
+.sidebar-logout:hover{background:rgba(239,68,68,0.1)}
 
-/* Main area */
-.main-area{margin-left:280px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+/* Sidebar overlay for mobile */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity .3s}
+.sidebar-overlay.show{display:block;opacity:1}
 
-/* Header */
-.header{background:var(--bg-light);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:50}
-.header h1{font-size:16px;color:var(--text);font-weight:600}
-.header .user-info{color:var(--text-dim);font-size:13px;display:flex;align-items:center;gap:8px}
-.header button{background:none;border:none;color:var(--text-dim);padding:6px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;transition:all .2s}
-.header button:hover{color:var(--accent);background:var(--hover)}
+/* Main content area */
+.main-wrap{margin-left:var(--sidebar-width);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.main-header{background:#ffffff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100}
+.main-header .mh-left{display:flex;align-items:center;gap:14px}
+.main-header .hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text);padding:4px}
+.main-header h1{font-size:17px;color:var(--text);font-weight:700}
+.main-header .mh-right{display:flex;align-items:center;gap:10px}
+.main-header .mh-search{position:relative}
+.main-header .mh-search input{width:220px;padding:8px 12px 8px 34px;background:var(--bg-lighter);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;transition:all .2s}
+.main-header .mh-search input:focus{outline:none;border-color:var(--accent);width:280px;box-shadow:0 0 0 3px rgba(79,140,247,0.1)}
+.main-header .mh-search .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-muted)}
+.main-header button{background:none;border:none;color:var(--text-dim);padding:8px;border-radius:var(--radius-sm);cursor:pointer;font-size:15px;transition:all .15s}
+.main-header button:hover{color:var(--accent);background:var(--hover)}
 
-/* Hamburger for mobile */
-.hamburger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:6px 10px}
-
-/* Tabs — hidden, sidebar replaces them */
-.tabs{display:none}
-
-/* Content */
-.content{padding:20px 24px;max-width:100%;margin:0 auto;width:100%}
-
-/* Overlay for mobile sidebar */
-.sidebar-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:99}
-.sidebar-overlay.show{display:block}
-
-/* Dashboard metric cards */
-.metric-card{background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all .15s}
-.metric-card:hover{border-color:rgba(94,181,247,0.3)}
-.metric-label{font-size:13px;color:var(--text-dim);margin-bottom:8px}
-.metric-value{font-size:28px;font-weight:700;line-height:1.1}
-.metric-card .metric-diff{font-size:11px;color:var(--text-muted);margin-top:6px}
+.main-content{padding:24px;flex:1;max-width:1200px;width:100%}
 
 /* Cards */
-.card{background:var(--bg-light);border:none;border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.card h3{margin-bottom:14px;color:var(--text);font-size:15px;font-weight:600}
-.card h4{margin-bottom:8px;color:var(--text);font-size:13px;font-weight:600}
+.card{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--card-shadow)}
+.card h3{margin-bottom:14px;color:var(--text);font-size:16px;font-weight:700}
+.card h4{margin-bottom:8px;color:var(--text);font-size:14px;font-weight:600}
+
+/* Metric cards for dashboard */
+.metric-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--card-shadow);transition:transform .15s,box-shadow .15s}
+.metric-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.metric-card .mc-label{font-size:13px;color:var(--text-dim);margin-bottom:6px}
+.metric-card .mc-value{font-size:26px;font-weight:700}
 
 /* Tables */
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:left}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
 th{color:var(--text-dim);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px;background:var(--bg-lighter)}
 tr:hover td{background:var(--hover)}
 
@@ -117,7 +122,7 @@ input[type=number]{width:90px}
 input[type=time]{width:100px}
 select{cursor:pointer}
 textarea{resize:vertical;min-height:60px}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,247,0.1)}
 
 /* Buttons */
 .btn{padding:8px 16px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
@@ -132,17 +137,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 
 /* Month nav */
 .month-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.month-nav button{background:var(--card-solid);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:var(--radius);cursor:pointer;font-size:13px}
-.month-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.month-nav button{background:var(--bg-lighter);border:none;color:var(--text-dim);padding:7px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;transition:all .15s}
+.month-nav button:hover{color:var(--accent);background:var(--hover)}
 .month-nav span{font-size:15px;font-weight:600;min-width:160px;text-align:center}
 
 /* Employee cards */
-.emp-card{background:var(--bubble-out);border:none;border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:background .15s}
-.emp-card:hover{background:#335e85}
+.emp-card{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all .15s;box-shadow:var(--card-shadow)}
+.emp-card:hover{border-color:var(--accent);box-shadow:0 2px 8px rgba(79,140,247,0.1)}
 .emp-card .emp-name{font-weight:600;font-size:15px;margin-bottom:2px}
 .emp-card .emp-pos{color:var(--text-dim);font-size:13px;margin-bottom:12px}
 .emp-card .emp-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;font-size:14px}
-.emp-card .emp-stats div{background:rgba(0,0,0,0.15);padding:10px;border-radius:var(--radius-sm)}
+.emp-card .emp-stats div{background:var(--bg-lighter);padding:10px;border-radius:var(--radius-sm)}
 .emp-card .emp-stats .label{color:var(--text-dim);font-size:12px}
 .emp-card .emp-stats .val{font-weight:600;font-size:15px}
 .val-money{color:var(--green)}
@@ -159,18 +164,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .settings-row input,.settings-row select{max-width:200px}
 
 /* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--bubble-out);border:1px solid var(--accent);color:var(--accent);padding:10px 18px;border-radius:var(--radius);font-size:13px;z-index:9999;opacity:0;transition:opacity .3s}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);border:1px solid var(--accent);color:var(--accent);padding:10px 18px;border-radius:var(--radius);font-size:13px;z-index:9999;opacity:0;transition:opacity .3s}
 .toast.show{opacity:1}
 .empty-msg{color:var(--text-muted);text-align:center;padding:24px;font-size:13px}
-.position-tag{display:inline-block;background:var(--input-bg);border:none;padding:4px 10px;border-radius:var(--radius-sm);margin:3px;font-size:12px;color:var(--text)}
+.position-tag{display:inline-block;background:var(--bg-lighter);border:none;padding:4px 10px;border-radius:var(--radius-sm);margin:3px;font-size:12px;color:var(--text)}
 .position-tag .del-pos{cursor:pointer;color:var(--red);margin-left:5px}
 .hidden{display:none!important}
-
-/* Month nav */
-.month-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.month-nav button{background:var(--bg-lighter);border:none;color:var(--text-dim);padding:7px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;transition:all .15s}
-.month-nav button:hover{color:var(--accent);background:var(--hover)}
-.month-nav span{font-size:15px;font-weight:600;min-width:160px;text-align:center}
 
 /* Schedule Calendar */
 .schedule-wrap{overflow-x:auto;margin-top:14px}
@@ -179,41 +178,28 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .schedule-table th.name-col{position:sticky;left:0;z-index:2;min-width:160px;max-width:180px;text-align:left;background:var(--bg-light);font-weight:600;color:var(--text);font-size:12px;border-right:2px solid var(--border)}
 .schedule-table td.name-col{position:sticky;left:0;z-index:2;min-width:160px;max-width:180px;text-align:left;background:var(--bg-light);font-weight:500;font-size:12px;border-right:2px solid var(--border)}
 .schedule-table .day-header{font-size:11px;position:relative}
-.schedule-table .day-header.weekend{background:rgba(232,93,93,0.15);color:var(--red)}
-.schedule-table .day-header.today{background:rgba(94,181,247,0.15);box-shadow:inset 0 -2px 0 var(--accent)}
+.schedule-table .day-header.weekend{background:rgba(239,68,68,0.06);color:var(--red)}
+.schedule-table .day-header.today{background:rgba(79,140,247,0.1);box-shadow:inset 0 -2px 0 var(--accent)}
 .schedule-table .day-num{font-weight:600;font-size:12px}
 .schedule-table .day-name{font-size:10px;color:var(--text-muted)}
 .schedule-table .shift-cell{cursor:pointer;transition:background .15s;position:relative}
-.schedule-table .shift-cell:hover{background:rgba(94,181,247,0.12)}
-.schedule-table .shift-cell.working{background:rgba(108,199,138,0.2)}.schedule-table .shift-cell.vacation{background:rgba(94,181,247,0.12);color:var(--accent)}.schedule-table .shift-cell.practice{background:rgba(168,85,247,0.15);color:#c084fc}.schedule-table .shift-cell.weekend{background:rgba(232,93,93,0.06)}.schedule-table .shift-cell.weekend.off{background:rgba(232,93,93,0.18);color:var(--red)}.schedule-table .shift-cell .shift-label{font-size:11px;font-weight:600}.schedule-table .shift-cell .shift-label.s-work{color:var(--green)}.schedule-table .shift-cell .shift-label.s-vacation{color:var(--accent)}.schedule-table .shift-cell .shift-label.s-off{color:var(--red)}.schedule-table .shift-cell .shift-label.s-practice{color:#c084fc}.schedule-table .day-header.today-col{outline:2px solid var(--accent);outline-offset:-2px;border-radius:2px}
+.schedule-table .shift-cell:hover{background:rgba(79,140,247,0.08)}
+.schedule-table .shift-cell.working{background:rgba(34,197,94,0.1)}.schedule-table .shift-cell.vacation{background:rgba(79,140,247,0.08);color:var(--accent)}.schedule-table .shift-cell.practice{background:rgba(168,85,247,0.08);color:#a855f7}.schedule-table .shift-cell.weekend{background:rgba(239,68,68,0.04)}.schedule-table .shift-cell.weekend.off{background:rgba(239,68,68,0.1);color:var(--red)}.schedule-table .shift-cell .shift-label{font-size:11px;font-weight:600}.schedule-table .shift-cell .shift-label.s-work{color:var(--green)}.schedule-table .shift-cell .shift-label.s-vacation{color:var(--accent)}.schedule-table .shift-cell .shift-label.s-off{color:var(--red)}.schedule-table .shift-cell .shift-label.s-practice{color:#a855f7}.schedule-table .day-header.today-col{outline:2px solid var(--accent);outline-offset:-2px;border-radius:2px}
 .schedule-table .shift-cell.today-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:2px}
 .schedule-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
 
 /* Role badge */
 .role-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
-.role-badge.owner{background:rgba(94,181,247,0.2);color:var(--accent)}
-.role-badge.manager{background:rgba(108,199,138,0.2);color:var(--green)}
-.role-badge.admin{background:rgba(232,200,74,0.2);color:var(--yellow)}
+.role-badge.owner{background:rgba(79,140,247,0.12);color:var(--accent)}
+.role-badge.manager{background:rgba(34,197,94,0.12);color:#16a34a}
+.role-badge.admin{background:rgba(245,158,11,0.12);color:#b45309}
 .role-badge.none{background:var(--bg-lighter);color:var(--text-muted)}
 
-@media(max-width:768px){
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .main-area{margin-left:0}
-  .hamburger{display:block}
-  .content{padding:12px}
-  .card{padding:14px}
-  .emp-card .emp-stats{grid-template-columns:1fr 1fr}
-  .header h1{font-size:14px}
-  .header{padding:8px 12px}
-  .schedule-table th,.schedule-table td{min-width:30px;padding:3px 4px}
-  .metric-value{font-size:22px}
-}
 /* Cloud sync indicator */
 .cloud-icon{font-size:18px;cursor:pointer;position:relative;transition:opacity .3s;user-select:none;line-height:1}
 .cloud-icon.green{filter:none}.cloud-icon.yellow{animation:cloud-pulse 2s infinite}@keyframes cloud-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .cloud-icon.red{opacity:.7}
-.cloud-menu{position:absolute;top:100%;right:0;background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px;z-index:9999;min-width:180px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.cloud-menu{position:absolute;top:100%;right:0;background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px;z-index:9999;min-width:180px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
 .cloud-menu.show{display:block}
 .cloud-menu-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text);transition:background .15s;white-space:nowrap}
 .cloud-menu-item:hover{background:var(--hover)}
@@ -226,28 +212,67 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 .cloud-config .cc-row input{max-width:400px}
 .cloud-config .cc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .cloud-syncing{color:var(--yellow)!important;pointer-events:none}
-/* LIGHT THEME */
-body.light{--bg:#e6ebf0;--bg-light:#ffffff;--bg-lighter:#f0f2f5;--input-bg:#ffffff;--input-border:#d1d9e0;--bubble-out:#ffffff;--bubble-in:#eff2f5;--border:rgba(0,0,0,0.06);--text:#222;--text-dim:#708499;--text-muted:#a0aec0;--hover:rgba(0,0,0,0.04)}
-body.light .header{background:#ffffff;border-bottom-color:rgba(0,0,0,0.08)}
-body.light .login-box{background:#ffffff;border-color:rgba(0,0,0,0.08)}
-body.light .login-box input{background:#f0f2f5;border-color:#d1d9e0;color:#222}
-body.light .emp-card{background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,0.08)}
-body.light table{border-color:rgba(0,0,0,0.06)}
-body.light th{background:#f0f2f5;color:#708499}
-body.light td{border-color:rgba(0,0,0,0.06)}
-body.light .fot-total{color:var(--accent)}
-body.light .schedule-table th{background:#f0f2f5;color:#708499}
-body.light .position-tag{background:#f0f2f5;color:#475569}
-body.light .role-badge.owner{background:rgba(94,181,247,0.15);color:#2b7cc7}
-body.light .role-badge.manager{background:rgba(108,199,138,0.15);color:#2a7a45}
-body.light .role-badge.admin{background:rgba(232,200,74,0.15);color:#8a7020}
-body.light .role-badge.none{background:#f0f2f5;color:#a0aec0}
-body.light .settings-section{border-color:#e0e0e0}
-body.light .toast{background:#333;color:#fff}
 
+/* DARK THEME */
+body.dark{
+  --bg:#0f1219;
+  --bg-light:#1a1f2e;
+  --bg-lighter:#232a3a;
+  --input-bg:#1a1f2e;
+  --input-border:#2d3548;
+  --bubble-out:#1a1f2e;
+  --bubble-in:#232a3a;
+  --border:rgba(255,255,255,0.06);
+  --text:#e2e8f0;
+  --text-dim:#94a3b8;
+  --text-muted:#64748b;
+  --hover:rgba(255,255,255,0.04);
+  --card-shadow:0 1px 3px rgba(0,0,0,0.2);
+}
+body.dark .main-header{background:var(--bg-light);border-bottom-color:rgba(255,255,255,0.06)}
+body.dark .main-header .mh-search input{background:var(--bg-lighter);border-color:var(--input-border);color:var(--text)}
+body.dark .main-header .mh-search input:focus{box-shadow:0 0 0 3px rgba(79,140,247,0.15)}
+body.dark .metric-card{background:var(--bg-light);border-color:rgba(255,255,255,0.06)}
+body.dark .metric-card:hover{box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+body.dark .emp-card{background:var(--bg-light);border-color:rgba(255,255,255,0.06);box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+body.dark .emp-card:hover{border-color:var(--accent)}
+body.dark .card{background:var(--bg-light);border-color:rgba(255,255,255,0.06);box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+body.dark th{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark td{border-color:rgba(255,255,255,0.04)}
+body.dark .fot-total{color:var(--accent)}
+body.dark .schedule-table th{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark .schedule-table td.name-col{background:var(--bg-light)}
+body.dark .position-tag{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark .role-badge.owner{background:rgba(79,140,247,0.15);color:var(--accent)}
+body.dark .role-badge.manager{background:rgba(34,197,94,0.15);color:var(--green)}
+body.dark .role-badge.admin{background:rgba(245,158,11,0.15);color:var(--yellow)}
+body.dark .role-badge.none{background:var(--bg-lighter);color:var(--text-muted)}
+body.dark .toast{background:var(--bg-light);color:var(--accent);border-color:rgba(255,255,255,0.06)}
+body.dark .cloud-menu{background:var(--bg-light);border-color:rgba(255,255,255,0.06);box-shadow:0 4px 12px rgba(0,0,0,0.4)}
+body.dark .month-nav button{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark .settings-section{border-color:rgba(255,255,255,0.06)}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-wrap{margin-left:0}
+  .main-header .hamburger{display:block}
+  .main-content{padding:16px}
+  .main-header{padding:12px 16px}
+  .main-header .mh-search input{width:160px}
+  .main-header .mh-search input:focus{width:200px}
+  .card{padding:14px}
+  .emp-card .emp-stats{grid-template-columns:1fr 1fr}
+  .schedule-table th,.schedule-table td{min-width:30px;padding:3px 4px}
+}
+@media(max-width:480px){
+  .main-header .mh-search{display:none}
+  .main-content{padding:12px}
+}
 </style>
 </head>
-<body>
+<body class="dark">
 
 <div id="app"></div>
 <div id="toast" class="toast"></div>
@@ -274,10 +299,9 @@ const Cloud={
   lastSync:null,
   syncing:false,
   errorCount:0,
-  _cache:{}, // Кэш данных из облака
+  _cache:{},
   _syncTimer:null,
 
-  // Проверить подключение
   async ping(){
     if(!this.config.url)return{ok:false,error:'URL не настроен'};
     try{
@@ -291,7 +315,6 @@ const Cloud={
     }
   },
 
-  // Инициализация
   async init(){
     this.config.url=LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec');
     this.config.key=LS.get('zp_cloud_key','zk2026');
@@ -301,7 +324,6 @@ const Cloud={
     this._updateIcon();
   },
 
-  // Загрузить данные из облака
   async load(type,params){
     if(!this.config.url)return null;
     try{
@@ -314,7 +336,6 @@ const Cloud={
     }catch(e){toast('☁️ Ошибка сети при загрузке');return null}
   },
 
-  // Сохранить данные в облако (POST запрос)
   async save(type,data,replace){
     if(!this.config.url)return false;
     try{
@@ -327,7 +348,6 @@ const Cloud={
     }catch(e){toast('☁️ Ошибка сети при сохранении');return false}
   },
 
-  // Полная синхронизация: загрузить всё из облака → записать в localStorage
   async sync(){
     if(this.syncing)return;
     this.syncing=true;
@@ -336,10 +356,8 @@ const Cloud={
       const data=await this.load('read_all');
       if(!data)return false;
 
-      // Сотрудники
       if(data.employees){LS.set('zp_employees',data.employees)}
 
-      // Данные за день: конвертируем из строкового формата в zp_daily_DATE
       if(data.daily){
         const byDate={};
         data.daily.forEach(r=>{
@@ -349,7 +367,6 @@ const Cloud={
         Object.entries(byDate).forEach(([d,v])=>LS.set('zp_daily_'+d,v));
       }
 
-      // Авансы: конвертируем из строкового формата в zp_advances_MONTH
       if(data.advances){
         const byMonth={};
         data.advances.forEach(r=>{
@@ -359,11 +376,9 @@ const Cloud={
         Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_advances_'+m,v));
       }
 
-      // График: конвертируем из строкового формата в zp_schedule_MONTH
       if(data.schedule){
         const byMonth={};
         data.schedule.forEach(r=>{
-          // r.date в формате YYYY-MM-DD → month = YYYY_MM
           const parts=r.date.split('-');
           const mKey=parts[0]+'_'+parts[1];
           if(!byMonth[mKey])byMonth[mKey]={};
@@ -374,7 +389,6 @@ const Cloud={
         Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_schedule_'+m,v));
       }
 
-      // Настройки (если есть zp_creds и т.д.)
       if(data.settings){
         // zp_settings пока не используем активно, но сохраняем на будущее
       }
@@ -382,7 +396,7 @@ const Cloud={
       this.connected=true;
       this.lastSync=new Date().toISOString();
       this.errorCount=0;
-      this._syncQueue=[]; // Очищаем очередь
+      this._syncQueue=[];
       toast('☁️ Синхронизация завершена');
       return true;
     }catch(e){
@@ -395,16 +409,13 @@ const Cloud={
     }
   },
 
-  // Выгрузить ВСЕ локальные данные в облако
   async pushAll(){
     if(this.syncing)return;
     this.syncing=true;
     this._updateIcon();
     try{
-      // Собираем всех сотрудников
       const employees=LS.get('zp_employees',[]);
 
-      // Собираем все данные за день из localStorage
       const daily=[];
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
@@ -417,7 +428,6 @@ const Cloud={
         }
       }
 
-      // Собираем все авансы
       const advances=[];
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
@@ -430,7 +440,6 @@ const Cloud={
         }
       }
 
-      // Собираем график
       const schedule=[];
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
@@ -462,17 +471,13 @@ const Cloud={
     }
   },
 
-  // Очередь изменений для синхронизации
   _syncQueue:[],
-
-  // Поставить ключ в очередь на синхронизацию
   queueSync(key){
     if(!this.config.url)return;
     if(!this._syncQueue.includes(key))this._syncQueue.push(key);
     this._updateIcon();
   },
 
-  // Автосинхронизация каждые 15 секунд
   _startAutoSync(){
     if(this._syncTimer)clearInterval(this._syncTimer);
     this._syncTimer=setInterval(async()=>{
@@ -482,7 +487,6 @@ const Cloud={
     },15000);
   },
 
-  // Обновить значок синхронизации
   _updateIcon(){
     const icon=document.getElementById('cloud-icon');
     if(!icon)return;
@@ -505,7 +509,6 @@ const Cloud={
     }
   },
 
-  // Настроить облако
   configure(url,key){
     this.config.url=url.trim().replace(/\/$/,'');
     this.config.key=key.trim();
@@ -524,15 +527,11 @@ const Cloud={
   }
 };
 
-// Обёртки localStorage с облачной синхронизацией
-// cloudGet — всегда читает из localStorage (он же кэш)
 function cloudGet(k,d){
   return LS.get(k,d);
 }
-// cloudSet — записывает в localStorage + ставит в очередь на выгрузку
 function cloudSet(k,v){
   LS.set(k,v);
-  // Если облако подключено — ставим в очередь
   if(Cloud.config.url && Cloud.connected){
     Cloud.queueSync(k);
   }
@@ -571,7 +570,6 @@ function initDefaults(){
 initDefaults();
 
 function getLastMonthWithData(){
-  // Проверяем текущий месяц и предыдущие 6 месяцев
   const d=new Date();
   for(let i=0;i<=6;i++){
     const y=d.getFullYear();
@@ -580,9 +578,7 @@ function getLastMonthWithData(){
     const yy=y-Math.floor((m-1)/12);
     const key='zp_daily_'+yy+'-'+String(mm).padStart(2,'0')+'-01';
     const sKey='zp_schedule_'+yy+'_'+String(mm).padStart(2,'0');
-    // Проверяем есть ли данные за этот месяц
     if(LS.get(sKey,null)){return yy+'-'+String(mm).padStart(2,'0')}
-    // Также проверяем любые zp_daily_ записи за этот месяц
     for(let j=0;j<localStorage.length;j++){
       const k=localStorage.key(j);
       if(k.startsWith('zp_daily_'+yy+'-'+String(mm).padStart(2,'0'))){return yy+'-'+String(mm).padStart(2,'0')}
@@ -594,7 +590,7 @@ function getLastMonthWithData(){
 let state={
   role:null,
   empId:null,
-  tab:'daily',
+  tab:'dashboard',
   month:getLastMonthWithData(),
   reportDate:todayStr()
 };
@@ -632,7 +628,6 @@ function calcSalary(emp,worked,totalRevenue){
   return salary;
 }
 
-// Расчёт по дням для fixed_day_percent: 5% от выручки клиники за каждый отработанный день
 function calcSalaryByDays(emp,days){
   const ct=emp.calcType;
   if(ct!=='fixed_day_percent') return null;
@@ -641,7 +636,6 @@ function calcSalaryByDays(emp,days){
     const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});
     const worked=d.worked||0;
     if(worked>0){
-      // Считаем общую выручку клиники за этот день (все сотрудники)
       const dayData=LS.get('zp_daily_'+day,{});
       let dayClinicRevenue=0;
       for(const eid in dayData){dayClinicRevenue+=dayData[eid].revenue||0}
@@ -675,6 +669,23 @@ function roleLabel(r){
   if(r==='manager')return 'Управляющая';
   if(r==='admin')return 'Администратор';
   return '';
+}
+
+function getGreeting(){
+  const h=new Date().getHours();
+  if(h<6)return 'Доброй ночи';
+  if(h<12)return 'Доброе утро';
+  if(h<18)return 'Добрый день';
+  return 'Добрый вечер';
+}
+
+function getCurrentUserName(){
+  const sess=LS.get('zp_session',{});
+  if(sess.empId){
+    const emp=getEmps().find(e=>e.id===sess.empId);
+    return emp?emp.name.split(' ')[0]:sess.login;
+  }
+  return sess.login||'';
 }
 
 function render(){
@@ -714,14 +725,12 @@ function doLogin(){
   const pass=document.getElementById('pass-input').value;
   if(!login||!pass){toast('Введите логин и пароль');return}
 
-  // Check legacy zp_creds first
   const creds=LS.get('zp_creds',{});
   let role=null;
   for(const[r,c] of Object.entries(creds)){
     if(c.login===login&&c.pass===pass){role=r;break}
   }
 
-  // Check employee-based credentials
   let empMatchId=null;
   if(!role){
     const emps=getEmps();
@@ -743,7 +752,6 @@ function doLogin(){
   else if(role==='manager')state.tab='dashboard';
   else state.tab='report';
   render();
-  // Фоновая синхронизация с облаком при входе
   if(Cloud.config.url){
     setTimeout(()=>{Cloud.sync().then(ok=>{if(ok)render()})},1000);
   }
@@ -767,54 +775,96 @@ function getTabs(){
     {id:'schedule',icon:'🗓',label:'График'},
     {id:'admin-report',icon:'📑',label:'Отчёт администратора'},
     {id:'employees',icon:'👥',label:'Сотрудники'},
-    {id:'settings',icon:'⚙️',label:'Настройки'},
-    {id:'ideas',icon:'💡',label:'Идеи'}
+    {id:'settings',icon:'⚙️',label:'Настройки'}
   ];
   if(r==='manager')return[
     {id:'dashboard',icon:'📊',label:'Главная'},
     {id:'daily',icon:'📅',label:'Ввод за день'},
     {id:'monthly',icon:'💰',label:'Расчёт за месяц'},
-    {id:'month-report',icon:'📋',label:'Отчёт за месяц'},
-    {id:'schedule',icon:'🗓',label:'График'},
-    {id:'employees',icon:'👥',label:'Сотрудники'},
-    {id:'settings',icon:'⚙️',label:'Настройки'},
-    {id:'ideas',icon:'💡',label:'Идеи'}
-  ];
-  if(r==='admin')return[
-    {id:'daily',icon:'📅',label:'Ввод за день'},
-    {id:'schedule',icon:'🗓',label:'График'},
-    {id:'settings',icon:'⚙️',label:'Настройки'},
-    {id:'ideas',icon:'💡',label:'Идеи'}
+    {id:'schedule',icon:'🗓',label:'График'}
   ];
   return[{id:'report',icon:'📋',label:'Мой отчёт'}];
+}
+
+function getTabLabel(tabId){
+  const tabs=getTabs();
+  const t=tabs.find(t=>t.id===tabId);
+  return t?t.label:'';
+}
+
+function renderSidebar(){
+  const tabs=getTabs();
+  const userName=getCurrentUserName();
+  const userRole=roleLabel(state.role);
+
+  let html=`<div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-name">🦷 Земский доктор</div>
+      <div class="logo-sub">Система управления</div>
+    </div>
+    <div class="sidebar-nav">`;
+
+  html+=`<div class="nav-section">Меню</div>`;
+  for(const t of tabs){
+    html+=`<div class="nav-item ${t.id===state.tab?'active':''}" data-tab="${t.id}">
+      <span class="nav-icon">${t.icon}</span>
+      <span>${t.label}</span>
+    </div>`;
+  }
+
+  html+=`</div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">👤</div>
+        <div class="sidebar-user-info">
+          <div class="su-name">${userName}</div>
+          <div class="su-role">${userRole}</div>
+        </div>
+      </div>
+      <button class="sidebar-logout" onclick="logout()">🚪 Выйти</button>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>`;
+
+  return html;
 }
 
 function renderApp(){
   const tabs=getTabs();
   if(!tabs.find(t=>t.id===state.tab))state.tab=tabs[0].id;
   const cloudLastSync=Cloud.lastSync?new Date(Cloud.lastSync).toLocaleString('ru-RU'):'никогда';
-  const session=LS.get('zp_session',{});
-  const tabLabel=tabs.find(t=>t.id===state.tab)?.label||'';
+  const isDark=LS.get('zp_theme','dark')==='dark';
+
+  let html=`<div class="app-layout">`;
 
   // Sidebar
-  let html=`<div class="app-layout"><div class="sidebar-overlay" id="sidebar-overlay"></div><aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">🦷 Земский <span>доктор</span></div>
-    <nav class="sidebar-nav">`;
-  for(const t of tabs){
-    html+=`<div class="sidebar-item${t.id===state.tab?' active':''}" data-tab="${t.id}"><span class="si-icon">${t.icon}</span>${t.label}</div>`;
-  }
-  html+=`</nav><div class="sidebar-user"><div class="su-avatar">${session.login==='karen'?'👨‍⚕️':'👤'}</div><div class="su-info"><div class="su-name">${session.login||''}</div><div class="su-role">${roleLabel(state.role)}</div></div><button class="su-logout" onclick="logout()">Выйти</button></div></aside>`;
+  html+=renderSidebar();
 
   // Main area
-  html+=`<div class="main-area"><header class="header"><button class="hamburger" id="hamburger">☰</button><h1>${tabLabel}</h1><div class="user-info">
-    <span id="cloud-icon" class="cloud-icon" title="Облако">☁️</span><div id="cloud-menu" class="cloud-menu">
-      <div class="cloud-menu-item" id="cm-sync">🔄 Синхронизировать</div>
-      <div class="cloud-menu-item" id="cm-push">⬆️ Выгрузить в облако</div>
-      <div class="cloud-menu-item" id="cm-pull">⬇️ Загрузить из облака</div>
-      <div class="cloud-status-bar">${Cloud.connected?'✅ Подключено':'⚪ Не подключено'} · Последняя: ${cloudLastSync}</div>
+  html+=`<div class="main-wrap">
+    <div class="main-header">
+      <div class="mh-left">
+        <button class="hamburger" id="hamburger-btn">☰</button>
+        <h1>${getTabLabel(state.tab)}</h1>
+      </div>
+      <div class="mh-right">
+        <div class="mh-search">
+          <span class="search-icon">🔍</span>
+          <input type="search" placeholder="Поиск..." id="global-search">
+        </div>
+        <span id="cloud-icon" class="cloud-icon" title="Облако" style="position:relative">☁️</span>
+        <div id="cloud-menu" class="cloud-menu">
+          <div class="cloud-menu-item" id="cm-sync">🔄 Синхронизировать</div>
+          <div class="cloud-menu-item" id="cm-push">⬆️ Выгрузить в облако</div>
+          <div class="cloud-menu-item" id="cm-pull">⬇️ Загрузить из облака</div>
+          <div class="cloud-status-bar">${Cloud.connected?'✅ Подключено':'⚪ Не подключено'} · Последняя: ${cloudLastSync}</div>
+        </div>
+        <button id="theme-toggle" title="Сменить тему" style="font-size:16px;padding:6px 10px">${isDark?'☀️':'🌙'}</button>
+      </div>
     </div>
-    <button id="theme-toggle" title="Сменить тему" style="font-size:16px;padding:6px 10px">${LS.get('zp_theme','dark')==='light'?'☀️':'🌙'}</button></div></header>`;
-  html+=`<div class="content">${renderTab()}</div></div></div>`;
+    <div class="main-content">${renderTab()}</div>
+  </div></div>`;
+
   return html;
 }
 
@@ -827,126 +877,50 @@ function renderTab(){
   if(state.tab==='admin-report')return renderAdminReportView();
   if(state.tab==='employees')return renderEmployees();
   if(state.tab==='settings')return renderSettings();
-  if(state.tab==='ideas')return renderIdeas();
   if(state.tab==='report')return renderAdminForm();
   return'';
 }
 
-// ========== DASHBOARD ==========
-function renderDashboard(){
-  const today=todayStr();
-  const emps=getActiveEmps();
-  const days=monthDays(todayStr().substring(0,7));
+function switchTab(tab){state.tab=tab;empEditId=null;showAddEmp=false;empSearchQ='';render();closeSidebar()}
 
-  // Метрики за сегодня
-  let todayRev=0,todayPat=0;
-  const td=LS.get('zp_daily_'+today,{});
-  for(const eid in td){todayRev+=td[eid].revenue||0;todayPat+=td[eid].patients||0}
-
-  // Вчера
-  let yRev=0;
-  const yd=new Date();yd.setDate(yd.getDate()-1);
-  const yStr=yd.toISOString().split('T')[0];
-  const yd2=LS.get('zp_daily_'+yStr,{});
-  for(const eid in yd2)yRev+=yd2[eid].revenue||0;
-
-  // За неделю
-  let weekRev=0,weekPat=0;
-  for(let i=0;i<7;i++){
-    const d=new Date();d.setDate(d.getDate()-i);
-    const ds=d.toISOString().split('T')[0];
-    const dd=LS.get('zp_daily_'+ds,{});
-    for(const eid in dd){weekRev+=dd[eid].revenue||0;weekPat+=dd[eid].patients||0}
-  }
-
-  // Топ врачи за месяц
-  const docs={};
-  for(const day of days){
-    const dd=LS.get('zp_daily_'+day,{});
-    for(const e of emps){
-      if(e.position&&e.position.includes('Врач')&&!e.position.includes('подмена')&&!e.position.includes('Подмена')){
-        const d=dd[e.id]||{};
-        if(!docs[e.name])docs[e.name]={revenue:0,patients:0};
-        docs[e.name].revenue+=d.revenue||0;docs[e.name].patients+=d.patients||0;
-      }
-    }
-  }
-  const topDocs=Object.entries(docs).sort((a,b)=>b[1].revenue-a[1].revenue);
-
-  // На смене сегодня
-  let onShift=0;
-  for(const e of emps){if(td[e.id]&&td[e.id].worked)onShift++}
-
-  const hour=new Date().getHours();
-  const greeting=hour<12?'Доброе утро':hour<18?'Добрый день':'Добрый вечер';
-  const name=LS.get('zp_session',{}).login||'';
-
-  let html=`<div class="card" style="margin-bottom:20px"><h3 style="font-size:18px">${greeting}, ${name==='karen'?'Карен':''} 👋</h3><div style="color:var(--text-dim);font-size:13px;margin-top:4px">${new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'})}</div></div>`;
-
-  // Метрики
-  html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px">`;
-  html+=mCard('💰 Выручка сегодня',todayRev.toLocaleString('ru-RU')+' ₽','var(--green)',yRev>0?`Вчера: ${yRev.toLocaleString('ru-RU')} ₽`:null);
-  html+=mCard('📊 За неделю',weekRev.toLocaleString('ru-RU')+' ₽','var(--accent)',weekPat+' пациент.')
-  html+=mCard('👥 Пациентов сегодня',todayPat,'var(--yellow)',onShift>0?onShift+' чел. на смене':null);
-  html+=mCard('👨‍⚕️ На смене',onShift+'/'+emps.length,'var(--text)',null);
-  html+=`</div>`;
-
-  // Топ врачи
-  if(topDocs.length){
-    html+=`<div class="card"><h3>🏆 Топ врачей за ${monthName(todayStr().substring(0,7))}</h3>`;
-    for(const[n,d] of topDocs){
-      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:600;font-size:14px">${n}</div><div style="color:var(--text-dim);font-size:12px">${d.patients} пациент.</div></div><div style="font-weight:700;color:var(--green);font-size:16px">${d.revenue.toLocaleString('ru-RU')} ₽</div></div>`;
-    }
-    html+=`</div>`;
-  }
-
-  return html;
+function openSidebar(){
+  document.getElementById('sidebar')?.classList.add('open');
+  document.getElementById('sidebar-overlay')?.classList.add('show');
 }
-
-function mCard(label,value,color,hint){
-  return `<div class="metric-card"><div class="metric-label">${label}</div><div class="metric-value" style="color:${color}">${value}</div>${hint?`<div class="metric-diff">${hint}</div>`:''}</div>`;
+function closeSidebar(){
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('sidebar-overlay')?.classList.remove('show');
 }
-
-function monthName(ym){
-  const months=['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const m=parseInt(ym.split('-')[1]);
-  return months[m]||ym;
-}
-
-function bindDashboard(){}
-
-// ========== IDEAS ==========
-function renderIdeas(){
-  return `<div class="card"><h3>💡 Идеи и предложения</h3><div style="color:var(--text-dim);margin-top:8px">Здесь будут идеи по улучшению приложения. Пока раздел пуст.</div></div>`;
-}
-function bindIdeas(){}
-
-function switchTab(tab){state.tab=tab;empEditId=null;showAddEmp=false;empSearchQ='';render()}
 
 function bindApp(){
-  // Sidebar navigation
-  document.querySelectorAll('.sidebar-item').forEach(el=>{
+  // Sidebar nav items
+  document.querySelectorAll('.nav-item[data-tab]').forEach(el=>{
     el.onclick=()=>switchTab(el.dataset.tab);
   });
-  // Hamburger (mobile)
-  const hamburger=document.getElementById('hamburger');
-  const sidebar=document.getElementById('sidebar');
+
+  // Hamburger
+  const hamburger=document.getElementById('hamburger-btn');
+  if(hamburger)hamburger.onclick=openSidebar;
+
+  // Sidebar overlay close
   const overlay=document.getElementById('sidebar-overlay');
-  if(hamburger&&sidebar&&overlay){
-    hamburger.onclick=()=>{sidebar.classList.toggle('open');overlay.classList.toggle('show')};
-    overlay.onclick=()=>{sidebar.classList.remove('open');overlay.classList.remove('show')};
-  }
+  if(overlay)overlay.onclick=closeSidebar;
+
   // Theme toggle
   const themeBtn=document.getElementById('theme-toggle');
   if(themeBtn)themeBtn.onclick=()=>{
     const cur=LS.get('zp_theme','dark');
     const next=cur==='dark'?'light':'dark';
     LS.set('zp_theme',next);
-    document.body.classList.toggle('light',next==='light');
-    themeBtn.textContent=next==='light'?'☀️':'🌙';
+    document.body.classList.remove('dark','light');
+    document.body.classList.add(next);
+    themeBtn.textContent=next==='dark'?'☀️':'🌙';
   };
-  // Apply saved theme on load
-  if(LS.get('zp_theme','dark')==='light')document.body.classList.add('light');
+  // Apply saved theme
+  const savedTheme=LS.get('zp_theme','dark');
+  document.body.classList.remove('dark','light');
+  document.body.classList.add(savedTheme);
+
   // Cloud menu
   const cloudIcon=document.getElementById('cloud-icon');
   const cloudMenu=document.getElementById('cloud-menu');
@@ -972,8 +946,103 @@ function bindTabContent(){
   if(state.tab==='admin-report')bindAdminReportView();
   if(state.tab==='employees')bindEmployees();
   if(state.tab==='settings')bindSettings();
-  if(state.tab==='ideas')bindIdeas();
   if(state.tab==='report')bindAdminForm();
+}
+
+// ========== DASHBOARD ==========
+function metricCard(label, value, color){
+  return '<div class="metric-card"><div class="mc-label">'+label+'</div><div class="mc-value" style="color:'+color+'">'+value+'</div></div>';
+}
+
+function renderDashboard(){
+  const today=todayStr();
+  const emps=getActiveEmps();
+
+  // Вчера
+  const d=new Date();
+  d.setDate(d.getDate()-1);
+  const yesterday=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+
+  // Метрики сегодня
+  let todayRevenue=0, todayPatients=0;
+  const todayData=LS.get('zp_daily_'+today,{});
+  for(const eid in todayData){todayRevenue+=todayData[eid].revenue||0;todayPatients+=todayData[eid].patients||0}
+
+  // Вчера
+  let yesterdayRevenue=0;
+  const yData=LS.get('zp_daily_'+yesterday,{});
+  for(const eid in yData){yesterdayRevenue+=yData[eid].revenue||0}
+
+  // За неделю
+  let weekRevenue=0;
+  for(let i=0;i<7;i++){
+    const wd=new Date();wd.setDate(wd.getDate()-i);
+    const wds=wd.getFullYear()+'-'+String(wd.getMonth()+1).padStart(2,'0')+'-'+String(wd.getDate()).padStart(2,'0');
+    const wdd=LS.get('zp_daily_'+wds,{});
+    for(const eid in wdd)weekRevenue+=wdd[eid].revenue||0;
+  }
+
+  // Топ врачи за месяц
+  const days=monthDays(state.month);
+  const docs={};
+  for(const day of days){
+    const dd=LS.get('zp_daily_'+day,{});
+    for(const e of emps){
+      if(e.position.includes('Врач')){
+        const d=dd[e.id]||{};
+        if(!docs[e.name])docs[e.name]={revenue:0,patients:0};
+        docs[e.name].revenue+=d.revenue||0;
+        docs[e.name].patients+=d.patients||0;
+      }
+    }
+  }
+  const topDocs=Object.entries(docs).sort((a,b)=>b[1].revenue-a[1].revenue);
+
+  const greeting=getGreeting();
+  const userName=getCurrentUserName();
+
+  let html='<div class="card"><h3>'+greeting+', '+userName+' 👋</h3></div>';
+
+  // Метрики
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px">';
+  html+=metricCard('💰 Выручка сегодня', todayRevenue.toLocaleString('ru')+' ₽', 'var(--green)');
+  html+=metricCard('📊 Вчера', yesterdayRevenue.toLocaleString('ru')+' ₽', 'var(--accent)');
+  html+=metricCard('📅 За неделю', weekRevenue.toLocaleString('ru')+' ₽', 'var(--yellow)');
+  html+=metricCard('👥 Пациентов сегодня', todayPatients, 'var(--accent)');
+  html+='</div>';
+
+  // На смене сегодня
+  html+='<div class="card"><h3>📋 На смене сегодня</h3>';
+  const workingEmps=emps.filter(e=>{
+    if(e.calcType==='fixed_month')return false;
+    const d=todayData[e.id]||{};
+    return d.worked>0;
+  });
+  if(workingEmps.length){
+    html+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    for(const e of workingEmps){
+      html+='<span class="position-tag" style="font-size:13px;padding:6px 14px">'+e.name+' — '+e.position+'</span>';
+    }
+    html+='</div>';
+  }else{
+    html+='<div class="empty-msg">Нет данных за сегодня</div>';
+  }
+  html+='</div>';
+
+  // Топ врачей
+  if(topDocs.length){
+    html+='<div class="card"><h3>🏆 Топ врачей за '+monthName(state.month)+'</h3>';
+    for(const[name,data] of topDocs){
+      html+='<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span style="font-weight:600;color:var(--green)">'+data.revenue.toLocaleString('ru')+' ₽ ('+data.patients+' пациент.)</span></div>';
+    }
+    html+='</div>';
+  }
+
+  return html;
+}
+
+function bindDashboard(){
+  // Can add interactivity later
 }
 
 // ========== DAILY INPUT ==========
@@ -1045,7 +1114,6 @@ function renderMonthly(){
       totalOwnRevenue+=d.revenue||0;
     }
     if(emp.calcType==='fixed_month'){totalWorked=0;totalOwnRevenue=0}
-    // Для fixed_day_percent считаем по дням (5% от выручки клиники за каждый рабочий день)
     let salary;
     if(emp.calcType==='fixed_day_percent'){
       salary=calcSalaryByDays(emp,days)||0;
@@ -1162,7 +1230,6 @@ function renderMonthReport(){
   for(const emp of emps){
     let tw=0,trv=0;
     for(const day of days){const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});tw+=d.worked||0;trv+=d.revenue||0}
-    // Для fixed_day_percent считаем по дням отдельно (5% от выручки клиники за каждый рабочий день)
     let sal;
     if(emp.calcType==='fixed_day_percent'){
       sal=calcSalaryByDays(emp,days)||0;
@@ -1180,7 +1247,6 @@ function renderMonthReport(){
   const topDay=Object.entries(revenueByDay).sort((a,b)=>b[1]-a[1])[0];
   const lowDays=Object.entries(revenueByDay).filter(([d,v])=>v>0&&v<avgDayRev*0.5);
 
-  // Top doctors
   const sortedDocs=Object.entries(doctorsRevenue).sort((a,b)=>b[1]-a[1]);
 
   let html=`<div class="card"><h3>📋 Отчёт за ${monthName(state.month)}</h3>
@@ -1188,47 +1254,47 @@ function renderMonthReport(){
       <button id="mr-prev-month">◀</button><span>${monthName(state.month)}</span><button id="mr-next-month">▶</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px">
-      <div style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Общая выручка</div>
+      <div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Общая выручка</div>
         <div style="font-size:22px;font-weight:700;color:var(--accent);margin-top:4px">${totalRevenue.toLocaleString('ru')} ₽</div>
       </div>
-      <div style="background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Расходы</div>
+      <div class="metric-card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Расходы</div>
         <div style="font-size:22px;font-weight:700;color:var(--red);margin-top:4px">${totalExpenses.toLocaleString('ru')} ₽</div>
       </div>
-      <div style="background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">ФОТ</div>
+      <div class="metric-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">ФОТ</div>
         <div style="font-size:22px;font-weight:700;color:var(--green);margin-top:4px">${totalFOT.toLocaleString('ru')} ₽</div>
       </div>
-      <div style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Маржа</div>
+      <div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Маржа</div>
         <div style="font-size:22px;font-weight:700;color:${margin>=0?'var(--green)':'var(--red)'};margin-top:4px">${margin.toLocaleString('ru')} ₽</div>
       </div>
-      <div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Средний чек</div>
+      <div class="metric-card" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Средний чек</div>
         <div style="font-size:22px;font-weight:700;color:var(--yellow);margin-top:4px">${avgCheck.toLocaleString('ru')} ₽</div>
       </div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Пациентов</div>
+      <div class="metric-card">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Пациентов</div>
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${totalPatients}</div>
       </div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Рабочих дней</div>
+      <div class="metric-card">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Рабочих дней</div>
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${workDays}</div>
       </div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center">
-        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Ср. выручка/день</div>
+      <div class="metric-card">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Ср. выручка/день</div>
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${avgDayRev.toLocaleString('ru')} ₽</div>
       </div>
     </div>
-    ${topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(74,222,128,0.08);border-radius:var(--radius-sm);font-size:13px">🏆 <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:''}
-    ${lowDays.length?`<div style="margin-top:8px;padding:10px 14px;background:rgba(248,113,113,0.08);border-radius:var(--radius-sm);font-size:13px">⚠️ <b>Ниже среднего (менее 50% от нормы):</b> ${lowDays.map(([d])=>d).join(', ')}</div>`:''}`;
+    ${topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:var(--radius-sm);font-size:13px">🏆 <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:''}
+    ${lowDays.length?`<div style="margin-top:8px;padding:10px 14px;background:rgba(239,68,68,0.06);border-radius:var(--radius-sm);font-size:13px">⚠️ <b>Ниже среднего (менее 50% от нормы):</b> ${lowDays.map(([d])=>d).join(', ')}</div>`:''}`;
 
   if(sortedDocs.length){
     html+=`<div style="margin-top:16px"><h4 style="margin-bottom:10px">👨‍⚕️ Выручка по врачам</h4><div style="display:grid;gap:6px">`;
     for(const[name,rev] of sortedDocs){
       const pct=totalRevenue>0?Math.round(rev/totalRevenue*100):0;
-      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:var(--radius-sm)"><span>${name}</span><span style="font-weight:600;color:var(--accent)">${rev.toLocaleString('ru')} ₽ <span style="color:var(--text2);font-size:12px">(${pct}%)</span></span></div>`;
+      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-lighter);border-radius:var(--radius-sm)"><span>${name}</span><span style="font-weight:600;color:var(--accent)">${rev.toLocaleString('ru')} ₽ <span style="color:var(--text-dim);font-size:12px">(${pct}%)</span></span></div>`;
     }
     html+=`</div></div>`;
   }
@@ -1295,7 +1361,6 @@ function renderSchedule(){
       const dow=dateObj.getDay();
       const isWeekend=dow===0||dow===6;
       const isToday=fmtDate(dateObj)===today;
-      // Default: Р for weekdays, В for weekends
       const val=empSch[d]||(isWeekend?'В':'Р');
       let cls='shift-cell';
       cls+=' '+statusCls[val];
@@ -1330,7 +1395,6 @@ function bindSchedule(){
   };
 
   const statusCycle=['Р','О','В','П'];
-  // Click cells to cycle status
   document.querySelectorAll('.shift-cell').forEach(cell=>{
     cell.onclick=()=>{
       const empId=parseInt(cell.dataset.emp);
@@ -1341,7 +1405,6 @@ function bindSchedule(){
       const cur=cell.dataset.val||'Р';
       const idx=statusCycle.indexOf(cur);
       const next=statusCycle[(idx+1)%statusCycle.length];
- // Only save if different from default
       const dateObj=new Date(parseInt(state.month.split('-')[0]),parseInt(state.month.split('-')[1])-1,day);
       const isWeekend=dateObj.getDay()===0||dateObj.getDay()===6;
       const defaultVal=isWeekend?'В':'Р';
@@ -1642,7 +1705,6 @@ let empSearchQ='';
 
 function renderEmployees(){
   let allEmps=getEmps();
-  // Защита: если счётчик показывает сотрудников но список пуст — восстановим из defaults
   if(allEmps.length===0&&LS.get('zp_employees')){LS.del('zp_employees');initDefaults();allEmps=getEmps();}
   const emps=allEmps.filter(e=>{
     if(!empSearchQ)return true;
@@ -1659,12 +1721,12 @@ function renderEmployees(){
     <div style="margin-bottom:12px"><input type="text" id="emp-search" placeholder="🔍 Поиск по ФИО или должности..." value="${empSearchQ}" style="width:100%;max-width:320px;padding:10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px"></div>
     <button class="btn btn-primary btn-sm" id="toggle-add-emp" style="margin-bottom:14px">+ Добавить сотрудника</button>
     <div id="add-emp-form" class="${showAddEmp?'':'hidden'}" style="margin-bottom:18px">
-      <div class="card" style="background:var(--input-bg)">
+      <div class="card" style="background:var(--bg-lighter)">
         <h4 id="emp-form-title">Новый сотрудник</h4>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:10px">
-          <div><label style="font-size:12px;color:var(--text2)">ФИО</label><input type="text" id="emp-fio" autocomplete="off"></div>
-          <div><label style="font-size:12px;color:var(--text2)">Должность</label><select id="emp-position">${positions.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="__new__">+ Новая должность...</option></select><input type="text" id="emp-position-new" style="display:none;margin-top:4px" placeholder="Новая должность"></div>
-          <div><label style="font-size:12px;color:var(--text2)">Тип расчёта</label><select id="emp-calc">
+          <div><label style="font-size:12px;color:var(--text-dim)">ФИО</label><input type="text" id="emp-fio" autocomplete="off"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Должность</label><select id="emp-position">${positions.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="__new__">+ Новая должность...</option></select><input type="text" id="emp-position-new" style="display:none;margin-top:4px" placeholder="Новая должность"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Тип расчёта</label><select id="emp-calc">
             <option value="fixed_day">Фикс за смену</option>
             <option value="fixed_month">Фикс за месяц</option>
             <option value="percent">Процент</option>
@@ -1672,19 +1734,19 @@ function renderEmployees(){
             <option value="fixed_month_percent">Фикс/мес + %</option>
             <option value="fixed_day_percent_own">Фикс/смен + % от своей выручки</option>
           </select></div>
-          <div><label style="font-size:12px;color:var(--text2)">Фикс за смену ₽</label><input type="number" id="emp-fixed-day" value="0" min="0"></div>
-          <div><label style="font-size:12px;color:var(--text2)">Фикс за месяц ₽</label><input type="number" id="emp-fixed-month" value="0" min="0"></div>
-          <div><label style="font-size:12px;color:var(--text2)">Процент %</label><input type="number" id="emp-percent" value="0" min="0" max="100"></div>
-          <div><label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="emp-can-login" ${currentRole!=='none'?'checked':''}> Вход в приложение</label></div>
-          <div id="emp-cred-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text2)">Логин</label><input type="text" id="emp-login" value="${currentLogin}" autocomplete="new-password" placeholder="Логин"></div>
-          <div id="emp-pass-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text2)">Пароль</label><input type="password" id="emp-pass" value="${currentPass}" autocomplete="new-password" placeholder="Пароль"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Фикс за смену ₽</label><input type="number" id="emp-fixed-day" value="0" min="0"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Фикс за месяц ₽</label><input type="number" id="emp-fixed-month" value="0" min="0"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Процент %</label><input type="number" id="emp-percent" value="0" min="0" max="100"></div>
+          <div><label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="emp-can-login" ${currentRole!=='none'?'checked':''}> Вход в приложение</label></div>
+          <div id="emp-cred-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text-dim)">Логин</label><input type="text" id="emp-login" value="${currentLogin}" autocomplete="new-password" placeholder="Логин"></div>
+          <div id="emp-pass-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text-dim)">Пароль</label><input type="password" id="emp-pass" value="${currentPass}" autocomplete="new-password" placeholder="Пароль"></div>
           <div id="emp-perms-section" style="grid-column:1/-1;${currentRole==='none'?'display:none':''}"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:8px">🔒 Права доступа</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
-            <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-salaries" class="emp-perm" data-perm="seeSalaries" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSalaries?'checked':''}> 👁 Видеть зарплаты</label>
-            <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-revenue" class="emp-perm" data-perm="seeRevenue" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeRevenue?'checked':''}> 👁 Видеть выручку</label>
-            <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-schedule" class="emp-perm" data-perm="seeSchedule" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSchedule?'checked':''}> 👁 Видеть график</label>
-            <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-expenses" class="emp-perm" data-perm="seeExpenses" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeExpenses?'checked':''}> 👁 Видеть расходы</label>
-            <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-input" class="emp-perm" data-perm="canInput" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canInput?'checked':''}> ✏️ Вводить данные</label>
-            <label style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-report" class="emp-perm" data-perm="canFillReport" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canFillReport?'checked':''}> ✏️ Заполнять отчёт</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-salaries" class="emp-perm" data-perm="seeSalaries" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSalaries?'checked':''}> 👁 Видеть зарплаты</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-revenue" class="emp-perm" data-perm="seeRevenue" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeRevenue?'checked':''}> 👁 Видеть выручку</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-schedule" class="emp-perm" data-perm="seeSchedule" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSchedule?'checked':''}> 👁 Видеть график</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-expenses" class="emp-perm" data-perm="seeExpenses" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeExpenses?'checked':''}> 👁 Видеть расходы</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-input" class="emp-perm" data-perm="canInput" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canInput?'checked':''}> ✏️ Вводить данные</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-report" class="emp-perm" data-perm="canFillReport" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canFillReport?'checked':''}> ✏️ Заполнять отчёт</label>
             <label style="font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600"><input type="checkbox" id="perm-is-owner" class="emp-perm" data-perm="isOwner" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.isOwner?'checked':''}> ⭐ Полный доступ</label>
           </div></div>
         </div>
@@ -1697,7 +1759,7 @@ function renderEmployees(){
   for(const e of emps){
     const permCount = e.permissions ? Object.values(e.permissions).filter(v=>v).length : 0;
     const permText = !e.permissions || permCount===0 ? '—' : (e.permissions.isOwner ? '⭐ Владелец' : permCount + ' прав');
-    const permColor = !e.permissions || permCount===0 ? 'var(--text2)' : (e.permissions.isOwner ? 'var(--accent)' : 'var(--green)');
+    const permColor = !e.permissions || permCount===0 ? 'var(--text-dim)' : (e.permissions.isOwner ? 'var(--accent)' : 'var(--green)');
     html+=`<tr><td>${e.name}</td><td>${e.position}</td><td>${e.calcType.replace(/_/g,' ')}</td>
       <td>${e.fixedDay||''}</td><td>${e.fixedMonth||''}</td><td>${e.percent||''}</td>
       <td><span style="color:${permColor};font-size:12px;font-weight:600">${permText}</span></td>
@@ -1735,7 +1797,6 @@ function bindEmployees(){
   const searchInput=document.getElementById('emp-search');
   if(searchInput)searchInput.oninput=()=>{empSearchQ=searchInput.value;render()};
 
-  // Show/hide login/pass/permissions based on canLogin checkbox
   const canLogin=document.getElementById('emp-can-login');
   function toggleCredFields(){
     const show=canLogin&&canLogin.checked;
@@ -1749,7 +1810,6 @@ function bindEmployees(){
   if(canLogin)canLogin.onchange=toggleCredFields;
   toggleCredFields();
 
-  // Owner checkbox toggles all others
   const ownerCheck=document.getElementById('perm-is-owner');
   if(ownerCheck)ownerCheck.onchange=()=>{
     document.querySelectorAll('.emp-perm').forEach(cb=>{if(cb.id!=='perm-is-owner')cb.checked=ownerCheck.checked});
@@ -1822,7 +1882,6 @@ function bindEmployees(){
       setTimeout(()=>{
         document.getElementById('emp-fio').value=emp.name;
         const posSel=document.getElementById('emp-position');
-        // Try to set position; if not found, it's custom
         const posOpts=Array.from(posSel.options).map(o=>o.value);
         if(posOpts.includes(emp.position)){posSel.value=emp.position}
         else{
@@ -1837,7 +1896,6 @@ function bindEmployees(){
         document.getElementById('emp-login').value=emp.login||'';
         document.getElementById('emp-pass').value=emp.pass||'';
         document.getElementById('emp-form-title').textContent='Редактирование: '+emp.name;
-        // Показать/скрыть поля логина/пароля
         const canLogin=emp.appRole&&emp.appRole!=='none';
         document.getElementById('emp-can-login').checked=canLogin;
         const credFields=document.getElementById('emp-cred-fields');
@@ -1846,7 +1904,6 @@ function bindEmployees(){
         if(credFields)credFields.style.display=canLogin?'':'none';
         if(passFields)passFields.style.display=canLogin?'':'none';
         if(permsSection)permsSection.style.display=canLogin?'':'none';
-        // Заполнить права доступа
         if(emp.permissions){
           document.querySelectorAll('.emp-perm').forEach(cb=>{
             const perm=cb.dataset.perm;
@@ -1932,7 +1989,7 @@ function renderSettings(){
           <button class="btn btn-primary btn-sm" id="cloud-save-config">💾 Сохранить настройки</button>
           <button class="btn btn-outline btn-sm" id="cloud-reset-config" style="color:var(--red);border-color:var(--red)">🔄 Сбросить по умолчанию</button>
         </div>
-        <div style="margin-top:12px;padding:10px;background:var(--input-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--text-dim)">
+        <div style="margin-top:12px;padding:10px;background:var(--bg-lighter);border-radius:var(--radius-sm);font-size:12px;color:var(--text-dim)">
           Статус: <span id="cloud-status-text" style="color:${Cloud.connected?'var(--green)':'var(--yellow)'}">${Cloud.connected?'✅ Подключено':'⚪ Не настроено'}</span>
           ${Cloud.lastSync?'<span style=color:var(--text-muted)> · Последняя синхронизация: </span>'+new Date(Cloud.lastSync).toLocaleString("ru-RU"):""}
         </div>
@@ -1995,7 +2052,6 @@ function bindSettings(){
     initDefaults();
     toast('Все данные очищены');render();
   };
-  // Cloud settings bindings
   const cloudCheck=document.getElementById('cloud-check');
   if(cloudCheck)cloudCheck.onclick=async()=>{
     const url=document.getElementById('cloud-url').value.trim();
@@ -2073,4 +2129,3 @@ Cloud.init().then(()=>render());
 </script>
 </body>
 </html>
-
