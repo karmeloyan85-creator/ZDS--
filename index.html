@@ -1478,7 +1478,10 @@ let showAddEmp=false;
 let empSearchQ='';
 
 function renderEmployees(){
-  const emps=getEmps().filter(e=>{
+  let allEmps=getEmps();
+  // Защита: если счётчик показывает сотрудников но список пуст — восстановим из defaults
+  if(allEmps.length===0&&LS.get('zp_employees')){LS.del('zp_employees');initDefaults();allEmps=getEmps();}
+  const emps=allEmps.filter(e=>{
     if(!empSearchQ)return true;
     const q=empSearchQ.toLowerCase();
     return e.name.toLowerCase().includes(q)||e.position.toLowerCase().includes(q);
