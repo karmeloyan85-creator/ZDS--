@@ -443,17 +443,25 @@ const Cloud={
       if(!data)return false;
 
       if(data.employees){
-        // Безопасная синхронизация: перезаписываем employees только если в облаке полные данные
+        // Безопасная синхронизация: сливаем облако с локальными, ЛОКАЛЬНЫЕ права/логин/пароль приоритет
         const localEmps=LS.get('zp_employees',[]);
-        if(data.employees.length>=localEmps.length){
-          LS.set('zp_employees',data.employees);
-        }else{
-          // Облако неполное — сливаем: сохраняем local, но добавляем новых из облака
-          const localIds=new Set(localEmps.map(e=>e.id));
-          data.employees.forEach(e=>{if(!localIds.has(e.id))localEmps.push(e)});
-          LS.set('zp_employees',localEmps);
-          addHistory('⚠️ Синхронизация: локальные сотрудники сохранены (облако неполное)');
-        }
+        const localMap=new Map(localEmps.map(e=>[e.id,e]));
+        const merged=data.employees.map(cloudEmp=>{
+          const local=localMap.get(cloudEmp.id);
+          if(!local)return cloudEmp; // нового сотрудника из облака — берём как есть
+          // Локальные поля приоритет — не перезаписываем из облака:
+          return {...cloudEmp,
+            appRole:local.appRole||cloudEmp.appRole||'none',
+            login:local.login||cloudEmp.login||'',
+            pass:local.pass||cloudEmp.pass||'',
+            permissions:local.permissions||cloudEmp.permissions||undefined
+          };
+        });
+        // Добавляем локальных сотрудников, которых нет в облаке
+        const cloudIds=new Set(data.employees.map(e=>e.id));
+        localEmps.forEach(e=>{if(!cloudIds.has(e.id))merged.push(e)});
+        LS.set('zp_employees',merged);
+        addHistory('☁️ Сотрудники синхронизированы (локальные права сохранены)');
       }
 
       if(data.daily){
@@ -1963,6 +1971,12 @@ function bindEmployees(){
     if(canLogin&&(!login||!pass)){toast('Укажите логин и пароль');return}
     const permissions={};
     document.querySelectorAll('.emp-perm').forEach(cb=>{permissions[cb.dataset.perm]=cb.checked});
+    // Определяем appRole: при редактировании сохраняем оригинальную роль (owner/manager/admin), иначе 'custom'
+    let appRole=canLogin?'custom':'none';
+    if(empEditId&&canLogin){
+      const origEmp=getEmps().find(e=>e.id===empEditId);
+      if(origEmp&&origEmp.appRole&&origEmp.appRole!=='none'&&origEmp.appRole!=='custom'){appRole=origEmp.appRole}
+    }
     const obj={
       name,
       position,
@@ -1971,7 +1985,7 @@ function bindEmployees(){
       fixedMonth:parseInt(document.getElementById('emp-fixed-month').value)||0,
       percent:parseInt(document.getElementById('emp-percent').value)||0,
       active:true,
-      appRole:canLogin?'custom':'none',
+      appRole,
       login:login||undefined,
       pass:pass||undefined,
       permissions:canLogin?permissions:undefined
@@ -1991,6 +2005,14 @@ function bindEmployees(){
       addHistory('Добавлен сотрудник: '+name);
     }
     LS.set('zp_employees',emps);
+    // Синхронизируем логин/пароль в zp_creds для manager/admin
+    if(canLogin&&login&&pass){
+      const creds=LS.get('zp_creds',{});
+      if(appRole==='manager'){creds.manager={login,pass}}
+      if(appRole==='admin'){creds.admin={login,pass}}
+      if(appRole==='owner'){creds.owner={login,pass}}
+      LS.set('zp_creds',creds);
+    }
     showAddEmp=false;empEditId=null;
     render();toast('Сохранено');
   };
@@ -2074,12 +2096,30 @@ function bindEmployees(){
 // ========== SETTINGS ==========
 function renderSettings(){
   const creds=LS.get('zp_creds',{});
+  const emps=getEmps();
+  const mgrEmp=emps.find(e=>e.appRole==='manager');
+  const admEmp=emps.find(e=>e.appRole==='admin');
+  const mgrPerms=mgrEmp?.permissions||{};
+  const admPerms=admEmp?.permissions||{};
+  function permCheckboxes(prefix,perms){
+    const items=[
+      {key:'seeSalaries',label:'👁 Видеть зарплаты'},
+      {key:'seeRevenue',label:'👁 Видеть выручку'},
+      {key:'seeSchedule',label:'👁 Видеть график'},
+      {key:'seeExpenses',label:'👁 Видеть расходы'},
+      {key:'canInput',label:'✏️ Вводить данные'},
+      {key:'canFillReport',label:'📝 Заполнять отчёт'},
+      {key:'isOwner',label:'⭐ Полный доступ'}
+    ];
+    return items.map(it=>`<label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="${prefix}-${it.key}" class="${prefix}-perm" data-perm="${it.key}" ${perms[it.key]?'checked':''}> ${it.label}</label>`).join('');
+  }
   let html=`<div class="card"><h3><i data-feather="settings"></i> Настройки</h3>
 
     <div class="settings-section">
       <h4>🔑 Пароль управляющей</h4>
       <div class="settings-row"><label>Логин</label><input type="text" id="mgr-login" value="${creds.manager?.login||''}"></div>
       <div class="settings-row"><label>Пароль</label><input type="text" id="mgr-pass" value="${creds.manager?.pass||''}"></div>
+      <div style="margin-top:8px;margin-bottom:8px"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:6px">Права доступа:</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px">${permCheckboxes('mgr',mgrPerms)}</div></div>
       <button class="btn btn-primary btn-sm" id="save-mgr">Сохранить</button>
     </div>
 
@@ -2087,6 +2127,7 @@ function renderSettings(){
       <h4>🔑 Пароль администратора</h4>
       <div class="settings-row"><label>Логин</label><input type="text" id="adm-login" value="${creds.admin?.login||''}"></div>
       <div class="settings-row"><label>Пароль</label><input type="text" id="adm-pass" value="${creds.admin?.pass||''}"></div>
+      <div style="margin-top:8px;margin-bottom:8px"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:6px">Права доступа:</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px">${permCheckboxes('adm',admPerms)}</div></div>
       <button class="btn btn-primary btn-sm" id="save-adm">Сохранить</button>
     </div>
 
@@ -2127,17 +2168,46 @@ function renderSettings(){
 }
 
 function bindSettings(){
+  // "Полный доступ" чекбокс включает все остальные
+  ['mgr','adm'].forEach(prefix=>{
+    const ownerCb=document.getElementById(prefix+'-isOwner');
+    if(ownerCb)ownerCb.onchange=()=>{
+      document.querySelectorAll('.'+prefix+'-perm').forEach(cb=>{if(cb.id!==prefix+'-isOwner')cb.checked=ownerCb.checked});
+    };
+  });
   const saveMgr=document.getElementById('save-mgr');
   if(saveMgr)saveMgr.onclick=()=>{
     const creds=LS.get('zp_creds',{});
     creds.manager={login:document.getElementById('mgr-login').value.trim(),pass:document.getElementById('mgr-pass').value};
-    LS.set('zp_creds',creds);toast('Сохранено');addHistory('Изменён пароль управляющей');
+    LS.set('zp_creds',creds);
+    // Обновляем логин/пароль/права в записи сотрудника
+    const emps=getEmps();
+    const emp=emps.find(e=>e.appRole==='manager');
+    if(emp){
+      emp.login=creds.manager.login;emp.pass=creds.manager.pass;
+      const perms={};
+      document.querySelectorAll('.mgr-perm').forEach(cb=>{perms[cb.dataset.perm]=cb.checked});
+      emp.permissions=perms;
+      LS.set('zp_employees',emps);
+    }
+    toast('Сохранено');addHistory('Изменён пароль управляющей');
   };
   const saveAdm=document.getElementById('save-adm');
   if(saveAdm)saveAdm.onclick=()=>{
     const creds=LS.get('zp_creds',{});
     creds.admin={login:document.getElementById('adm-login').value.trim(),pass:document.getElementById('adm-pass').value};
-    LS.set('zp_creds',creds);toast('Сохранено');addHistory('Изменён пароль администратора');
+    LS.set('zp_creds',creds);
+    // Обновляем логин/пароль/права в записи сотрудника
+    const emps=getEmps();
+    const emp=emps.find(e=>e.appRole==='admin');
+    if(emp){
+      emp.login=creds.admin.login;emp.pass=creds.admin.pass;
+      const perms={};
+      document.querySelectorAll('.adm-perm').forEach(cb=>{perms[cb.dataset.perm]=cb.checked});
+      emp.permissions=perms;
+      LS.set('zp_employees',emps);
+    }
+    toast('Сохранено');addHistory('Изменён пароль администратора');
   };
   const expBtn=document.getElementById('export-json');
   if(expBtn)expBtn.onclick=()=>{

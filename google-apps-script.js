@@ -124,6 +124,10 @@ function readSheet(sheetName) {
       if (typeof val === 'number') val = val;
       // Преобразуем логические
       if (typeof val === 'boolean') val = val ? 1 : 0;
+      // Десериализуем JSON-строки (например permissions)
+      if (typeof val === 'string' && val.startsWith('{') && val.endsWith('}')) {
+        try { val = JSON.parse(val); } catch(e) { /* оставляем как строку */ }
+      }
       obj[headers[j]] = val;
     }
     result.push(obj);
@@ -149,6 +153,8 @@ function writeSheet(sheetName, data) {
     return headers.map(h => {
       let val = item[h];
       if (val === undefined || val === null) return '';
+      // Сериализуем объекты/массивы в JSON (например permissions)
+      if (typeof val === 'object') return JSON.stringify(val);
       // Force date-like strings to stay as text (prevent DATE_AS_TEXT conversion)
       if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
         return val;
