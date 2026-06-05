@@ -1057,6 +1057,7 @@ function metricCard(label, value, color){
 function renderDashboard(){
   const today=todayStr();
   const emps=getActiveEmps();
+  const isOwner=state.role==='owner';
 
   // Вчера
   const d=new Date();
@@ -1105,9 +1106,11 @@ function renderDashboard(){
 
   // Метрики
   html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px">';
-  html+=metricCard('<i data-feather="dollar-sign"></i> Выручка сегодня', todayRevenue.toLocaleString('ru')+' ₽', 'var(--green)');
-  html+=metricCard('<i data-feather="trending-up"></i> Вчера', yesterdayRevenue.toLocaleString('ru')+' ₽', 'var(--accent)');
-  html+=metricCard('<i data-feather="calendar"></i> За неделю', weekRevenue.toLocaleString('ru')+' ₽', 'var(--yellow)');
+  if(isOwner){
+    html+=metricCard('<i data-feather="dollar-sign"></i> Выручка сегодня', todayRevenue.toLocaleString('ru')+' ₽', 'var(--green)');
+    html+=metricCard('<i data-feather="trending-up"></i> Вчера', yesterdayRevenue.toLocaleString('ru')+' ₽', 'var(--accent)');
+    html+=metricCard('<i data-feather="calendar"></i> За неделю', weekRevenue.toLocaleString('ru')+' ₽', 'var(--yellow)');
+  }
   html+=metricCard('<i data-feather="heart"></i> Пациентов сегодня', todayPatients, 'var(--accent)');
   html+='</div>';
 
@@ -1130,7 +1133,7 @@ function renderDashboard(){
   html+='</div>';
 
   // Топ врачей
-  if(topDocs.length){
+  if(topDocs.length&&isOwner){
     html+='<div class="card"><h3><i data-feather="award"></i> Топ врачей за '+monthName(state.month)+'</h3>';
     for(const[name,data] of topDocs){
       html+='<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span style="font-weight:600;color:var(--green)">'+data.revenue.toLocaleString('ru')+' ₽ ('+data.patients+' пациент.)</span></div>';
@@ -1232,17 +1235,15 @@ function renderMonthly(){
         <div><div class="label">Дней/смен</div><div class="val">${totalWorked}</div></div>
         ${isOwner?`<div><div class="label">Выручка ₽</div><div class="val val-money">${totalOwnRevenue.toLocaleString('ru')}</div></div>`:''}
         <div><div class="label">Пациентов</div><div class="val">${totalPatients}</div></div>
-        <div><div class="label">Начислено ₽</div><div class="val val-money">${salary.toLocaleString('ru')}</div></div>
-        ${isOwner?`<div><div class="label">Аванс ₽</div><div class="val"><input type="number" class="advance-input" data-id="${emp.id}" value="${advance}" min="0" style="width:80px"></div></div>`:`<div><div class="label">Аванс ₽</div><div class="val">${advance.toLocaleString('ru')}</div></div>`}
-        <div><div class="label">К выдаче ₽</div><div class="val val-total">${toPay.toLocaleString('ru')}</div></div>
+        ${isOwner?`<div><div class="label">Начислено ₽</div><div class="val val-money">${salary.toLocaleString('ru')}</div></div>`:''}
+        ${isOwner?`<div><div class="label">Аванс ₽</div><div class="val"><input type="number" class="advance-input" data-id="${emp.id}" value="${advance}" min="0" style="width:80px"></div></div>`:''}
+        ${isOwner?`<div><div class="label">К выдаче ₽</div><div class="val val-total">${toPay.toLocaleString('ru')}</div></div>`:''}
       </div>
     </div>`;
   }
 
   if(isOwner){
     html+=`<div class="fot-total">ФОТ: ${totalAll.toLocaleString('ru')} ₽ · Выручка: ${totalRevAll.toLocaleString('ru')} ₽</div>`;
-  } else {
-    html+=`<div class="fot-total">ФОТ: ${totalAll.toLocaleString('ru')} ₽</div>`;
   }
 
   return html;
@@ -1300,6 +1301,7 @@ function renderMonthReport(){
   const days=monthDays(state.month);
   const emps=getActiveEmps();
   const advances=LS.get('zp_advances_'+state.month,{});
+  const isOwner=state.role==='owner';
 
   let totalRevenue=0,totalExpenses=0,totalFOT=0,totalPatients=0;
   let revenueByDay={};
@@ -1354,7 +1356,7 @@ function renderMonthReport(){
       <button id="mr-prev-month"><i data-feather="arrow-left"></i></button><span>${monthName(state.month)}</span><button id="mr-next-month"><i data-feather="arrow-right"></i></button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px">
-      <div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
+      ${isOwner?`<div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
         <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Общая выручка</div>
         <div style="font-size:22px;font-weight:700;color:var(--accent);margin-top:4px">${totalRevenue.toLocaleString('ru')} ₽</div>
       </div>
@@ -1373,7 +1375,7 @@ function renderMonthReport(){
       <div class="metric-card" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.15)">
         <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Средний чек</div>
         <div style="font-size:22px;font-weight:700;color:var(--yellow);margin-top:4px">${avgCheck.toLocaleString('ru')} ₽</div>
-      </div>
+      </div>`:''}
       <div class="metric-card">
         <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Пациентов</div>
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${totalPatients}</div>
@@ -1382,15 +1384,15 @@ function renderMonthReport(){
         <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Рабочих дней</div>
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${workDays}</div>
       </div>
-      <div class="metric-card">
+      ${isOwner?`<div class="metric-card">
         <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Ср. выручка/день</div>
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${avgDayRev.toLocaleString('ru')} ₽</div>
-      </div>
+      </div>`:''}
     </div>
-    ${topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:var(--radius-sm);font-size:13px"><i data-feather="award"></i> <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:''}
-    ${lowDays.length?`<div style="margin-top:8px;padding:10px 14px;background:rgba(239,68,68,0.06);border-radius:var(--radius-sm);font-size:13px">⚠️ <b>Ниже среднего (менее 50% от нормы):</b> ${lowDays.map(([d])=>d).join(', ')}</div>`:''}`;
+    ${isOwner&&(topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:var(--radius-sm);font-size:13px"><i data-feather="award"></i> <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:'')}
+    ${isOwner&&(lowDays.length?`<div style="margin-top:8px;padding:10px 14px;background:rgba(239,68,68,0.06);border-radius:var(--radius-sm);font-size:13px">⚠️ <b>Ниже среднего (менее 50% от нормы):</b> ${lowDays.map(([d])=>d).join(', ')}</div>`:'')}`;
 
-  if(sortedDocs.length){
+  if(sortedDocs.length&&isOwner){
     html+=`<div style="margin-top:16px"><h4 style="margin-bottom:10px">👨‍⚕️ Выручка по врачам</h4><div style="display:grid;gap:6px">`;
     for(const[name,rev] of sortedDocs){
       const pct=totalRevenue>0?Math.round(rev/totalRevenue*100):0;
