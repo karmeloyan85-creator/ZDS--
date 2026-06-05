@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <title>Зарплаты — Земский доктор-стоматолог</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700}
@@ -121,6 +123,20 @@ tr:hover td{background:var(--hover)}
 input[type=number],input[type=text],input[type=time],input[type=password],input[type=date],input[type=search],select,textarea{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);color:var(--text);padding:8px 12px;font-size:14px;width:100%}
 input[type=number]{width:90px}
 input[type=time]{width:100px}
+/* Tom Select overrides */
+.ts-wrapper.single .ts-control{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);color:var(--text);padding:8px 12px;font-size:14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;min-height:38px;box-shadow:none}
+.ts-wrapper.single .ts-control::after{content:'';border:5px solid transparent;border-top:6px solid var(--text-dim);margin-right:10px;right:12px;top:50%}
+.ts-wrapper.single.focus .ts-control{border-color:var(--accent);box-shadow:0 0 0 2px rgba(79,140,247,0.2)}
+.ts-dropdown{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);box-shadow:0 4px 12px rgba(0,0,0,0.1);max-height:220px;overflow-y:auto;z-index:9999}
+.ts-dropdown .option,.ts-dropdown .optgroup .option{padding:8px 12px;font-size:13px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;color:var(--text);cursor:pointer}
+.ts-dropdown .option:hover,.ts-dropdown .option.active{background:var(--hover);color:var(--text)}
+.ts-dropdown .option.selected{background:rgba(79,140,247,0.1);color:var(--accent)}
+.ts-dropdown .no-results{padding:8px 12px;color:var(--text-dim);font-size:13px}
+.ts-wrapper .ts-control>input{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;color:var(--text)}
+body.dark .ts-wrapper.single .ts-control{background:var(--bg-lighter);border-color:var(--border);color:var(--text)}
+body.dark .ts-dropdown{background:var(--bg-lighter);border-color:var(--border);color:var(--text)}
+body.dark .ts-dropdown .option:hover{background:var(--hover)}
+.ts-clear{color:var(--text-muted)}
 select{cursor:pointer}
 textarea{resize:vertical;min-height:60px}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,247,0.1)}
@@ -1589,9 +1605,10 @@ function renderAdminForm(){
 
 function shiftRow(s,emps){
   const opts=emps.map(e=>`<option value="${e.name}" ${e.name===s.name?'selected':''}>${e.name}</option>`).join('');
+  const positionOptions=['Врач стоматолог ортопед','Врач стоматолог хирург','Врач стоматолог терапевт','Врач ортопед','Врач хирург','Врач терапевт','Ассистент','Администратор','Управляющая'].map(p=>`<option value="${p}" ${s.position===p?'selected':''}>${p}</option>`).join('');
   return `<tr class="shift-row"><td><select class="shift-name">${opts}<option value="">-- вручную --</option></select>
     <input type="text" class="shift-name-manual" value="${s.name==='opts'?'':s.name}" style="display:none;margin-top:4px"></td>
-    <td><input type="text" class="shift-position" value="${s.position||''}"></td>
+    <td><select class="shift-position"><option value="">-- должность --</option>${positionOptions}</select></td>
     <td><input type="time" class="shift-start" value="${s.start||''}"></td>
     <td><input type="time" class="shift-end" value="${s.end||''}"></td>
     <td class="shift-hours">${s.hours||''}</td>
@@ -1602,9 +1619,10 @@ function shiftRow(s,emps){
 
 function patientRow(p,doctors){
   const opts=doctors.map(e=>`<option value="${e.name}" ${e.name===p.doctor?'selected':''}>${e.name}</option>`).join('');
+  const serviceOptions=['Ортопедия','Терапия','Хирургия','Имплантация'].map(s=>`<option value="${s}" ${p.service===s?'selected':''}>${s}</option>`).join('');
   return `<tr class="patient-row"><td><input type="text" class="pat-name" value="${p.patientName||''}"></td>
     <td><select class="pat-doctor"><option value="">--</option>${opts}</select></td>
-    <td><input type="text" class="pat-service" value="${p.service||''}"></td>
+    <td><select class="pat-service"><option value="">-- услуга --</option>${serviceOptions}</select></td>
     <td><input type="number" class="pat-cash" value="${p.cash||0}" min="0"></td>
     <td><input type="number" class="pat-cashless" value="${p.cashless||0}" min="0"></td>
     <td><select class="pat-method"><option value="">—</option><option value="Сбер" ${p.method==='Сбер'?'selected':''}>Сбер</option><option value="ВТБ" ${p.method==='ВТБ'?'selected':''}>ВТБ</option><option value="Т-Банк" ${p.method==='Т-Банк'?'selected':''}>Т-Банк</option><option value="СБП QR" ${p.method==='СБП QR'?'selected':''}>СБП QR</option><option value="Другое" ${p.method==='Другое'?'selected':''}>Другое</option></select></td>
@@ -1710,7 +1728,11 @@ function bindShiftRowEvents(tr){
       nameMan.style.display=nameSel.value==='-- вручную --'?'block':'none';
       if(nameSel.value!=='-- вручную --'){
         const emp=getActiveEmps().find(e=>e.name===nameSel.value);
-        if(emp)tr.querySelector('.shift-position').value=emp.position;
+        if(emp){
+          const posSel=tr.querySelector('.shift-position');
+          if(posSel._ts){posSel._ts.setValue(emp.position)}
+          else{posSel.value=emp.position}
+        }
       }
     };
   }
@@ -1728,6 +1750,11 @@ function bindShiftRowEvents(tr){
   if(start)start.onchange=updHours;
   if(end)end.onchange=updHours;
   tr.querySelector('.del-row').onclick=()=>tr.remove();
+  // Initialize Tom Select for position dropdown
+  const posSel=tr.querySelector('.shift-position');
+  if(posSel&&!posSel.tomselect){
+    posSel._ts=new TomSelect(posSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'}});
+  }
 }
 
 function bindPatientRowEvents(tr){
@@ -1741,6 +1768,11 @@ function bindPatientRowEvents(tr){
   };
   cashInp.oninput=upd;cashlessInp.oninput=upd;
   tr.querySelector('.del-row').onclick=()=>{tr.remove();calcReportTotals()};
+  // Initialize Tom Select for service dropdown
+  const svcSel=tr.querySelector('.pat-service');
+  if(svcSel&&!svcSel.tomselect){
+    svcSel._ts=new TomSelect(svcSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'}});
+  }
   // Toggle primary/secondary
   const toggle=tr.querySelector('.patient-type-toggle');
   if(toggle){
