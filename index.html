@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 <title>Зарплаты — Земский доктор-стоматолог</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700}
@@ -171,6 +171,41 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
 .position-tag{display:inline-block;background:var(--bg-lighter);border:none;padding:4px 10px;border-radius:var(--radius-sm);margin:3px;font-size:12px;color:var(--text)}
 .position-tag .del-pos{cursor:pointer;color:var(--red);margin-left:5px}
 .hidden{display:none!important}
+
+/* Feather Icons color scheme */
+.feather-brand{color:var(--accent)}
+.nav-icon [data-feather="home"],.nav-icon [data-feather="arrow-left"],.nav-icon [data-feather="arrow-right"]{color:#4A90D9}
+.nav-icon [data-feather="users"],.nav-icon [data-feather="heart"]{color:#8B5CF6}
+.nav-icon [data-feather="dollar-sign"],.nav-icon [data-feather="credit-card"]{color:#22C55E}
+.nav-icon [data-feather="calendar"]{color:#F59E0B}
+.nav-icon [data-feather="file-text"],.nav-icon [data-feather="bar-chart-2"]{color:#4A90D9}
+.nav-icon [data-feather="settings"]{color:#64748B}
+.cloud-icon{color:#64748B}
+.cloud-icon.green{color:#22C55E}
+.cloud-icon.yellow{color:#F59E0B}
+.cloud-icon.red{color:#ef4444}
+.metric-card [data-feather="dollar-sign"]{color:#22C55E}
+.metric-card [data-feather="trending-up"]{color:#4A90D9}
+.metric-card [data-feather="calendar"]{color:#F59E0B}
+.metric-card [data-feather="heart"]{color:#8B5CF6}
+.btn [data-feather="check"]{color:#fff}
+.btn [data-feather="x"]{color:#fff}
+.btn [data-feather="edit-2"]{color:#64748B}
+.btn [data-feather="trash-2"]{color:#fff}
+.btn [data-feather="download"]{color:#fff}
+.btn [data-feather="upload"]{color:#fff}
+.btn [data-feather="search"]{color:#64748B}
+.btn [data-feather="save"]{color:#fff}
+.btn [data-feather="lock"]{color:#64748B}
+.btn [data-feather="refresh-cw"]{color:#64748B}
+.btn [data-feather="star"]{color:#F59E0B}
+.btn [data-feather="arrow-left"]{color:#64748B}
+.btn [data-feather="database"]{color:#64748B}
+.btn [data-feather="pause"]{color:#fff}
+.btn [data-feather="play"]{color:#fff}
+[data-feather="log-out"]{color:#ef4444}
+[data-feather="award"]{color:#F59E0B}
+.sidebar-avatar [data-feather="user"]{color:#fff}
 
 /* Schedule Calendar */
 .schedule-wrap{overflow-x:auto;margin-top:14px}
@@ -500,22 +535,15 @@ const Cloud={
     const icon=document.getElementById('cloud-icon');
     if(!icon)return;
     icon.className='cloud-icon';
-    if(this.syncing){
-      icon.classList.add('yellow');
-      icon.textContent='⏳';
-    }else if(!this.config.url){
-      icon.classList.add('');
-      icon.textContent='☁️';
-    }else if(this._syncQueue.length>0){
-      icon.classList.add('yellow');
-      icon.textContent='☁️';
-    }else if(this.connected){
-      icon.classList.add('green');
-      icon.textContent='☁️';
-    }else{
-      icon.classList.add('red');
-      icon.textContent='☁️';
-    }
+    const state_=this.syncing?'syncing':(!this.config.url?'disconnected':(this._syncQueue.length>0?'pending':(this.connected?'connected':'error')));
+    const iconMap={syncing:'<i data-feather="loader"></i>',disconnected:'<i data-feather="cloud-off"></i>',pending:'<i data-feather="cloud"></i>',connected:'<i data-feather="cloud"></i>',error:'<i data-feather="cloud-off"></i>'};
+    icon.innerHTML=iconMap[state_]||'<i data-feather="cloud"></i>';
+    if(this.syncing)icon.classList.add('yellow');
+    else if(!this.config.url)icon.classList.add('');
+    else if(this._syncQueue.length>0)icon.classList.add('yellow');
+    else if(this.connected)icon.classList.add('green');
+    else icon.classList.add('red');
+    if(typeof feather!=='undefined')feather.replace();
   },
 
   configure(url,key){
@@ -709,12 +737,13 @@ function render(){
     app.innerHTML=renderApp();
     bindApp();
   }
+  if(typeof feather!=='undefined')feather.replace();
 }
 
 // ========== LOGIN ==========
 function renderLogin(){
   return `<div class="login-wrap"><div class="login-box">
-    <h2><i class="ri-tooth-line" style="color:var(--accent);margin-right:6px"></i>Земский доктор</h2>
+    <h2><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор</h2>
     <div class="login-sub">Система управления зарплатами</div>
     <input type="text" id="login-input" placeholder="Логин" autocomplete="username">
     <input type="password" id="pass-input" placeholder="Пароль" autocomplete="current-password">
@@ -777,22 +806,22 @@ function logout(){
 function getTabs(){
   const r=state.role;
   if(r==='owner')return[
-    {id:'dashboard',icon:'<i class="ri-dashboard-3-line"></i>',label:'Главная'},
-    {id:'daily',icon:'<i class="ri-calendar-check-line"></i>',label:'Ввод за день'},
-    {id:'monthly',icon:'<i class="ri-money-dollar-circle-line"></i>',label:'Расчёт за месяц'},
-    {id:'month-report',icon:'<i class="ri-file-list-3-line"></i>',label:'Отчёт за месяц'},
-    {id:'schedule',icon:'<i class="ri-calendar-schedule-line"></i>',label:'График'},
-    {id:'admin-report',icon:'<i class="ri-file-chart-line"></i>',label:'Отчёт администратора'},
-    {id:'employees',icon:'<i class="ri-team-line"></i>',label:'Сотрудники'},
-    {id:'settings',icon:'<i class="ri-settings-3-line"></i>',label:'Настройки'}
+    {id:'dashboard',icon:'<i data-feather="home"></i>',label:'Главная'},
+    {id:'daily',icon:'<i data-feather="calendar"></i>',label:'Ввод за день'},
+    {id:'monthly',icon:'<i data-feather="dollar-sign"></i>',label:'Расчёт за месяц'},
+    {id:'month-report',icon:'<i data-feather="file-text"></i>',label:'Отчёт за месяц'},
+    {id:'schedule',icon:'<i data-feather="calendar"></i>',label:'График'},
+    {id:'admin-report',icon:'<i data-feather="bar-chart-2"></i>',label:'Отчёт администратора'},
+    {id:'employees',icon:'<i data-feather="users"></i>',label:'Сотрудники'},
+    {id:'settings',icon:'<i data-feather="settings"></i>',label:'Настройки'}
   ];
   if(r==='manager')return[
-    {id:'dashboard',icon:'<i class="ri-dashboard-3-line"></i>',label:'Главная'},
-    {id:'daily',icon:'<i class="ri-calendar-check-line"></i>',label:'Ввод за день'},
-    {id:'monthly',icon:'<i class="ri-money-dollar-circle-line"></i>',label:'Расчёт за месяц'},
-    {id:'schedule',icon:'<i class="ri-calendar-schedule-line"></i>',label:'График'}
+    {id:'dashboard',icon:'<i data-feather="home"></i>',label:'Главная'},
+    {id:'daily',icon:'<i data-feather="calendar"></i>',label:'Ввод за день'},
+    {id:'monthly',icon:'<i data-feather="dollar-sign"></i>',label:'Расчёт за месяц'},
+    {id:'schedule',icon:'<i data-feather="calendar"></i>',label:'График'}
   ];
-  return[{id:'report',icon:'<i class="ri-file-list-3-line"></i>',label:'Мой отчёт'}];
+  return[{id:'report',icon:'<i data-feather="file-text"></i>',label:'Мой отчёт'}];
 }
 
 function getTabLabel(tabId){
@@ -808,7 +837,7 @@ function renderSidebar(){
 
   let html=`<div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-name"><i class="ri-tooth-line" style="color:var(--accent);margin-right:6px"></i>Земский доктор</div>
+      <div class="logo-name"><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор</div>
       <div class="logo-sub">Система управления</div>
     </div>
     <div class="sidebar-nav">`;
@@ -824,13 +853,13 @@ function renderSidebar(){
   html+=`</div>
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <div class="sidebar-avatar"><i class="ri-user-line"></i></div>
+        <div class="sidebar-avatar"><i data-feather="user"></i></div>
         <div class="sidebar-user-info">
           <div class="su-name">${userName}</div>
           <div class="su-role">${userRole}</div>
         </div>
       </div>
-      <button class="sidebar-logout" onclick="logout()"><i class="ri-logout-box-r-line"></i> Выйти</button>
+      <button class="sidebar-logout" onclick="logout()"><i data-feather="log-out"></i> Выйти</button>
     </div>
   </div>
   <div class="sidebar-overlay" id="sidebar-overlay"></div>`;
@@ -853,17 +882,17 @@ function renderApp(){
   html+=`<div class="main-wrap">
     <div class="main-header">
       <div class="mh-left">
-        <button class="hamburger" id="hamburger-btn">☰</button>
+        <button class="hamburger" id="hamburger-btn"><i data-feather="menu"></i></button>
         <h1>${getTabLabel(state.tab)}</h1>
       </div>
       <div class="mh-right">
         <div class="mh-search">
-          <span class="search-icon"><i class="ri-search-line"></i></span>
+          <span class="search-icon"><i data-feather="search"></i></span>
           <input type="search" placeholder="Поиск..." id="global-search">
         </div>
-        <span id="cloud-icon" class="cloud-icon" title="Облако" style="position:relative">☁️</span>
+        <span id="cloud-icon" class="cloud-icon" title="Облако" style="position:relative"><i data-feather="cloud"></i></span>
         <div id="cloud-menu" class="cloud-menu">
-          <div class="cloud-menu-item" id="cm-sync"><i class="ri-refresh-line"></i> Синхронизировать</div>
+          <div class="cloud-menu-item" id="cm-sync"><i data-feather="refresh-cw"></i> Синхронизировать</div>
           <div class="cloud-menu-item" id="cm-push">⬆️ Выгрузить в облако</div>
           <div class="cloud-menu-item" id="cm-pull">⬇️ Загрузить из облака</div>
           <div class="cloud-status-bar">${Cloud.connected?'✅ Подключено':'⚪ Не подключено'} · Последняя: ${cloudLastSync}</div>
@@ -1014,14 +1043,14 @@ function renderDashboard(){
 
   // Метрики
   html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px">';
-  html+=metricCard('<i class="ri-money-dollar-circle-line"></i> Выручка сегодня', todayRevenue.toLocaleString('ru')+' ₽', 'var(--green)');
-  html+=metricCard('<i class="ri-line-chart-line"></i> Вчера', yesterdayRevenue.toLocaleString('ru')+' ₽', 'var(--accent)');
-  html+=metricCard('<i class="ri-calendar-check-line"></i> За неделю', weekRevenue.toLocaleString('ru')+' ₽', 'var(--yellow)');
-  html+=metricCard('<i class="ri-user-heart-line"></i> Пациентов сегодня', todayPatients, 'var(--accent)');
+  html+=metricCard('<i data-feather="dollar-sign"></i> Выручка сегодня', todayRevenue.toLocaleString('ru')+' ₽', 'var(--green)');
+  html+=metricCard('<i data-feather="trending-up"></i> Вчера', yesterdayRevenue.toLocaleString('ru')+' ₽', 'var(--accent)');
+  html+=metricCard('<i data-feather="calendar"></i> За неделю', weekRevenue.toLocaleString('ru')+' ₽', 'var(--yellow)');
+  html+=metricCard('<i data-feather="heart"></i> Пациентов сегодня', todayPatients, 'var(--accent)');
   html+='</div>';
 
   // На смене сегодня
-  html+='<div class="card"><h3><i class="ri-group-line"></i> На смене сегодня</h3>';
+  html+='<div class="card"><h3><i data-feather="users"></i> На смене сегодня</h3>';
   const workingEmps=emps.filter(e=>{
     if(e.calcType==='fixed_month')return false;
     const d=todayData[e.id]||{};
@@ -1040,7 +1069,7 @@ function renderDashboard(){
 
   // Топ врачей
   if(topDocs.length){
-    html+='<div class="card"><h3><i class="ri-trophy-line"></i> Топ врачей за '+monthName(state.month)+'</h3>';
+    html+='<div class="card"><h3><i data-feather="award"></i> Топ врачей за '+monthName(state.month)+'</h3>';
     for(const[name,data] of topDocs){
       html+='<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span style="font-weight:600;color:var(--green)">'+data.revenue.toLocaleString('ru')+' ₽ ('+data.patients+' пациент.)</span></div>';
     }
@@ -1060,7 +1089,7 @@ function renderDaily(){
   const emps=getActiveEmps();
   const data=LS.get('zp_daily_'+today,{});
   const isOwner=state.role==='owner';
-  let html=`<div class="card"><h3><i class="ri-calendar-check-line"></i> Ввод данных за день</h3>
+  let html=`<div class="card"><h3><i data-feather="calendar"></i> Ввод данных за день</h3>
     <div style="margin-bottom:14px"><label>Дата: </label><input type="date" id="daily-date" value="${today}"></div>
     <div class="table-wrap"><table>
     <tr><th>Сотрудник</th><th>Должность</th><th>Смен/дней</th>${isOwner?'<th>Выручка ₽</th>':''}<th>Пациентов</th></tr>`;
@@ -1075,7 +1104,7 @@ function renderDaily(){
     </tr>`;
   }
   html+=`</table></div>
-    <button class="btn btn-success" id="save-daily" style="margin-top:14px"><i class="ri-save-line"></i> Сохранить</button>
+    <button class="btn btn-success" id="save-daily" style="margin-top:14px"><i data-feather="check"></i> Сохранить</button>
   </div>`;
   return html;
 }
@@ -1110,8 +1139,8 @@ function renderMonthly(){
   let totalRevAll=0;
 
   let html=`<div class="month-nav">
-    <button id="prev-month"><i class="ri-arrow-left-s-line"></i></button><span>${monthName(state.month)}</span><button id="next-month"><i class="ri-arrow-right-s-line"></i></button>
-    <button class="btn btn-primary btn-sm" id="export-csv" style="margin-left:auto"><i class="ri-download-2-line"></i> Экспорт CSV</button>
+    <button id="prev-month"><i data-feather="arrow-left"></i></button><span>${monthName(state.month)}</span><button id="next-month"><i data-feather="arrow-right"></i></button>
+    <button class="btn btn-primary btn-sm" id="export-csv" style="margin-left:auto"><i data-feather="download"></i> Экспорт CSV</button>
   </div>`;
 
   for(const emp of emps){
@@ -1258,9 +1287,9 @@ function renderMonthReport(){
 
   const sortedDocs=Object.entries(doctorsRevenue).sort((a,b)=>b[1]-a[1]);
 
-  let html=`<div class="card"><h3><i class="ri-file-chart-line"></i> Отчёт за ${monthName(state.month)}</h3>
+  let html=`<div class="card"><h3><i data-feather="bar-chart-2"></i> Отчёт за ${monthName(state.month)}</h3>
     <div class="month-nav">
-      <button id="mr-prev-month"><i class="ri-arrow-left-s-line"></i></button><span>${monthName(state.month)}</span><button id="mr-next-month"><i class="ri-arrow-right-s-line"></i></button>
+      <button id="mr-prev-month"><i data-feather="arrow-left"></i></button><span>${monthName(state.month)}</span><button id="mr-next-month"><i data-feather="arrow-right"></i></button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px">
       <div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
@@ -1296,7 +1325,7 @@ function renderMonthReport(){
         <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${avgDayRev.toLocaleString('ru')} ₽</div>
       </div>
     </div>
-    ${topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:var(--radius-sm);font-size:13px"><i class="ri-trophy-line"></i> <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:''}
+    ${topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:var(--radius-sm);font-size:13px"><i data-feather="award"></i> <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:''}
     ${lowDays.length?`<div style="margin-top:8px;padding:10px 14px;background:rgba(239,68,68,0.06);border-radius:var(--radius-sm);font-size:13px">⚠️ <b>Ниже среднего (менее 50% от нормы):</b> ${lowDays.map(([d])=>d).join(', ')}</div>`:''}`;
 
   if(sortedDocs.length){
@@ -1335,12 +1364,12 @@ function renderSchedule(){
   const schedule=LS.get(scheduleKey,{});
   const today=todayStr();
 
-  let html=`<div class="card"><h3><i class="ri-calendar-schedule-line"></i> График работы</h3>
+  let html=`<div class="card"><h3><i data-feather="calendar"></i> График работы</h3>
     <div class="schedule-controls">
-      <button id="sch-prev-month"><i class="ri-arrow-left-s-line"></i></button>
+      <button id="sch-prev-month"><i data-feather="arrow-left"></i></button>
       <span style="font-weight:600">${monthName(state.month)}</span>
-      <button id="sch-next-month"><i class="ri-arrow-right-s-line"></i></button>
-      <button class="btn btn-success btn-sm" id="save-schedule" style="margin-left:auto"><i class="ri-save-line"></i> Сохранить</button>
+      <button id="sch-next-month"><i data-feather="arrow-right"></i></button>
+      <button class="btn btn-success btn-sm" id="save-schedule" style="margin-left:auto"><i data-feather="check"></i> Сохранить</button>
       <button class="btn btn-primary btn-sm" id="print-schedule" style="margin-left:8px">📄 PDF</button>
     </div>`;
 
@@ -1436,14 +1465,14 @@ function bindSchedule(){
     const el=document.querySelector('.schedule-wrap');
     if(!el)return;
     const win=window.open('','_blank');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>График ${monthName(state.month)}</title><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;padding:20px;color:#1e293b}h2{color:#0c1929;margin-bottom:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #cbd5e1;padding:6px 8px;text-align:center}th{background:#f1f5f9;font-weight:600}.name-col{text-align:left;font-weight:600;min-width:140px}.s-work{color:#166534;font-weight:700}.s-vacation{color:#b91c1c;font-weight:700}.s-off{color:#64748b}.s-practice{color:#0284c7;font-weight:700}.weekend{background:#fef2f2}.today-cell{outline:2px solid #38bdf8}@media print{body{padding:10px}table{font-size:10px}th,td{padding:4px 5px}}</style></head><body><h2><i class="ri-tooth-line" style="color:var(--accent);margin-right:6px"></i>Земский доктор — График ${monthName(state.month)}</h2>${el.outerHTML}<scr`+`ipt>setTimeout(()=>window.print(),300)</scr`+`ipt></body></html>`);
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>График ${monthName(state.month)}</title><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;padding:20px;color:#1e293b}h2{color:#0c1929;margin-bottom:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #cbd5e1;padding:6px 8px;text-align:center}th{background:#f1f5f9;font-weight:600}.name-col{text-align:left;font-weight:600;min-width:140px}.s-work{color:#166534;font-weight:700}.s-vacation{color:#b91c1c;font-weight:700}.s-off{color:#64748b}.s-practice{color:#0284c7;font-weight:700}.weekend{background:#fef2f2}.today-cell{outline:2px solid #38bdf8}@media print{body{padding:10px}table{font-size:10px}th,td{padding:4px 5px}}</style></head><body><h2><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор — График ${monthName(state.month)}</h2>${el.outerHTML}<scr`+`ipt>setTimeout(()=>window.print(),300)</scr`+`ipt></body></html>`);
     win.document.close();
   };
 }
 
 // ========== ADMIN REPORT VIEW (owner) ==========
 function renderAdminReportView(){
-  let html=`<div class="card"><h3><i class="ri-file-chart-line"></i> Отчёт администратора</h3>
+  let html=`<div class="card"><h3><i data-feather="bar-chart-2"></i> Отчёт администратора</h3>
     <div style="margin-bottom:14px"><label>Дата: </label><input type="date" id="admin-report-date" value="${state.reportDate}"></div>
     <div id="admin-report-content"></div>
   </div>`;
@@ -1497,7 +1526,7 @@ function renderAdminForm(){
   const emps=getActiveEmps();
   const doctors=emps.filter(e=>e.position.includes('Врач')||e.position.includes('Хирург')||e.position.includes('Терапевт'));
 
-  let html=`<div class="card"><h3><i class="ri-file-list-3-line"></i> Мой отчёт за ${today}</h3>
+  let html=`<div class="card"><h3><i data-feather="file-text"></i> Мой отчёт за ${today}</h3>
     <h4 style="margin-bottom:8px">Сотрудники на смене</h4>
     <div class="table-wrap"><table id="shifts-table">
     <tr><th>ФИО</th><th>Должность</th><th>Начало</th><th>Конец</th><th>Часов</th><th>Опоздание</th><th>Примечание</th><th></th></tr>`;
@@ -1526,7 +1555,7 @@ function renderAdminForm(){
     <div id="expenses-total" style="text-align:right;margin-top:8px;font-weight:600;color:var(--red)"></div>
     <button class="btn btn-outline btn-sm" id="add-expense" style="margin-top:8px">+ Добавить расход</button>`;
 
-  html+=`<div style="margin-top:20px"><button class="btn btn-success" id="save-report"><i class="ri-save-line"></i> Сохранить отчёт</button></div></div>`;
+  html+=`<div style="margin-top:20px"><button class="btn btn-success" id="save-report"><i data-feather="check"></i> Сохранить отчёт</button></div></div>`;
 
   return html;
 }
@@ -1541,7 +1570,7 @@ function shiftRow(s,emps){
     <td class="shift-hours">${s.hours||''}</td>
     <td><input type="number" class="shift-late" value="${s.late||0}" min="0"></td>
     <td><input type="text" class="shift-note" value="${s.note||''}"></td>
-    <td><button class="btn btn-danger btn-sm del-row"><i class="ri-close-line"></i></button></td></tr>`;
+    <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
 }
 
 function patientRow(p,doctors){
@@ -1553,7 +1582,7 @@ function patientRow(p,doctors){
     <td><input type="number" class="pat-cashless" value="${p.cashless||0}" min="0"></td>
     <td><select class="pat-method"><option value="">—</option><option value="Сбер" ${p.method==='Сбер'?'selected':''}>Сбер</option><option value="ВТБ" ${p.method==='ВТБ'?'selected':''}>ВТБ</option><option value="Т-Банк" ${p.method==='Т-Банк'?'selected':''}>Т-Банк</option><option value="СБП QR" ${p.method==='СБП QR'?'selected':''}>СБП QR</option><option value="Другое" ${p.method==='Другое'?'selected':''}>Другое</option></select></td>
     <td class="pat-total">${((p.cash||0)+(p.cashless||0)).toLocaleString('ru')}</td>
-    <td><button class="btn btn-danger btn-sm del-row"><i class="ri-close-line"></i></button></td></tr>`;
+    <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
 }
 
 function expenseRow(e){
@@ -1565,7 +1594,7 @@ function expenseRow(e){
     <td><select class="exp-type"><option value="Нал" ${e.type==='Нал'?'selected':''}>Нал</option><option value="Безнал" ${e.type==='Безнал'?'selected':''}>Безнал</option></select></td>
     <td><input type="text" class="exp-doc" value="${e.document||''}"></td>
     <td><input type="text" class="exp-note" value="${e.note||''}"></td>
-    <td><button class="btn btn-danger btn-sm del-row"><i class="ri-close-line"></i></button></td></tr>`;
+    <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
 }
 
 function bindAdminForm(){
@@ -1726,7 +1755,7 @@ function renderEmployees(){
   const currentLogin=editingEmp?(editingEmp.login||''):'';
   const currentPass=editingEmp?(editingEmp.pass||''):'';
 
-  let html=`<div class="card"><h3><i class="ri-team-line"></i> Сотрудники (${getEmps().length})</h3>
+  let html=`<div class="card"><h3><i data-feather="users"></i> Сотрудники (${getEmps().length})</h3>
     <div style="margin-bottom:12px"><input type="text" id="emp-search" placeholder="Поиск по ФИО или должности..." value="${empSearchQ}" style="width:100%;max-width:320px;padding:10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px"></div>
     <button class="btn btn-primary btn-sm" id="toggle-add-emp" style="margin-bottom:14px">+ Добавить сотрудника</button>
     <div id="add-emp-form" class="${showAddEmp?'':'hidden'}" style="margin-bottom:18px">
@@ -1749,17 +1778,17 @@ function renderEmployees(){
           <div><label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="emp-can-login" ${currentRole!=='none'?'checked':''}> Вход в приложение</label></div>
           <div id="emp-cred-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text-dim)">Логин</label><input type="text" id="emp-login" value="${currentLogin}" autocomplete="new-password" placeholder="Логин"></div>
           <div id="emp-pass-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text-dim)">Пароль</label><input type="password" id="emp-pass" value="${currentPass}" autocomplete="new-password" placeholder="Пароль"></div>
-          <div id="emp-perms-section" style="grid-column:1/-1;${currentRole==='none'?'display:none':''}"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:8px"><i class="ri-lock-line"></i> Права доступа</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+          <div id="emp-perms-section" style="grid-column:1/-1;${currentRole==='none'?'display:none':''}"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:8px"><i data-feather="lock"></i> Права доступа</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
             <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-salaries" class="emp-perm" data-perm="seeSalaries" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSalaries?'checked':''}> 👁 Видеть зарплаты</label>
             <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-revenue" class="emp-perm" data-perm="seeRevenue" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeRevenue?'checked':''}> 👁 Видеть выручку</label>
             <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-schedule" class="emp-perm" data-perm="seeSchedule" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSchedule?'checked':''}> 👁 Видеть график</label>
             <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-expenses" class="emp-perm" data-perm="seeExpenses" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeExpenses?'checked':''}> 👁 Видеть расходы</label>
-            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-input" class="emp-perm" data-perm="canInput" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canInput?'checked':''}> <i class="ri-edit-line"></i> Вводить данные</label>
-            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-report" class="emp-perm" data-perm="canFillReport" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canFillReport?'checked':''}> <i class="ri-edit-line"></i> Заполнять отчёт</label>
-            <label style="font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600"><input type="checkbox" id="perm-is-owner" class="emp-perm" data-perm="isOwner" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.isOwner?'checked':''}> <i class="ri-star-fill"></i> Полный доступ</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-input" class="emp-perm" data-perm="canInput" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canInput?'checked':''}> <i data-feather="edit-2"></i> Вводить данные</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-report" class="emp-perm" data-perm="canFillReport" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canFillReport?'checked':''}> <i data-feather="edit-2"></i> Заполнять отчёт</label>
+            <label style="font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600"><input type="checkbox" id="perm-is-owner" class="emp-perm" data-perm="isOwner" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.isOwner?'checked':''}> <i data-feather="star"></i> Полный доступ</label>
           </div></div>
         </div>
-        <button class="btn btn-success btn-sm" id="save-emp"><i class="ri-save-line"></i> Сохранить</button>
+        <button class="btn btn-success btn-sm" id="save-emp"><i data-feather="check"></i> Сохранить</button>
         <button class="btn btn-outline btn-sm" id="cancel-emp" style="margin-left:8px">Отмена</button>
       </div>
     </div>
@@ -1767,16 +1796,16 @@ function renderEmployees(){
     <tr><th>ФИО</th><th>Должность</th><th>Тип расчёта</th><th>Фикс/день</th><th>Фикс/мес</th><th>%</th><th>Доступ</th><th>Статус</th><th></th></tr>`;
   for(const e of emps){
     const permCount = e.permissions ? Object.values(e.permissions).filter(v=>v).length : 0;
-    const permText = !e.permissions || permCount===0 ? '—' : (e.permissions.isOwner ? '<i class="ri-star-fill"></i> Владелец' : permCount + ' прав');
+    const permText = !e.permissions || permCount===0 ? '—' : (e.permissions.isOwner ? '<i data-feather="star"></i> Владелец' : permCount + ' прав');
     const permColor = !e.permissions || permCount===0 ? 'var(--text-dim)' : (e.permissions.isOwner ? 'var(--accent)' : 'var(--green)');
     html+=`<tr><td>${e.name}</td><td>${e.position}</td><td>${e.calcType.replace(/_/g,' ')}</td>
       <td>${e.fixedDay||''}</td><td>${e.fixedMonth||''}</td><td>${e.percent||''}</td>
       <td><span style="color:${permColor};font-size:12px;font-weight:600">${permText}</span></td>
       <td><span style="color:${e.active?'var(--green)':'var(--red)'}">${e.active?'Активен':'Неактивен'}</span></td>
       <td class="row-btns">
-        <button class="btn btn-outline btn-sm edit-emp" data-id="${e.id}"><i class="ri-edit-line"></i></button>
-        <button class="btn ${e.active?'btn-warning':'btn-success'} btn-sm toggle-emp" data-id="${e.id}">${e.active?'<i class="ri-pause-line"></i>':'<i class="ri-play-line"></i>'}</button>
-        <button class="btn btn-danger btn-sm del-emp" data-id="${e.id}"><i class="ri-delete-bin-line"></i></button>
+        <button class="btn btn-outline btn-sm edit-emp" data-id="${e.id}"><i data-feather="edit-2"></i></button>
+        <button class="btn ${e.active?'btn-warning':'btn-success'} btn-sm toggle-emp" data-id="${e.id}">${e.active?'<i data-feather="pause"></i>':'<i data-feather="play"></i>'}</button>
+        <button class="btn btn-danger btn-sm del-emp" data-id="${e.id}"><i data-feather="trash-2"></i></button>
       </td></tr>`;
   }
   html+=`</table></div></div>`;
@@ -1788,7 +1817,7 @@ function renderEmployees(){
     </div><div>`;
   for(const p of positions){
     const hasEmp=emps.some(e=>e.position===p);
-    html+=`<span class="position-tag">${p}${!hasEmp?` <span class="del-pos" data-pos="${p}" title="Удалить"><i class="ri-close-line"></i></span>`:''}</span>`;
+    html+=`<span class="position-tag">${p}${!hasEmp?` <span class="del-pos" data-pos="${p}" title="Удалить"><i data-feather="x"></i></span>`:''}</span>`;
   }
   html+=`</div></div>`;
 
@@ -1961,7 +1990,7 @@ function bindEmployees(){
 // ========== SETTINGS ==========
 function renderSettings(){
   const creds=LS.get('zp_creds',{});
-  let html=`<div class="card"><h3><i class="ri-settings-3-line"></i> Настройки</h3>
+  let html=`<div class="card"><h3><i data-feather="settings"></i> Настройки</h3>
 
     <div class="settings-section">
       <h4>🔑 Пароль управляющей</h4>
@@ -1978,11 +2007,11 @@ function renderSettings(){
     </div>
 
     <div class="settings-section">
-      <h4><i class="ri-database-2-line"></i> Данные</h4>
+      <h4><i data-feather="database"></i> Данные</h4>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-success btn-sm" id="export-json"><i class="ri-download-2-line"></i> Экспорт JSON</button>
-        <button class="btn btn-primary btn-sm" id="import-json"><i class="ri-upload-2-line"></i> Импорт JSON</button>
-        <button class="btn btn-danger btn-sm" id="clear-data"><i class="ri-delete-bin-line"></i> Очистить все данные</button>
+        <button class="btn btn-success btn-sm" id="export-json"><i data-feather="download"></i> Экспорт JSON</button>
+        <button class="btn btn-primary btn-sm" id="import-json"><i data-feather="upload"></i> Импорт JSON</button>
+        <button class="btn btn-danger btn-sm" id="clear-data"><i data-feather="trash-2"></i> Очистить все данные</button>
       </div>
       <input type="file" id="import-file" accept=".json" style="display:none">
     </div>
@@ -1994,9 +2023,9 @@ function renderSettings(){
         <div class="cc-row"><label>URL Apps Script</label><input type="text" id="cloud-url" value="${Cloud.config.url||''}" placeholder="https://script.google.com/macros/s/.../exec"></div>
         <div class="cc-row"><label>API-ключ</label><input type="password" id="cloud-key" value="${Cloud.config.key||''}" placeholder="Ключ из Apps Script"></div>
         <div class="cc-btns">
-          <button class="btn btn-outline btn-sm" id="cloud-check"><i class="ri-search-line"></i> Проверить</button>
-          <button class="btn btn-primary btn-sm" id="cloud-save-config"><i class="ri-save-line"></i> Сохранить настройки</button>
-          <button class="btn btn-outline btn-sm" id="cloud-reset-config" style="color:var(--red);border-color:var(--red)"><i class="ri-arrow-go-back-line"></i> Сбросить по умолчанию</button>
+          <button class="btn btn-outline btn-sm" id="cloud-check"><i data-feather="search"></i> Проверить</button>
+          <button class="btn btn-primary btn-sm" id="cloud-save-config"><i data-feather="check"></i> Сохранить настройки</button>
+          <button class="btn btn-outline btn-sm" id="cloud-reset-config" style="color:var(--red);border-color:var(--red)"><i data-feather="arrow-left"></i> Сбросить по умолчанию</button>
         </div>
         <div style="margin-top:12px;padding:10px;background:var(--bg-lighter);border-radius:var(--radius-sm);font-size:12px;color:var(--text-dim)">
           Статус: <span id="cloud-status-text" style="color:${Cloud.connected?'var(--green)':'var(--yellow)'}">${Cloud.connected?'✅ Подключено':'⚪ Не настроено'}</span>
@@ -2005,7 +2034,7 @@ function renderSettings(){
         <div class="cc-btns" style="margin-top:12px">
           <button class="btn btn-success btn-sm" id="cloud-pull" ${Cloud.config.url?'':'disabled'}>⬇️ Загрузить из облака</button>
           <button class="btn btn-primary btn-sm" id="cloud-push" ${Cloud.config.url?'':'disabled'}>⬆️ Выгрузить в облако</button>
-          <button class="btn btn-warning btn-sm" id="cloud-sync" ${Cloud.config.url?'':'disabled'}><i class="ri-refresh-line"></i> Синхронизировать</button>
+          <button class="btn btn-warning btn-sm" id="cloud-sync" ${Cloud.config.url?'':'disabled'}><i data-feather="refresh-cw"></i> Синхронизировать</button>
         </div>
       </div>
     </div>
@@ -2136,5 +2165,6 @@ Cloud.init().then(()=>render());
 
 })();
 </script>
+<script>feather.replace()</script>
 </body>
 </html>
