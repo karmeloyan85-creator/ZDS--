@@ -1200,6 +1200,7 @@ function renderMonthly(){
   const emps=getActiveEmps();
   const advances=LS.get('zp_advances_'+state.month,{});
   const isOwner=state.role==='owner';
+  const isManager=state.role==='manager';
   let totalAll=0;
   let totalRevAll=0;
 
@@ -1228,6 +1229,8 @@ function renderMonthly(){
     totalAll+=toPay;
     totalRevAll+=totalOwnRevenue;
 
+    const showSalary=isOwner||(isManager&&emp.id===state.empId);
+    const showAdvances=isOwner||isManager;
     html+=`<div class="emp-card">
       <div class="emp-name">${emp.name}</div>
       <div class="emp-pos">${emp.position} · ${emp.calcType.replace(/_/g,' ')}</div>
@@ -1235,9 +1238,9 @@ function renderMonthly(){
         <div><div class="label">Дней/смен</div><div class="val">${totalWorked}</div></div>
         ${isOwner?`<div><div class="label">Выручка ₽</div><div class="val val-money">${totalOwnRevenue.toLocaleString('ru')}</div></div>`:''}
         <div><div class="label">Пациентов</div><div class="val">${totalPatients}</div></div>
-        ${isOwner?`<div><div class="label">Начислено ₽</div><div class="val val-money">${salary.toLocaleString('ru')}</div></div>`:''}
-        ${isOwner?`<div><div class="label">Аванс ₽</div><div class="val"><input type="number" class="advance-input" data-id="${emp.id}" value="${advance}" min="0" style="width:80px"></div></div>`:''}
-        ${isOwner?`<div><div class="label">К выдаче ₽</div><div class="val val-total">${toPay.toLocaleString('ru')}</div></div>`:''}
+        ${showSalary?`<div><div class="label">Начислено ₽</div><div class="val val-money">${salary.toLocaleString('ru')}</div></div>`:''}
+        ${showAdvances?`<div><div class="label">Аванс ₽</div><div class="val">${isOwner?`<input type="number" class="advance-input" data-id="${emp.id}" value="${advance}" min="0" style="width:80px">`:(advance.toLocaleString('ru')+' ₽')}</div></div>`:''}
+        ${showSalary?`<div><div class="label">К выдаче ₽</div><div class="val val-total">${toPay.toLocaleString('ru')}</div></div>`:''}
       </div>
     </div>`;
   }
