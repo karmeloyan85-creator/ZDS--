@@ -738,6 +738,11 @@ function render(){
     bindApp();
   }
   if(typeof feather!=='undefined')feather.replace();
+  // Apply sidebar icon colors after feather.replace()
+  document.querySelectorAll('.nav-icon [data-icon-color]').forEach(el=>{
+    const svg=el.querySelector('svg.feather');
+    if(svg)svg.style.color=el.dataset.iconColor;
+  });
 }
 
 // ========== LOGIN ==========
@@ -806,22 +811,22 @@ function logout(){
 function getTabs(){
   const r=state.role;
   if(r==='owner')return[
-    {id:'dashboard',icon:'<i data-feather="home"></i>',label:'Главная'},
-    {id:'daily',icon:'<i data-feather="calendar"></i>',label:'Ввод за день'},
-    {id:'monthly',icon:'<i data-feather="dollar-sign"></i>',label:'Расчёт за месяц'},
-    {id:'month-report',icon:'<i data-feather="file-text"></i>',label:'Отчёт за месяц'},
-    {id:'schedule',icon:'<i data-feather="calendar"></i>',label:'График'},
-    {id:'admin-report',icon:'<i data-feather="bar-chart-2"></i>',label:'Отчёт администратора'},
-    {id:'employees',icon:'<i data-feather="users"></i>',label:'Сотрудники'},
-    {id:'settings',icon:'<i data-feather="settings"></i>',label:'Настройки'}
+    {id:'dashboard',icon:'<i data-feather="home" data-icon-color="#4A90D9"></i>',label:'Главная'},
+    {id:'daily',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'Ввод за день'},
+    {id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'},
+    {id:'month-report',icon:'<i data-feather="file-text" data-icon-color="#4A90D9"></i>',label:'Отчёт за месяц'},
+    {id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'},
+    {id:'admin-report',icon:'<i data-feather="bar-chart-2" data-icon-color="#4A90D9"></i>',label:'Отчёт администратора'},
+    {id:'employees',icon:'<i data-feather="users" data-icon-color="#8B5CF6"></i>',label:'Сотрудники'},
+    {id:'settings',icon:'<i data-feather="settings" data-icon-color="#64748B"></i>',label:'Настройки'}
   ];
   if(r==='manager')return[
-    {id:'dashboard',icon:'<i data-feather="home"></i>',label:'Главная'},
-    {id:'daily',icon:'<i data-feather="calendar"></i>',label:'Ввод за день'},
-    {id:'monthly',icon:'<i data-feather="dollar-sign"></i>',label:'Расчёт за месяц'},
-    {id:'schedule',icon:'<i data-feather="calendar"></i>',label:'График'}
+    {id:'dashboard',icon:'<i data-feather="home" data-icon-color="#4A90D9"></i>',label:'Главная'},
+    {id:'daily',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'Ввод за день'},
+    {id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'},
+    {id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'}
   ];
-  return[{id:'report',icon:'<i data-feather="file-text"></i>',label:'Мой отчёт'}];
+  return[{id:'report',icon:'<i data-feather="file-text" data-icon-color="#4A90D9"></i>',label:'Мой отчёт'}];
 }
 
 function getTabLabel(tabId){
@@ -2165,6 +2170,6 @@ Cloud.init().then(()=>render());
 
 })();
 </script>
-<script>feather.replace()</script>
+<script>feather.replace();document.querySelectorAll('.nav-icon [data-icon-color]').forEach(el=>{const svg=el.querySelector('svg.feather');if(svg)svg.style.color=el.dataset.iconColor})</script>
 </body>
 </html>
