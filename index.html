@@ -1313,7 +1313,6 @@ function renderDaily(){
       <td><input type="number" class="daily-patients" data-id="${e.id}" value="${d.patients||0}" min="0"></td>
     </tr>`;
   }
-  }
   html+=`</table></div>
     <button class="btn btn-success" id="save-daily" style="margin-top:14px"><i data-feather="check"></i> Сохранить</button>
   </div>`;
@@ -2465,13 +2464,16 @@ function bindSettings(){
 
 window.logout=logout;
 
-// Автоочистка старых настроек облака (одноразовая)
+// Автоочистка старых настроек облака (одноразовая) (одноразовая)
 (function(){
   const oldUrl='AKfycbyDQgCW5ypwGIJTbJ_yOKvRdO6lZU-skpztrET_4PIS7dh8lCOiuBKmajoy0ofqMAfI';
   const saved=LS.get('zp_cloud_url','');
   if(saved && saved.includes(oldUrl)){LS.del('zp_cloud_url');LS.del('zp_cloud_key');console.log('Cloud config auto-cleared')}
 })();
 
+// Инициализация облачного хранилища
+Cloud.init().then(()=>render());
+})();
 </script>
 <script>featherReplace();</script>
 </body>
