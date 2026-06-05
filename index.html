@@ -426,12 +426,39 @@ const Cloud={
     if(!this.config.url)return false;
     try{
       const body={data,replace:!!replace};
+      const jsonStr=JSON.stringify(body);
+      // Если данные большие (>50KB) — отправляем частями через отдельные запросы
+      if(jsonStr.length>50000&&type==='bulk_write'){
+        return await this._saveChunked(data);
+      }
+      // Кодируем данные в base64 и отправляем через GET (workaround для сломанного doPost)
+      const payload=btoa(unescape(encodeURIComponent(jsonStr)));
       const url=this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key);
-      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow',signal:AbortSignal.timeout(30000)});
+      const fullUrl=url+'&payload='+encodeURIComponent(payload);
+      const r=await fetch(fullUrl,{method:'GET',signal:AbortSignal.timeout(60000)});
       const j=await r.json();
       if(j.status==='ok')return true;
       toast('☁️ Ошибка сохранения: '+j.message);return false;
     }catch(e){toast('☁️ Ошибка сети при сохранении');return false}
+  },
+  async _saveChunked(data){
+    const types=['employees','daily','advances','schedule'];
+    let ok=true;
+    for(const t of types){
+      if(!data[t])continue;
+      const body={data:data[t],replace:true};
+      const jsonStr=JSON.stringify(body);
+      const payload=btoa(unescape(encodeURIComponent(jsonStr)));
+      const url=this.config.url+'?action=write_'+(t==='employees'?'employees':t)+'&key='+encodeURIComponent(this.config.key);
+      const fullUrl=url+'&payload='+encodeURIComponent(payload);
+      try{
+        const r=await fetch(fullUrl,{method:'GET',signal:AbortSignal.timeout(60000)});
+        const j=await r.json();
+        if(j.status!=='ok'){ok=false;toast('☁️ Ошибка: '+t+': '+j.message)}
+      }catch(e){ok=false;toast('☁️ Ошибка сети: '+t)}
+    }
+    if(ok)toast('☁️ Данные выгружены в облако (по частям)');
+    return ok;
   },
 
   async sync(){
@@ -442,7 +469,19 @@ const Cloud={
       const data=await this.load('read_all');
       if(!data)return false;
 
-      if(data.employees){LS.set('zp_employees',data.employees)}
+      if(data.employees){
+        // Безопасная синхронизация: перезаписываем employees только если в облаке полные данные
+        const localEmps=LS.get('zp_employees',[]);
+        if(data.employees.length>=localEmps.length){
+          LS.set('zp_employees',data.employees);
+        }else{
+          // Облако неполное — сливаем: сохраняем local, но добавляем новых из облака
+          const localIds=new Set(localEmps.map(e=>e.id));
+          data.employees.forEach(e=>{if(!localIds.has(e.id))localEmps.push(e)});
+          LS.set('zp_employees',localEmps);
+          addHistory('⚠️ Синхронизация: локальные сотрудники сохранены (облако неполное)');
+        }
+      }
 
       if(data.daily){
         const byDate={};

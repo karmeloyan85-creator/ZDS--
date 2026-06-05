@@ -16,6 +16,10 @@
  * 4. Опубликуйте как веб-приложение (Выполнить как: я, Доступ: любой)
  * 5. Скопируйте URL и вставьте в настройках приложения
  *
+ * ⚠️ ВАЖНО: после вставки кода — нажмите «Сохранить» и
+ *    «Развернуть» → «Новое развертывание» → «Веб-приложение»
+ *    Это исправит проблему с doPost!
+ *
  * Структура листов:
  *
  * zp_employees: id | name | position | calcType | fixedDay | fixedMonth | percent | active | appRole | login | pass | permissions
@@ -39,7 +43,7 @@ const SHEETS = {
 };
 
 // Версия API (для совместимости)
-const API_VERSION = '1.0';
+const API_VERSION = '2.0';
 
 // ==================== Вспомогательные функции ====================
 
@@ -249,7 +253,9 @@ function parseBody(e) {
 }
 
 
-// ==================== GET — Чтение данных ====================
+// ==================== GET — Чтение + запись данных ====================
+// GET поддерживает запись через base64-параметр 'payload' (workaround для doPost)
+// Клиент кодирует JSON в base64 и передаёт как ?action=bulk_write&key=...&payload=...
 
 function doGet(e) {
   try {
@@ -258,12 +264,18 @@ function doGet(e) {
       return jsonResponse('ok', { pong: true, version: API_VERSION, timestamp: new Date().toISOString() });
     }
 
-    // Все остальные действия требуют ключ
+    // Все остальные действия требуют ключа
     if (!checkKey(e)) {
       return jsonResponse('error', null, 'Неверный API-ключ');
     }
 
     const action = e.parameter.action || '';
+
+    // ---- GET-based write (payload в base64) ----
+    const writeActions = ['write_employees','write_daily','write_advances','write_schedule','write_settings','bulk_write'];
+    if (writeActions.indexOf(action) !== -1) {
+      return handleWrite(action, e);
+    }
 
     switch (action) {
 
@@ -358,126 +370,147 @@ function doGet(e) {
 }
 
 
+// ==================== Unified write handler ====================
+// Используется и doGet (payload base64), и doPost (JSON body)
+
+function handleWrite(action, e) {
+  let body;
+
+  // Парсим данные: из POST body или из GET payload
+  if (e.postData && e.postData.contents) {
+    body = parseBody(e);
+  } else {
+    // GET-based: payload в base64
+    const payload = e.parameter.payload;
+    if (!payload) {
+      return jsonResponse('error', null, 'Отсутствуют данные (payload)');
+    }
+    try {
+      body = JSON.parse(Utilities.base64Decode(payload));
+    } catch (decErr) {
+      return jsonResponse('error', null, 'Ошибка декодирования payload: ' + decErr.message);
+    }
+  }
+
+  if (!body || !body.data) {
+    return jsonResponse('error', null, 'Отсутствует тело запроса (data)');
+  }
+
+  const replace = !!body.replace; // Если true — перезаписать, false — upsert
+
+  switch (action) {
+
+    case 'write_employees': {
+      if (replace) {
+        writeSheet(SHEETS.employees, body.data);
+      } else {
+        upsertSheet(SHEETS.employees, body.data);
+      }
+      return jsonResponse('ok', { written: body.data.length });
+    }
+
+    case 'write_daily': {
+      if (replace) {
+        writeSheet(SHEETS.daily, body.data);
+      } else {
+        upsertSheet(SHEETS.daily, body.data);
+      }
+      return jsonResponse('ok', { written: body.data.length });
+    }
+
+    case 'write_advances': {
+      if (replace) {
+        writeSheet(SHEETS.advances, body.data);
+      } else {
+        upsertSheet(SHEETS.advances, body.data);
+      }
+      return jsonResponse('ok', { written: body.data.length });
+    }
+
+    case 'write_schedule': {
+      if (replace) {
+        writeSheet(SHEETS.schedule, body.data);
+      } else {
+        upsertSheet(SHEETS.schedule, body.data);
+      }
+      return jsonResponse('ok', { written: body.data.length });
+    }
+
+    case 'write_settings': {
+      // Принимаем как объект {key: value} или массив [{key, value}]
+      let rows;
+      if (Array.isArray(body.data)) {
+        rows = body.data;
+      } else {
+        rows = Object.entries(body.data).map(([k, v]) => ({ key: k, value: String(v) }));
+      }
+      if (replace) {
+        writeSheet(SHEETS.settings, rows);
+      } else {
+        upsertSheet(SHEETS.settings, rows);
+      }
+      return jsonResponse('ok', { written: rows.length });
+    }
+
+    case 'bulk_write': {
+      // Массовая запись всех данных
+      const d = body.data;
+
+      // Сотрудники
+      if (d.employees) {
+        writeSheet(SHEETS.employees, d.employees);
+      }
+
+      // Данные за день
+      if (d.daily) {
+        writeSheet(SHEETS.daily, d.daily);
+      }
+
+      // Авансы
+      if (d.advances) {
+        writeSheet(SHEETS.advances, d.advances);
+      }
+
+      // График
+      if (d.schedule) {
+        writeSheet(SHEETS.schedule, d.schedule);
+      }
+
+      // Настройки
+      if (d.settings) {
+        let settingsRows;
+        if (Array.isArray(d.settings)) {
+          settingsRows = d.settings;
+        } else {
+          settingsRows = Object.entries(d.settings).map(([k, v]) => ({ key: k, value: String(v) }));
+        }
+        writeSheet(SHEETS.settings, settingsRows);
+      }
+
+      let total = 0;
+      if (d.employees) total += d.employees.length;
+      if (d.daily) total += d.daily.length;
+      if (d.advances) total += d.advances.length;
+      if (d.schedule) total += d.schedule.length;
+
+      return jsonResponse('ok', { written: total, message: 'Массовая запись выполнена' });
+    }
+
+    default:
+      return jsonResponse('error', null, 'Неизвестное действие: ' + action);
+  }
+}
+
+
 // ==================== POST — Запись данных ====================
+// Fallback: если doPost работает, используем его напрямую
 
 function doPost(e) {
   try {
-    // Проверка ключа
     if (!checkKey(e)) {
       return jsonResponse('error', null, 'Неверный API-ключ');
     }
-
-    const action = e.parameter.action || '';
-    const body = parseBody(e);
-
-    if (!body || !body.data) {
-      return jsonResponse('error', null, 'Отсутствует тело запроса (data)');
-    }
-
-    const replace = !!body.replace; // Если true — перезаписать, false — upsert
-
-    switch (action) {
-
-      case 'write_employees': {
-        if (replace) {
-          writeSheet(SHEETS.employees, body.data);
-        } else {
-          upsertSheet(SHEETS.employees, body.data);
-        }
-        return jsonResponse('ok', { written: body.data.length });
-      }
-
-      case 'write_daily': {
-        if (replace) {
-          writeSheet(SHEETS.daily, body.data);
-        } else {
-          upsertSheet(SHEETS.daily, body.data);
-        }
-        return jsonResponse('ok', { written: body.data.length });
-      }
-
-      case 'write_advances': {
-        if (replace) {
-          writeSheet(SHEETS.advances, body.data);
-        } else {
-          upsertSheet(SHEETS.advances, body.data);
-        }
-        return jsonResponse('ok', { written: body.data.length });
-      }
-
-      case 'write_schedule': {
-        if (replace) {
-          writeSheet(SHEETS.schedule, body.data);
-        } else {
-          upsertSheet(SHEETS.schedule, body.data);
-        }
-        return jsonResponse('ok', { written: body.data.length });
-      }
-
-      case 'write_settings': {
-        // Принимаем как объект {key: value} или массив [{key, value}]
-        let rows;
-        if (Array.isArray(body.data)) {
-          rows = body.data;
-        } else {
-          rows = Object.entries(body.data).map(([k, v]) => ({ key: k, value: String(v) }));
-        }
-        if (replace) {
-          writeSheet(SHEETS.settings, rows);
-        } else {
-          upsertSheet(SHEETS.settings, rows);
-        }
-        return jsonResponse('ok', { written: rows.length });
-      }
-
-      case 'bulk_write': {
-        // Массовая запись всех данных
-        const d = body.data;
-
-        // Сотрудники
-        if (d.employees) {
-          writeSheet(SHEETS.employees, d.employees);
-        }
-
-        // Данные за день
-        if (d.daily) {
-          writeSheet(SHEETS.daily, d.daily);
-        }
-
-        // Авансы
-        if (d.advances) {
-          writeSheet(SHEETS.advances, d.advances);
-        }
-
-        // График
-        if (d.schedule) {
-          writeSheet(SHEETS.schedule, d.schedule);
-        }
-
-        // Настройки
-        if (d.settings) {
-          let settingsRows;
-          if (Array.isArray(d.settings)) {
-            settingsRows = d.settings;
-          } else {
-            settingsRows = Object.entries(d.settings).map(([k, v]) => ({ key: k, value: String(v) }));
-          }
-          writeSheet(SHEETS.settings, settingsRows);
-        }
-
-        let total = 0;
-        if (d.employees) total += d.employees.length;
-        if (d.daily) total += d.daily.length;
-        if (d.advances) total += d.advances.length;
-        if (d.schedule) total += d.schedule.length;
-
-        return jsonResponse('ok', { written: total, message: 'Массовая запись выполнена' });
-      }
-
-      default:
-        return jsonResponse('error', null, 'Неизвестное действие: ' + action);
-    }
-
+    return handleWrite(e.parameter.action || '', e);
   } catch (err) {
     return jsonResponse('error', null, 'Ошибка сервера: ' + err.message);
   }
