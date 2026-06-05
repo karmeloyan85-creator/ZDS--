@@ -642,8 +642,96 @@ const Cloud={
     if(this._syncTimer)clearInterval(this._syncTimer);
     this._syncTimer=setInterval(async()=>{
       if(!navigator.onLine||this.syncing)return;
-      if(this._syncQueue.length===0)return;
-      await this.pushAll();
+      // СНАЧАЛА push (отправить локальные данные)
+      if(this._syncQueue.length>0){
+        await this.pushAll();
+      }
+      // ПОТОМ pull (загрузить изменения от других пользователей)
+      try {
+        const data=await this.load('read_all');
+        if(data){
+          // MERGE daily: локальные записи приоритет
+          if(data.daily){
+            const cloudByDate={};
+            data.daily.forEach(r=>{
+              if(!cloudByDate[r.date])cloudByDate[r.date]={};
+              cloudByDate[r.date][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
+            });
+            const allDates=new Set();
+            for(let i=0;i<localStorage.length;i++){
+              const k=localStorage.key(i);
+              if(k.startsWith('zp_daily_')){allDates.add(k.replace('zp_daily_',''))}
+            }
+            for(const cd of Object.keys(cloudByDate)){allDates.add(cd)}
+            allDates.forEach(d=>{
+              const local=LS.get('zp_daily_'+d,{});
+              const cloud=cloudByDate[d]||{};
+              const merged={...cloud};
+              for(const eid in local){merged[eid]=local[eid]}
+              LS.set('zp_daily_'+d,merged);
+            });
+          }
+          // MERGE advances: локальные записи приоритет
+          if(data.advances){
+            const cloudByMonth={};
+            data.advances.forEach(r=>{
+              if(!cloudByMonth[r.month])cloudByMonth[r.month]={};
+              cloudByMonth[r.month][r.emp_id]=r.amount||0;
+            });
+            const allMonths=new Set();
+            for(let i=0;i<localStorage.length;i++){
+              const k=localStorage.key(i);
+              if(k.startsWith('zp_advances_')){allMonths.add(k.replace('zp_advances_',''))}
+            }
+            for(const cm of Object.keys(cloudByMonth)){allMonths.add(cm)}
+            allMonths.forEach(m=>{
+              const local=LS.get('zp_advances_'+m,{});
+              const cloud=cloudByMonth[m]||{};
+              const merged={...cloud};
+              for(const eid in local){merged[eid]=local[eid]}
+              LS.set('zp_advances_'+m,merged);
+            });
+          }
+          // MERGE schedule: локальные записи приоритет
+          if(data.schedule){
+            const cloudByMonth={};
+            data.schedule.forEach(r=>{
+              const parts=r.date.split('-');
+              const mKey=parts[0]+'_'+parts[1];
+              if(!cloudByMonth[mKey])cloudByMonth[mKey]={};
+              if(!cloudByMonth[mKey][r.emp_id])cloudByMonth[mKey][r.emp_id]={};
+              const day=parseInt(parts[2]);
+              cloudByMonth[mKey][r.emp_id][day]=r.status;
+            });
+            const allSchMonths=new Set();
+            for(let i=0;i<localStorage.length;i++){
+              const k=localStorage.key(i);
+              if(k.startsWith('zp_schedule_')){allSchMonths.add(k.replace('zp_schedule_',''))}
+            }
+            for(const cm of Object.keys(cloudByMonth)){allSchMonths.add(cm)}
+            allSchMonths.forEach(m=>{
+              const local=LS.get('zp_schedule_'+m,{});
+              const cloud=cloudByMonth[m]||{};
+              const merged={};
+              for(const eid in cloud){merged[eid]={...cloud[eid]}}
+              for(const eid in local){
+                if(!merged[eid])merged[eid]={};
+                for(const day in local[eid]){merged[eid][day]=local[eid][day]}
+              }
+              LS.set('zp_schedule_'+m,merged);
+            });
+          }
+          // НЕ синхронизируем employees и settings при автосинхронизации
+          // (только при ручной кнопке, чтобы права не слетали)
+          this.connected=true;
+          this.lastSync=new Date().toISOString();
+          this.errorCount=0;
+          // Перерендерить текущую вкладку если данные обновились
+          if(typeof renderTab==='function')renderTab();
+        }
+      } catch(e){
+        // Ошибка pull — не критично, пробуем в следующий раз
+      }
     },15000);
   },
 
