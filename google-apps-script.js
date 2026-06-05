@@ -27,7 +27,7 @@
 
 // ==================== КОНФИГУРАЦИЯ ====================
 
-const API_KEY = 'e3d160439df4a6afcb73cb68d9da7f9b';
+const API_KEY = 'zk2026';
 
 // Названия листов (должны совпадать с таблицей)
 const SHEETS = {
@@ -109,6 +109,13 @@ function readSheet(sheetName) {
     const obj = {};
     for (let j = 0; j < headers.length && j < row.length; j++) {
       let val = row[j];
+      // Convert Date objects back to strings (Google Sheets may auto-convert)
+      if (val instanceof Date) {
+        const dy = val.getFullYear();
+        const dm = String(val.getMonth() + 1).padStart(2, '0');
+        const dd = String(val.getDate()).padStart(2, '0');
+        val = dy + '-' + dm + '-' + dd;
+      }
       // Преобразуем числа
       if (typeof val === 'number') val = val;
       // Преобразуем логические
@@ -136,13 +143,21 @@ function writeSheet(sheetName, data) {
   // Формируем строки
   const rows = data.map(item => {
     return headers.map(h => {
-      const val = item[h];
+      let val = item[h];
       if (val === undefined || val === null) return '';
+      // Force date-like strings to stay as text (prevent DATE_AS_TEXT conversion)
+      if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+        return val;
+      }
       return val;
     });
   });
 
   sheet.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
+  // Force text format on date columns to prevent Google Sheets auto-date conversion
+  if (sheetName === SHEETS.daily || sheetName === SHEETS.schedule || sheetName === SHEETS.advances) {
+    sheet.getRange(2, 1, rows.length, rows[0].length).setNumberFormat('@');
+  }
 }
 
 /**

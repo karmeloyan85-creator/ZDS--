@@ -172,40 +172,35 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
 .position-tag .del-pos{cursor:pointer;color:var(--red);margin-left:5px}
 .hidden{display:none!important}
 
-/* Feather Icons color scheme */
+/* Patient type toggle */
+.patient-type-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;user-select:none;padding:3px 8px;border-radius:12px;transition:all .15s;font-weight:600}
+.patient-type-toggle.is-primary{background:rgba(34,197,94,0.15);color:#16a34a}
+.patient-type-toggle.is-secondary{background:rgba(245,158,11,0.15);color:#b45309}
+.patient-type-toggle:hover{opacity:.8}
+
+/* Feather Icons — global color inheritance */
+svg.feather,[data-feather] svg,.feather{stroke:currentColor!important;fill:none!important}
+
+/* Feather icon color classes (applied to parent containers) */
 .feather-brand{color:var(--accent)}
-.nav-icon [data-feather="home"],.nav-icon [data-feather="arrow-left"],.nav-icon [data-feather="arrow-right"]{color:#4A90D9}
-.nav-icon [data-feather="users"],.nav-icon [data-feather="heart"]{color:#8B5CF6}
-.nav-icon [data-feather="dollar-sign"],.nav-icon [data-feather="credit-card"]{color:#22C55E}
-.nav-icon [data-feather="calendar"]{color:#F59E0B}
-.nav-icon [data-feather="file-text"],.nav-icon [data-feather="bar-chart-2"]{color:#4A90D9}
-.nav-icon [data-feather="settings"]{color:#64748B}
+.nav-icon [data-icon-color="#4A90D9"],.nav-icon .ic-blue{color:#4A90D9}
+.nav-icon [data-icon-color="#8B5CF6"],.nav-icon .ic-purple{color:#8B5CF6}
+.nav-icon [data-icon-color="#22C55E"],.nav-icon .ic-green{color:#22C55E}
+.nav-icon [data-icon-color="#F59E0B"],.nav-icon .ic-yellow{color:#F59E0B}
+.nav-icon [data-icon-color="#64748B"],.nav-icon .ic-gray{color:#64748B}
 .cloud-icon{color:#64748B}
 .cloud-icon.green{color:#22C55E}
 .cloud-icon.yellow{color:#F59E0B}
 .cloud-icon.red{color:#ef4444}
-.metric-card [data-feather="dollar-sign"]{color:#22C55E}
-.metric-card [data-feather="trending-up"]{color:#4A90D9}
-.metric-card [data-feather="calendar"]{color:#F59E0B}
-.metric-card [data-feather="heart"]{color:#8B5CF6}
-.btn [data-feather="check"]{color:#fff}
-.btn [data-feather="x"]{color:#fff}
-.btn [data-feather="edit-2"]{color:#64748B}
-.btn [data-feather="trash-2"]{color:#fff}
-.btn [data-feather="download"]{color:#fff}
-.btn [data-feather="upload"]{color:#fff}
-.btn [data-feather="search"]{color:#64748B}
-.btn [data-feather="save"]{color:#fff}
-.btn [data-feather="lock"]{color:#64748B}
-.btn [data-feather="refresh-cw"]{color:#64748B}
-.btn [data-feather="star"]{color:#F59E0B}
-.btn [data-feather="arrow-left"]{color:#64748B}
-.btn [data-feather="database"]{color:#64748B}
-.btn [data-feather="pause"]{color:#fff}
-.btn [data-feather="play"]{color:#fff}
-[data-feather="log-out"]{color:#ef4444}
-[data-feather="award"]{color:#F59E0B}
-.sidebar-avatar [data-feather="user"]{color:#fff}
+.metric-card [data-icon-color="#22C55E"]{color:#22C55E}
+.metric-card [data-icon-color="#4A90D9"]{color:#4A90D9}
+.metric-card [data-icon-color="#F59E0B"]{color:#F59E0B}
+.metric-card [data-icon-color="#8B5CF6"]{color:#8B5CF6}
+.btn [data-icon-color="#fff"]{color:#fff}
+.btn [data-icon-color="#64748B"]{color:#64748B}
+[data-icon-color="#ef4444"]{color:#ef4444}
+[data-icon-color="#F59E0B"]{color:#F59E0B}
+.sidebar-avatar svg.feather{color:#fff}
 
 /* Schedule Calendar */
 .schedule-wrap{overflow-x:auto;margin-top:14px}
@@ -328,6 +323,37 @@ const LS={
   set(k,v){localStorage.setItem(k,JSON.stringify(v))},
   del(k){localStorage.removeItem(k)}
 };
+
+// ==================== COLORED FEATHER ICONS ====================
+function colorFeatherIcons(){
+  const colors={
+    'home':'#4A90D9','arrow-left':'#4A90D9','arrow-right':'#4A90D9','menu':'#4A90D9',
+    'users':'#8B5CF6','heart':'#8B5CF6','user':'#94a3b8',
+    'dollar-sign':'#22C55E','credit-card':'#22C55E','trending-up':'#4A90D9',
+    'calendar':'#F59E0B','file-text':'#4A90D9','bar-chart-2':'#4A90D9',
+    'settings':'#64748B','cloud':'#64748B','log-out':'#ef4444','cloud-off':'#ef4444',
+    'loader':'#F59E0B','activity':'var(--accent)',
+    'plus':'#64748B','edit-2':'#64748B','trash-2':'#ef4444',
+    'check':'#fff','x':'#fff','download':'#fff','upload':'#fff',
+    'search':'#06B6D4','refresh-cw':'#64748B','star':'#F59E0B',
+    'lock':'#64748B','database':'#64748B','pause':'#fff','play':'#fff',
+    'award':'#F59E0B'
+  };
+  document.querySelectorAll('svg.feather').forEach(svg=>{
+    // Determine icon name from data-feather attribute on parent
+    const parent=svg.closest('[data-feather]');
+    const name=parent?parent.getAttribute('data-feather'):'';
+    if(colors[name]&&name){
+      svg.style.stroke=colors[name];
+      svg.style.color=colors[name];
+    }
+  });
+}
+// Helper: call feather.replace() + colorFeatherIcons() together
+function featherReplace(){
+  if(typeof feather!=='undefined')feather.replace();
+  colorFeatherIcons();
+}
 
 // ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
 const Cloud={
@@ -543,7 +569,7 @@ const Cloud={
     else if(this._syncQueue.length>0)icon.classList.add('yellow');
     else if(this.connected)icon.classList.add('green');
     else icon.classList.add('red');
-    if(typeof feather!=='undefined')feather.replace();
+    featherReplace();
   },
 
   configure(url,key){
@@ -737,12 +763,7 @@ function render(){
     app.innerHTML=renderApp();
     bindApp();
   }
-  if(typeof feather!=='undefined')feather.replace();
-  // Apply sidebar icon colors after feather.replace()
-  document.querySelectorAll('.nav-icon [data-icon-color]').forEach(el=>{
-    const svg=el.querySelector('svg.feather');
-    if(svg)svg.style.color=el.dataset.iconColor;
-  });
+  featherReplace();
 }
 
 // ========== LOGIN ==========
@@ -1504,13 +1525,14 @@ function renderReportReadonly(data){
   }
   html+='</table></div>';
 
-  html+='<h4 style="margin:14px 0 8px">Приём пациентов и оплата</h4><div class="table-wrap"><table><tr><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Нал ₽</th><th>Безнал ₽</th><th>Способ</th><th>Итого</th></tr>';
+  html+='<h4 style="margin:14px 0 8px">Приём пациентов и оплата</h4><div class="table-wrap"><table><tr><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Нал ₽</th><th>Безнал ₽</th><th>Способ</th><th>Итого</th><th>Тип</th></tr>';
   let tNal=0,tBez=0;
   for(const p of(data.patients||[])){
     tNal+=p.cash||0;tBez+=p.cashless||0;
-    html+=`<tr><td>${p.patientName}</td><td>${p.doctor}</td><td>${p.service||''}</td><td>${(p.cash||0).toLocaleString('ru')}</td><td>${(p.cashless||0).toLocaleString('ru')}</td><td>${p.method||''}</td><td>${((p.cash||0)+(p.cashless||0)).toLocaleString('ru')}</td></tr>`;
+    const isPrimary=p.isPrimary!==false;
+    html+=`<tr><td>${p.patientName}</td><td>${p.doctor}</td><td>${p.service||''}</td><td>${(p.cash||0).toLocaleString('ru')}</td><td>${(p.cashless||0).toLocaleString('ru')}</td><td>${p.method||''}</td><td>${((p.cash||0)+(p.cashless||0)).toLocaleString('ru')}</td><td><span class="patient-type-toggle ${isPrimary?'is-primary':'is-secondary'}">${isPrimary?'🟢 Первичный':'🟡 Вторичный'}</span></td></tr>`;
   }
-  html+=`<tr style="font-weight:700;color:var(--green)"><td colspan=3>ИТОГО</td><td>${tNal.toLocaleString('ru')}</td><td>${tBez.toLocaleString('ru')}</td><td></td><td>${(tNal+tBez).toLocaleString('ru')}</td></tr>`;
+  html+=`<tr style="font-weight:700;color:var(--green)"><td colspan=3>ИТОГО</td><td>${tNal.toLocaleString('ru')}</td><td>${tBez.toLocaleString('ru')}</td><td></td><td>${(tNal+tBez).toLocaleString('ru')}</td><td></td></tr>`;
   html+=`</table></div>`;
 
   html+='<h4 style="margin:14px 0 8px">Расходы за день</h4><div class="table-wrap"><table><tr><th>Категория</th><th>Описание</th><th>Кому/Куда</th><th>Сумма ₽</th><th>Нал/Безнал</th><th>Документ</th><th>Примечание</th></tr>';
@@ -1542,7 +1564,7 @@ function renderAdminForm(){
 
   html+=`<h4 style="margin:18px 0 8px">Приём пациентов и оплата</h4>
     <div class="table-wrap"><table id="patients-table">
-    <tr><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Нал ₽</th><th>Безнал ₽</th><th>Способ</th><th>Итого</th><th></th></tr>`;
+    <tr><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Нал ₽</th><th>Безнал ₽</th><th>Способ</th><th>Итого</th><th>Тип</th><th></th></tr>`;
   for(const p of data.patients){
     html+=patientRow(p,doctors);
   }
@@ -1587,6 +1609,7 @@ function patientRow(p,doctors){
     <td><input type="number" class="pat-cashless" value="${p.cashless||0}" min="0"></td>
     <td><select class="pat-method"><option value="">—</option><option value="Сбер" ${p.method==='Сбер'?'selected':''}>Сбер</option><option value="ВТБ" ${p.method==='ВТБ'?'selected':''}>ВТБ</option><option value="Т-Банк" ${p.method==='Т-Банк'?'selected':''}>Т-Банк</option><option value="СБП QR" ${p.method==='СБП QR'?'selected':''}>СБП QR</option><option value="Другое" ${p.method==='Другое'?'selected':''}>Другое</option></select></td>
     <td class="pat-total">${((p.cash||0)+(p.cashless||0)).toLocaleString('ru')}</td>
+    <td><span class="patient-type-toggle ${p.isPrimary!==false?'is-primary':'is-secondary'}" data-primary="${p.isPrimary!==false}" title="Нажмите для переключения">${p.isPrimary!==false?'🟢 Первичный':'🟡 Вторичный'}</span></td>
     <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
 }
 
@@ -1651,12 +1674,14 @@ function bindAdminForm(){
     document.querySelectorAll('.patient-row').forEach(tr=>{
       const cash=parseInt(tr.querySelector('.pat-cash').value)||0;
       const cashless=parseInt(tr.querySelector('.pat-cashless').value)||0;
+      const patToggle=tr.querySelector('.patient-type-toggle');
       data.patients.push({
         patientName:tr.querySelector('.pat-name').value,
         doctor:tr.querySelector('.pat-doctor').value,
         service:tr.querySelector('.pat-service').value,
         cash,cashless,
-        method:tr.querySelector('.pat-method').value
+        method:tr.querySelector('.pat-method').value,
+        isPrimary:patToggle?patToggle.dataset.primary==='true':true
       });
     });
     document.querySelectorAll('.expense-row').forEach(tr=>{
@@ -1716,6 +1741,16 @@ function bindPatientRowEvents(tr){
   };
   cashInp.oninput=upd;cashlessInp.oninput=upd;
   tr.querySelector('.del-row').onclick=()=>{tr.remove();calcReportTotals()};
+  // Toggle primary/secondary
+  const toggle=tr.querySelector('.patient-type-toggle');
+  if(toggle){
+    toggle.onclick=()=>{
+      const isPrimary=toggle.dataset.primary==='true';
+      toggle.dataset.primary=String(!isPrimary);
+      toggle.className='patient-type-toggle '+(isPrimary?'is-secondary':'is-primary');
+      toggle.textContent=isPrimary?'🟡 Вторичный':'🟢 Первичный';
+    };
+  }
 }
 
 function bindExpenseRowEvents(tr){
@@ -2170,6 +2205,6 @@ Cloud.init().then(()=>render());
 
 })();
 </script>
-<script>feather.replace();document.querySelectorAll('.nav-icon [data-icon-color]').forEach(el=>{const svg=el.querySelector('svg.feather');if(svg)svg.style.color=el.dataset.iconColor})</script>
+<script>featherReplace();</script>
 </body>
 </html>
