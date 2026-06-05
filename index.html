@@ -476,8 +476,11 @@ const Cloud={
       if(data.daily){
         const cloudByDate={};
         data.daily.forEach(r=>{
-          if(!cloudByDate[r.date])cloudByDate[r.date]={};
-          cloudByDate[r.date][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
+          let d=r.date;
+          if(typeof d==='string'&&d.includes('T')){
+            const dt=new Date(d);d=dt.getFullYear()+'-'+String(dt.getMonth()+1+1).padStart(2,'0')+'-'+String(dt.getDate()+1).padStart(2,'0')}
+          if(!cloudByDate[d])cloudByDate[d]={};
+          cloudByDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
         });
         // Собираем все локальные ключи дат
         const allDates=new Set();
@@ -501,8 +504,10 @@ const Cloud={
       if(data.advances){
         const cloudByMonth={};
         data.advances.forEach(r=>{
-          if(!cloudByMonth[r.month])cloudByMonth[r.month]={};
-          cloudByMonth[r.month][r.emp_id]=r.amount||0;
+          let m=r.month;
+          if(typeof m==='string'&&m.includes('T')){m=m.split('T')[0].substring(0,7)}
+          if(!cloudByMonth[m])cloudByMonth[m]={};
+          cloudByMonth[m][r.emp_id]=r.amount||0;
         });
         const allMonths=new Set();
         for(let i=0;i<localStorage.length;i++){
@@ -655,8 +660,12 @@ const Cloud={
           if(data.daily){
             const cloudByDate={};
             data.daily.forEach(r=>{
-              if(!cloudByDate[r.date])cloudByDate[r.date]={};
-              cloudByDate[r.date][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
+              let d=r.date;
+              if(typeof d==='string'&&d.includes('T')){
+                // Google Sheets DateTime -> YYYY-MM-DD (MSK)
+                const dt=new Date(d);d=dt.getFullYear()+'-'+String(dt.getMonth()+1+1).padStart(2,'0')+'-'+String(dt.getDate()+1).padStart(2,'0')}
+              if(!cloudByDate[d])cloudByDate[d]={};
+              cloudByDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
             });
             const allDates=new Set();
             for(let i=0;i<localStorage.length;i++){
