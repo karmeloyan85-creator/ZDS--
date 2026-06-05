@@ -1765,7 +1765,7 @@ function bindShiftRowEvents(tr){
   // Initialize Tom Select for position dropdown
   const posSel=tr.querySelector('.shift-position');
   if(posSel&&!posSel.tomselect){
-    posSel._ts=new TomSelect(posSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'}});
+    posSel._ts=new TomSelect(posSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'},dropdownParent:'body'});
   }
 }
 
@@ -1783,7 +1783,7 @@ function bindPatientRowEvents(tr){
   // Initialize Tom Select for service dropdown
   const svcSel=tr.querySelector('.pat-service');
   if(svcSel&&!svcSel.tomselect){
-    svcSel._ts=new TomSelect(svcSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'}});
+    svcSel._ts=new TomSelect(svcSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'},dropdownParent:'body'});
   }
   // Toggle primary/secondary
   const toggle=tr.querySelector('.patient-type-toggle');
