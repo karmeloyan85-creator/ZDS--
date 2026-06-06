@@ -478,7 +478,7 @@ const Cloud={
         data.daily.forEach(r=>{
           let d=r.date;
           if(typeof d==='string'&&d.includes('T')){
-            const dt=new Date(d);d=dt.getFullYear()+'-'+String(dt.getMonth()+1+1).padStart(2,'0')+'-'+String(dt.getDate()+1).padStart(2,'0')}
+            d=d.split('T')[0]}
           if(!cloudByDate[d])cloudByDate[d]={};
           cloudByDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
         });
@@ -505,7 +505,7 @@ const Cloud={
         const cloudByMonth={};
         data.advances.forEach(r=>{
           let m=r.month;
-          if(typeof m==='string'&&m.includes('T')){m=m.split('T')[0].substring(0,7)}
+          if(typeof m==='string'&&m.includes('T')){m=m.substring(0,7)}
           if(!cloudByMonth[m])cloudByMonth[m]={};
           cloudByMonth[m][r.emp_id]=r.amount||0;
         });
@@ -663,7 +663,7 @@ const Cloud={
               let d=r.date;
               if(typeof d==='string'&&d.includes('T')){
                 // Google Sheets DateTime -> YYYY-MM-DD (MSK)
-                const dt=new Date(d);d=dt.getFullYear()+'-'+String(dt.getMonth()+1+1).padStart(2,'0')+'-'+String(dt.getDate()+1).padStart(2,'0')}
+                d=d.split('T')[0]}
               if(!cloudByDate[d])cloudByDate[d]={};
               cloudByDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
             });
@@ -796,7 +796,7 @@ function initDefaults(){
       {id:3,name:'Кялоян Мгер Шаваршович',position:'Врач-стоматолог',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true},
       {id:4,name:'Сидорейко Илья Михайлович',position:'Врач-стоматолог',calcType:'percent',fixedDay:0,fixedMonth:0,percent:25,active:true},
       {id:5,name:'Громов Ростислав Евгеньевич',position:'Врач-стоматолог',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true},
-      {id:6,name:'Меркулова Ангелина Олеговна',position:'Медсестра',calcType:'fixed_day_percent',fixedDay:1200,fixedMonth:0,percent:5,active:true},
+      {id:6,name:'Меркулова Ангелина Олеговна',position:'Медсестра',calcType:'mixed',fixedDay:1200,fixedMonth:0,percent:5,active:true,appRole:'employee'},
       {id:7,name:'Соколова Елизавета Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2000,fixedMonth:0,percent:0,active:false},
       {id:8,name:'Алферова Татьяна Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2000,fixedMonth:0,percent:0,active:true},
       {id:9,name:'Белова Ирина Юрьевна',position:'Администратор',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true},
@@ -819,6 +819,21 @@ function initDefaults(){
   }
 }
 initDefaults();
+
+// Автоочистка при обновлении версии
+const APP_VERSION='2.1';
+const savedVersion=LS.get('zp_version','0');
+if(savedVersion!==APP_VERSION){
+  // Очищаем только daily данные и advances — сотрудники оставляем
+  for(let i=localStorage.length-1;i>=0;i--){
+    const k=localStorage.key(i);
+    if(k.startsWith('zp_daily_')||k.startsWith('zp_advances_')||k.startsWith('zp_schedule_')){
+      localStorage.removeItem(k);
+    }
+  }
+  LS.set('zp_version',APP_VERSION);
+  console.log('App updated to v'+APP_VERSION+', cache cleaned');
+}
 
 function getLastMonthWithData(){
   const d=new Date();

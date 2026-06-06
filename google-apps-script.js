@@ -120,6 +120,14 @@ function readSheet(sheetName) {
         const dd = String(val.getDate()).padStart(2, '0');
         val = dy + '-' + dm + '-' + dd;
       }
+      // Handle ISO date strings that Google Sheets may have converted
+      else if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(val)) {
+        val = val.substring(0, 10); // "2026-05-13T00:00:00.000Z" → "2026-05-13"
+      }
+      // Handle month-like strings converted to date ISO (e.g. "2026-02-28T21:00:00.000Z" from "2026-02")
+      else if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(val) && headers[j] === 'month') {
+        val = val.substring(0, 7); // "2026-02-28T21:00:00.000Z" → "2026-02"
+      }
       // Преобразуем числа
       if (typeof val === 'number') val = val;
       // Преобразуем логические
@@ -166,6 +174,10 @@ function writeSheet(sheetName, data) {
   sheet.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
   // Force text format on date columns to prevent Google Sheets auto-date conversion
   if (sheetName === SHEETS.daily || sheetName === SHEETS.schedule || sheetName === SHEETS.advances) {
+    sheet.getRange(2, 1, rows.length, rows[0].length).setNumberFormat('@');
+    // Also clear any date number format that may persist after clearContent
+    sheet.getRange(2, 1, sheet.getMaxRows(), sheet.getMaxColumns()).setNumberFormat('General');
+    // Re-apply text format to written rows
     sheet.getRange(2, 1, rows.length, rows[0].length).setNumberFormat('@');
   }
 }
