@@ -377,9 +377,6 @@ window.featherReplace=featherReplace;
 
 // Polyfill: AbortSignal.timeout for Safari/iOS
 if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
-
-// Polyfill: AbortSignal.timeout for Safari/iOS
-if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
 const Cloud={
   defaults:{
     url:'https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec',
@@ -884,7 +881,7 @@ function initDefaults(){
   }
 }
 initDefaults();
-seedMayData();
+try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
 
 // Автоочистка при обновлении версии
 const APP_VERSION='2.5';
@@ -1049,7 +1046,7 @@ function render(){
 // ========== LOGIN ==========
 function renderLogin(){
   return `<div class="login-wrap"><div class="login-box">
-    <h2><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор</h2>
+    <h2><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор-стоматолог</h2>
     <div class="login-sub">Система управления зарплатами</div>
     <input type="text" id="login-input" placeholder="Логин" autocomplete="username">
     <input type="password" id="pass-input" placeholder="Пароль" autocomplete="current-password">
@@ -1143,7 +1140,7 @@ function renderSidebar(){
 
   let html=`<div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-name"><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор</div>
+      <div class="logo-name"><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор-стоматолог</div>
       <div class="logo-sub">Система управления</div>
     </div>
     <div class="sidebar-nav">`;
@@ -2501,7 +2498,7 @@ function bindSettings(){
     for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_'))keys.push(k)}
     keys.forEach(k=>localStorage.removeItem(k));
     initDefaults();
-seedMayData();
+    try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
     toast('Все данные очищены');render();
   };
   const cloudCheck=document.getElementById('cloud-check');
@@ -2568,7 +2565,6 @@ seedMayData();
 window.logout=logout;
 
 // Автоочистка старых настроек облака (одноразовая) (одноразовая)
-const SEED_DATA_MAY={"2026-05-01":{"1":{"worked":1,"revenue":74000,"patients":8},"2":{"worked":1,"revenue":24850,"patients":4},"9":{"worked":1,"revenue":0,"patients":0},"11":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-03":{"4":{"worked":1,"revenue":13350,"patients":4},"7":{"worked":1,"revenue":0,"patients":0}},"2026-05-04":{"4":{"worked":1,"revenue":26950,"patients":4},"2":{"worked":1,"revenue":26950,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-05":{"3":{"worked":1,"revenue":18800,"patients":5},"2":{"worked":1,"revenue":28500,"patients":4},"1":{"worked":1,"revenue":4300,"patients":1},"8":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-06":{"1":{"worked":1,"revenue":112950,"patients":10},"2":{"worked":1,"revenue":49050,"patients":5},"9":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-07":{"3":{"worked":1,"revenue":27200,"patients":9},"2":{"worked":1,"revenue":10400,"patients":4},"9":{"worked":1,"revenue":0,"patients":0},"11":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-08":{"1":{"worked":1,"revenue":96850,"patients":11},"2":{"worked":1,"revenue":25300,"patients":6},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-11":{"1":{"worked":1,"revenue":18950,"patients":11},"4":{"worked":1,"revenue":28100,"patients":5},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-12":{"3":{"worked":1,"revenue":18100,"patients":8},"2":{"worked":1,"revenue":42250,"patients":7},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-13":{"1":{"worked":1,"revenue":74400,"patients":9},"2":{"worked":1,"revenue":31000,"patients":7},"9":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-14":{"3":{"worked":1,"revenue":74450,"patients":8},"2":{"worked":1,"revenue":26950,"patients":5},"9":{"worked":1,"revenue":0,"patients":0},"11":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-15":{"1":{"worked":1,"revenue":85200,"patients":10},"2":{"worked":1,"revenue":26650,"patients":5},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0}},"2026-05-16":{"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-17":{"4":{"worked":1,"revenue":26050,"patients":5},"5":{"worked":1,"revenue":34100,"patients":7},"11":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-18":{"1":{"worked":1,"revenue":57500,"patients":10},"4":{"worked":1,"revenue":22450,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"8":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-19":{"3":{"worked":1,"revenue":20400,"patients":3},"2":{"worked":1,"revenue":25900,"patients":3},"6":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-20":{"1":{"worked":1,"revenue":110700,"patients":11},"2":{"worked":1,"revenue":29900,"patients":4},"9":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0}},"2026-05-21":{"2":{"worked":1,"revenue":38700,"patients":6},"8":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0}},"2026-05-22":{"1":{"worked":1,"revenue":71550,"patients":13},"2":{"worked":1,"revenue":40800,"patients":7},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-24":{"4":{"worked":1,"revenue":23400,"patients":4},"5":{"worked":1,"revenue":23550,"patients":5},"11":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-25":{"2":{"worked":1,"revenue":21800,"patients":5},"4":{"worked":1,"revenue":17200,"patients":4},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-26":{"3":{"worked":1,"revenue":19350,"patients":6},"2":{"worked":1,"revenue":28150,"patients":6},"11":{"worked":1,"revenue":0,"patients":0},"8":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-27":{"1":{"worked":1,"revenue":92200,"patients":11},"2":{"worked":1,"revenue":33650,"patients":4},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-28":{"3":{"worked":1,"revenue":63950,"patients":6},"2":{"worked":1,"revenue":26850,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-29":{"1":{"worked":1,"revenue":134850,"patients":13},"2":{"worked":1,"revenue":24875,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-23":{"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-30":{"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-31":{"5":{"worked":1,"revenue":15950,"patients":5},"4":{"worked":1,"revenue":14850,"patients":3},"11":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}}};
 (function(){
   const oldUrl='AKfycbyDQgCW5ypwGIJTbJ_yOKvRdO6lZU-skpztrET_4PIS7dh8lCOiuBKmajoy0ofqMAfI';
   const saved=LS.get('zp_cloud_url','');
