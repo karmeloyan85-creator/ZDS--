@@ -1,17 +1,70 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Test</title></head>
-<body style="background:#e8ecf1;padding:40px;font-family:Helvetica">
-<h1 style="color:#4A90D9">Hello Karen!</h1>
-<p>If you see this, the domain works fine.</p>
-<p id="ls-test">LocalStorage test...</p>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Диагностика ZDS</title>
+<style>
+body{font-family:Helvetica,sans-serif;background:#e8ecf1;padding:20px;max-width:600px;margin:0 auto}
+h1{color:#4A90D9;font-size:20px}
+.test{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.test h3{margin:0 0 8px;font-size:15px;color:#333}
+.ok{color:#22c55e;font-weight:bold}
+.fail{color:#ef4444;font-weight:bold}
+.warn{color:#f59e0b;font-weight:bold}
+pre{background:#f5f5f5;padding:10px;border-radius:8px;overflow-x:auto;font-size:12px}
+</style>
+</head>
+<body>
+<h1>🔧 Диагностика ZDS</h1>
+<div id="results"></div>
 <script>
-try {
-  localStorage.setItem('test', 'ok');
-  document.getElementById('ls-test').textContent = 'LocalStorage: OK (' + localStorage.getItem('test') + ')';
-} catch(e) {
-  document.getElementById('ls-test').textContent = 'LocalStorage ERROR: ' + e.message;
+var R=document.getElementById('results');
+function log(name,html){
+  R.innerHTML+='<div class="test"><h3>'+name+'</h3>'+html+'</div>';
 }
+
+// 1. Basic JS
+try{log('JavaScript','<span class="ok">✅ Работает</span>');}catch(e){log('JavaScript','<span class="fail">❌ '+e+'</span>')}
+
+// 2. Template literals
+try{var x=`hello ${1+1}`;log('Template literals','<span class="ok">✅ '+x+'</span>');}catch(e){log('Template literals','<span class="fail">❌ '+e+'</span>')}
+
+// 3. Optional chaining
+try{var o={a:{b:1}};var y=o?.a?.b;log('Optional chaining (?.)','<span class="ok">✅ '+y+'</span>');}catch(e){log('Optional chaining','<span class="fail">❌ '+e+'</span>')}
+
+// 4. Async/await
+try{eval('(async()=>{await 1})()');log('Async/await','<span class="ok">✅ Работает</span>');}catch(e){log('Async/await','<span class="fail">❌ '+e+'</span>')}
+
+// 5. Object.entries
+try{var e=Object.entries({a:1,b:2});log('Object.entries','<span class="ok">✅ '+JSON.stringify(e)+'</span>');}catch(e){log('Object.entries','<span class="fail">❌ '+e+'</span>')}
+
+// 6. localStorage
+try{localStorage.setItem('zds_test','ok');localStorage.removeItem('zds_test');log('localStorage','<span class="ok">✅ Запись/чтение работает</span>');}catch(e){log('localStorage','<span class="fail">❌ '+e.message+'</span><br><span class="warn">⚠️ Это инкогнито! localStorage заблокирован!</span>')}
+
+// 7. AbortSignal.timeout
+try{AbortSignal.timeout(1000);log('AbortSignal.timeout','<span class="ok">✅ Поддерживается</span>');}catch(e){log('AbortSignal.timeout','<span class="warn">⚠️ Не поддерживается (нужен полифилл): '+e.message+'</span>')}
+
+// 8. Fetch
+try{log('Fetch API','<span class="ok">✅ Доступен</span>');}catch(e){log('Fetch API','<span class="fail">❌ '+e+'</span>')}
+
+// 9. Cross-origin fetch to Google
+fetch('https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec?action=ping&key=zk2026',
+  {signal:AbortSignal.timeout?AbortSignal.timeout(5000):undefined})
+  .then(r=>r.text()).then(t=>log('Google Apps Script','<span class="ok">✅ Подключение работает</span><pre>'+t.substring(0,100)+'</pre>'))
+  .catch(e=>log('Google Apps Script','<span class="fail">❌ Ошибка: '+e.message+'</span>'));
+
+// 10. User Agent
+var ua=navigator.userAgent;
+log('Браузер/ОС','<pre>'+ua+'</pre>');
+
+// 11. Screen
+log('Экран','Ширина: '+screen.width+', Высота: '+screen.height+', PixelRatio: '+window.devicePixelRatio);
+
+// 12. Connection
+if(navigator.connection){log('Соединение','Тип: '+(navigator.connection.effectiveType||'?')+', Скорость: '+(navigator.connection.downlink||'?')+'Mbps')}
+else{log('Соединение','Информация недоступна')}
+
 </script>
 </body>
 </html>
