@@ -374,6 +374,9 @@ function featherReplace(){
 window.featherReplace=featherReplace;
 
 // ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
+
+// Polyfill: AbortSignal.timeout for Safari/iOS
+if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
 const Cloud={
   defaults:{
     url:'https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec',
@@ -2570,7 +2573,7 @@ const SEED_DATA_MAY={"2026-05-01":{"1":{"worked":1,"revenue":74000,"patients":8}
 })();
 
 // Инициализация облачного хранилища
-Cloud.init().then(()=>render());
+Cloud.init().then(()=>render()).catch(()=>render());
 })();
 </script>
 <script>featherReplace();</script>
