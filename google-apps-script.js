@@ -290,7 +290,7 @@ function doGet(e) {
     const action = e.parameter.action || '';
 
     // ---- GET-based write (payload в base64) ----
-    const writeActions = ['write_employees','write_daily','write_advances','write_schedule','write_settings','bulk_write'];
+    const writeActions = ['write_employees','write_daily','write_advances','write_schedule','write_settings','bulk_write','bulk_write_upsert'];
     if (writeActions.indexOf(action) !== -1) {
       return handleWrite(action, e);
     }
@@ -512,6 +512,34 @@ function handleWrite(action, e) {
       if (d.schedule) total += d.schedule.length;
 
       return jsonResponse('ok', { written: total, message: 'Массовая запись выполнена' });
+    }
+
+    case 'bulk_write_upsert': {
+      // Массовая UPSERT — только обновляет существующие, не перезаписывает всё
+      const d = body.data;
+
+      if (d.employees) upsertSheet(SHEETS.employees, d.employees);
+      if (d.daily) upsertSheet(SHEETS.daily, d.daily);
+      if (d.advances) upsertSheet(SHEETS.advances, d.advances);
+      if (d.schedule) upsertSheet(SHEETS.schedule, d.schedule);
+
+      if (d.settings) {
+        let settingsRows;
+        if (Array.isArray(d.settings)) {
+          settingsRows = d.settings;
+        } else {
+          settingsRows = Object.entries(d.settings).map(([k, v]) => ({ key: k, value: String(v) }));
+        }
+        upsertSheet(SHEETS.settings, settingsRows);
+      }
+
+      let total = 0;
+      if (d.employees) total += d.employees.length;
+      if (d.daily) total += d.daily.length;
+      if (d.advances) total += d.advances.length;
+      if (d.schedule) total += d.schedule.length;
+
+      return jsonResponse('ok', { written: total, message: 'Массовый upsert выполнен' });
     }
 
     default:

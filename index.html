@@ -621,7 +621,25 @@ const Cloud={
         }
       }
 
-      const result=await this.save('bulk_write',{employees,daily,advances,schedule},true);
+      // Выгружаем данные через upsert (не перезаписываем облако)
+      let result=true;
+      if(daily.length>0){
+        const dailyResult=await this.save('write_daily',daily,false);
+        if(!dailyResult)result=false;
+      }
+      if(advances.length>0){
+        const advResult=await this.save('write_advances',advances,false);
+        if(!advResult)result=false;
+      }
+      if(schedule.length>0){
+        const schResult=await this.save('write_schedule',schedule,false);
+        if(!schResult)result=false;
+      }
+      // Сотрудников — только при явной выгрузке
+      if(employees.length>0){
+        const empResult=await this.save('write_employees',employees,false);
+        if(!empResult)result=false;
+      }
       if(result){
         this.connected=true;
         this.lastSync=new Date().toISOString();
@@ -821,7 +839,7 @@ function initDefaults(){
 initDefaults();
 
 // Автоочистка при обновлении версии
-const APP_VERSION='2.2';
+const APP_VERSION='2.3';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
   // Очищаем только daily данные и advances — сотрудники оставляем
