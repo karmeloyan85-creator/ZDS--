@@ -377,6 +377,9 @@ window.featherReplace=featherReplace;
 
 // Polyfill: AbortSignal.timeout for Safari/iOS
 if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
+
+// Polyfill: AbortSignal.timeout for Safari/iOS
+if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
 const Cloud={
   defaults:{
     url:'https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec',
@@ -2573,7 +2576,8 @@ const SEED_DATA_MAY={"2026-05-01":{"1":{"worked":1,"revenue":74000,"patients":8}
 })();
 
 // Инициализация облачного хранилища
-Cloud.init().then(()=>render()).catch(()=>render());
+try{Cloud.init().then(()=>render()).catch(()=>render())}catch(e){render()}
+setTimeout(function(){var a=document.getElementById('app');if(a&& !a.children.length){console.warn('ZDS render fallback');render()}},2000);
 })();
 </script>
 <script>featherReplace();</script>
