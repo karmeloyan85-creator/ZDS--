@@ -563,7 +563,8 @@ const Cloud={
       this.lastSync=new Date().toISOString();
       this.errorCount=0;
       this._syncQueue=[];
-      toast('☁️ Синхронизация завершена (локальные данные сохранены)');
+      // НЕ отправляем данные обратно — облако источник правды
+      toast('☁️ Данные загружены из облака');
       return true;
     }catch(e){
       this.connected=false;this.errorCount++;
@@ -655,22 +656,61 @@ const Cloud={
     }
   },
 
-  _syncQueue:[],
+
+    async _sendOne(key){
+      if(this.syncing)return;
+      try{
+        if(key.startsWith('zp_daily_')){
+          const date=key.replace('zp_daily_','');
+          const data=LS.get(key,{});
+          const daily=[];
+          Object.entries(data).forEach(([eid,v])=>{
+            daily.push({date,emp_id:parseInt(eid),worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
+          });
+          if(daily.length>0) await this.save('write_daily',daily,false);
+        }else if(key.startsWith('zp_advances_')){
+          const month=key.replace('zp_advances_','');
+          const data=LS.get(key,{});
+          const advances=[];
+          Object.entries(data).forEach(([eid,v])=>{
+            advances.push({emp_id:parseInt(eid),month,amount:v||0});
+          });
+          if(advances.length>0) await this.save('write_advances',advances,false);
+        }else if(key.startsWith('zp_schedule_')){
+          const data=LS.get(key,{});
+          const schedule=[];
+          Object.entries(data).forEach(([eid,days])=>{
+            Object.entries(days).forEach(([day,status])=>{
+              const md=key.replace('zp_schedule_','');
+              const date=md.replace('_','-')+'-'+String(day).padStart(2,'0');
+              schedule.push({emp_id:parseInt(eid),date,status});
+            });
+          });
+          if(schedule.length>0) await this.save('write_schedule',schedule,false);
+        }else if(key==='zp_employees'){
+          const emps=LS.get('zp_employees',[]);
+          if(emps.length>0) await this.save('write_employees',emps,false);
+        }
+        this._syncQueue=this._syncQueue.filter(k=>k!==key);
+        this._updateIcon();
+      }catch(e){}
+    },
+
+      _syncQueue:[],
   queueSync(key){
     if(!this.config.url)return;
     if(!this._syncQueue.includes(key))this._syncQueue.push(key);
     this._updateIcon();
+    // Отправляем сразу, не ждём таймер
+    this._sendOne(key);
   },
 
   _startAutoSync(){
     if(this._syncTimer)clearInterval(this._syncTimer);
     this._syncTimer=setInterval(async()=>{
       if(!navigator.onLine||this.syncing)return;
-      // СНАЧАЛА push (отправить локальные данные)
-      if(this._syncQueue.length>0){
-        await this.pushAll();
-      }
-      // ПОТОМ pull (загрузить изменения от других пользователей)
+      // НЕ отправляем — только скачиваем (облако = источник правды)
+      // Отправка происходит ТОЛЬКО при явном заполнении данных пользователем
       try {
         const data=await this.load('read_all');
         if(data){
@@ -839,7 +879,7 @@ function initDefaults(){
 initDefaults();
 
 // Автоочистка при обновлении версии
-const APP_VERSION='2.3';
+const APP_VERSION='2.4';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
   // Очищаем только daily данные и advances — сотрудники оставляем
