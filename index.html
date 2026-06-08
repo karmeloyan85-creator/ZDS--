@@ -927,9 +927,7 @@ function doLogin(){
   else if(role==='manager')state.tab='dashboard';
   else state.tab='report';
   render();
-  if(Cloud.config.url){
-    setTimeout(()=>{Cloud.sync().then(ok=>{if(ok)render()})},1000);
-  }
+  // Cloud sync on login disabled — use manual button in Settings
 }
 
 function logout(){
