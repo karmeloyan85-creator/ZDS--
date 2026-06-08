@@ -715,7 +715,7 @@ function initDefaults(){
   }
 }
 initDefaults();
-try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
+// try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
 
 // Автоочистка при обновлении версии
 const APP_VERSION='2.5';
@@ -2332,7 +2332,7 @@ function bindSettings(){
     for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_'))keys.push(k)}
     keys.forEach(k=>localStorage.removeItem(k));
     initDefaults();
-    try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
+    // try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
     toast('Все данные очищены');render();
   };
   const cloudCheck=document.getElementById('cloud-check');
