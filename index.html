@@ -447,116 +447,55 @@ const Cloud={
       const data=await this.load('read_all');
       if(!data)return false;
 
-      if(data.employees){
-        // Безопасная синхронизация: ЛОКАЛЬНЫЕ данные приоритет
-        const localEmps=LS.get('zp_employees',[]);
-        const localMap=new Map(localEmps.map(e=>[e.id,e]));
-        const merged=data.employees.map(cloudEmp=>{
-          const local=localMap.get(cloudEmp.id);
-          if(!local)return cloudEmp; // нового сотрудника из облака — берём как есть
-          // Локальные данные ПРИОРИТЕТ по всем значимым полям:
-          return {...cloudEmp,
-            appRole:local.appRole||cloudEmp.appRole||'none',
-            login:local.login||cloudEmp.login||'',
-            pass:local.pass||cloudEmp.pass||'',
-            permissions:local.permissions||cloudEmp.permissions||undefined,
-            calcType:local.calcType||cloudEmp.calcType||'fixed_day',
-            fixedDay:local.fixedDay!==undefined?local.fixedDay:(cloudEmp.fixedDay||0),
-            fixedMonth:local.fixedMonth!==undefined?local.fixedMonth:(cloudEmp.fixedMonth||0),
-            percent:local.percent!==undefined?local.percent:(cloudEmp.percent||0),
-            active:local.active!==undefined?local.active:(cloudEmp.active!==undefined?cloudEmp.active:true),
-            name:local.name||cloudEmp.name||'',
-            position:local.position||cloudEmp.position||''
-          };
-        });
-        // Добавляем локальных сотрудников, которых нет в облаке
-        const cloudIds=new Set(data.employees.map(e=>e.id));
-        localEmps.forEach(e=>{if(!cloudIds.has(e.id))merged.push(e)});
-        LS.set('zp_employees',merged);
-        addHistory('☁️ Сотрудники синхронизированы (локальные данные приоритет)');
-      }
+      // REPLACE employees (облако = источник правды)
+      if(data.employees){LS.set('zp_employees',data.employees)}
 
-      // БЕЗОПАСНАЯ синхронизация daily: MERGE, не перезапись
+      // REPLACE daily: clear old cache first, then write normalized cloud data
       if(data.daily){
-        const cloudByDate={};
+        const keysToRemove=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_daily_'))keysToRemove.push(k)}
+        keysToRemove.forEach(k=>localStorage.removeItem(k));
+
+        const byDate={};
         data.daily.forEach(r=>{
-          let d=r.date;
-          if(typeof d==='string'&&d.includes('T')){
-            d=d.split('T')[0]}
-          if(!cloudByDate[d])cloudByDate[d]={};
-          cloudByDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
+          const d=this.normDate(r.date);
+          if(!d)return;
+          if(!byDate[d])byDate[d]={};
+          byDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
         });
-        // Собираем все локальные ключи дат
-        const allDates=new Set();
-        for(let i=0;i<localStorage.length;i++){
-          const k=localStorage.key(i);
-          if(k.startsWith('zp_daily_')){allDates.add(k.replace('zp_daily_',''))}
-        }
-        for(const cd of Object.keys(cloudByDate)){allDates.add(cd)}
-        allDates.forEach(d=>{
-          const local=LS.get('zp_daily_'+d,{});
-          const cloud=cloudByDate[d]||{};
-          const merged={...cloud};
-          // Локальные записи приоритет
-          for(const eid in local){merged[eid]=local[eid]}
-          // Добавляем облачные записи, которых нет локально
-          LS.set('zp_daily_'+d,merged);
-        });
+        Object.entries(byDate).forEach(([d,v])=>LS.set('zp_daily_'+d,v));
       }
 
-      // БЕЗОПАСНАЯ синхронизация advances: MERGE, не перезапись
+      // REPLACE advances: clear old, write new
       if(data.advances){
-        const cloudByMonth={};
+        const keysToRemove=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_advances_'))keysToRemove.push(k)}
+        keysToRemove.forEach(k=>localStorage.removeItem(k));
+
+        const byMonth={};
         data.advances.forEach(r=>{
-          let m=r.month;
-          if(typeof m==='string'&&m.includes('T')){m=m.substring(0,7)}
-          if(!cloudByMonth[m])cloudByMonth[m]={};
-          cloudByMonth[m][r.emp_id]=r.amount||0;
+          if(!byMonth[r.month])byMonth[r.month]={};
+          byMonth[r.month][r.emp_id]=r.amount||0;
         });
-        const allMonths=new Set();
-        for(let i=0;i<localStorage.length;i++){
-          const k=localStorage.key(i);
-          if(k.startsWith('zp_advances_')){allMonths.add(k.replace('zp_advances_',''))}
-        }
-        for(const cm of Object.keys(cloudByMonth)){allMonths.add(cm)}
-        allMonths.forEach(m=>{
-          const local=LS.get('zp_advances_'+m,{});
-          const cloud=cloudByMonth[m]||{};
-          const merged={...cloud};
-          for(const eid in local){merged[eid]=local[eid]}
-          LS.set('zp_advances_'+m,merged);
-        });
+        Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_advances_'+m,v));
       }
 
-      // БЕЗОПАСНАЯ синхронизация schedule: MERGE, не перезапись
+      // REPLACE schedule: clear old, write new
       if(data.schedule){
-        const cloudByMonth={};
+        const keysToRemove=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_schedule_'))keysToRemove.push(k)}
+        keysToRemove.forEach(k=>localStorage.removeItem(k));
+
+        const byMonth={};
         data.schedule.forEach(r=>{
           const parts=r.date.split('-');
           const mKey=parts[0]+'_'+parts[1];
-          if(!cloudByMonth[mKey])cloudByMonth[mKey]={};
-          if(!cloudByMonth[mKey][r.emp_id])cloudByMonth[mKey][r.emp_id]={};
+          if(!byMonth[mKey])byMonth[mKey]={};
+          if(!byMonth[mKey][r.emp_id])byMonth[mKey][r.emp_id]={};
           const day=parseInt(parts[2]);
-          cloudByMonth[mKey][r.emp_id][day]=r.status;
+          byMonth[mKey][r.emp_id][day]=r.status;
         });
-        const allSchMonths=new Set();
-        for(let i=0;i<localStorage.length;i++){
-          const k=localStorage.key(i);
-          if(k.startsWith('zp_schedule_')){allSchMonths.add(k.replace('zp_schedule_',''))}
-        }
-        for(const cm of Object.keys(cloudByMonth)){allSchMonths.add(cm)}
-        allSchMonths.forEach(m=>{
-          const local=LS.get('zp_schedule_'+m,{});
-          const cloud=cloudByMonth[m]||{};
-          const merged={};
-          // Глубокий merge
-          for(const eid in cloud){merged[eid]={...cloud[eid]}}
-          for(const eid in local){
-            if(!merged[eid])merged[eid]={};
-            for(const day in local[eid]){merged[eid][day]=local[eid][day]}
-          }
-          LS.set('zp_schedule_'+m,merged);
-        });
+        Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_schedule_'+m,v));
       }
 
       if(data.settings){
@@ -580,6 +519,13 @@ const Cloud={
     }
   },
 
+  normDate(d){
+    if(!d)return null;
+    const s=String(d);
+    if(s.length<=10)return s;
+    return s.substring(0,10);
+  },
+
   async pushAll(){
     if(this.syncing)return;
     this.syncing=true;
@@ -591,7 +537,8 @@ const Cloud={
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
         if(k.startsWith('zp_daily_')){
-          const date=k.replace('zp_daily_','');
+          const date=this.normDate(k.replace('zp_daily_',''));
+          if(!date)continue;
           const d=LS.get(k,{});
           Object.entries(d).forEach(([eid,v])=>{
             daily.push({date,emp_id:parseInt(eid),worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
@@ -626,30 +573,13 @@ const Cloud={
         }
       }
 
-      // Выгружаем данные через upsert (не перезаписываем облако)
-      let result=true;
-      if(daily.length>0){
-        const dailyResult=await this.save('write_daily',daily,false);
-        if(!dailyResult)result=false;
-      }
-      if(advances.length>0){
-        const advResult=await this.save('write_advances',advances,false);
-        if(!advResult)result=false;
-      }
-      if(schedule.length>0){
-        const schResult=await this.save('write_schedule',schedule,false);
-        if(!schResult)result=false;
-      }
-      // Сотрудников — только при явной выгрузке
-      if(employees.length>0){
-        const empResult=await this.save('write_employees',employees,false);
-        if(!empResult)result=false;
-      }
+      // Выгружаем данные через bulk_write с полной заменой (не upsert)
+      const result=await this.save('bulk_write',{employees,daily,advances,schedule},true);
       if(result){
         this.connected=true;
         this.lastSync=new Date().toISOString();
         this._syncQueue=[];
-        toast('☁️ Данные выгружены в облако');
+        toast('☁️ Данные выгружены в облако ('+daily.length+' записей)');
       }
       return result;
     }catch(e){
@@ -702,109 +632,13 @@ const Cloud={
 
       _syncQueue:[],
   queueSync(key){
-    if(!this.config.url)return;
-    if(!this._syncQueue.includes(key))this._syncQueue.push(key);
-    this._updateIcon();
-    // Отправляем сразу, не ждём таймер
-    this._sendOne(key);
+    // Отключена мгновенная отправка — только ручные кнопки
+    // чтобы не создавать дубли при каждом вводе
   },
 
   _startAutoSync(){
-    if(this._syncTimer)clearInterval(this._syncTimer);
-    this._syncTimer=setInterval(async()=>{
-      if(!navigator.onLine||this.syncing)return;
-      // НЕ отправляем — только скачиваем (облако = источник правды)
-      // Отправка происходит ТОЛЬКО при явном заполнении данных пользователем
-      try {
-        const data=await this.load('read_all');
-        if(data){
-          // MERGE daily: локальные записи приоритет
-          if(data.daily){
-            const cloudByDate={};
-            data.daily.forEach(r=>{
-              let d=r.date;
-              if(typeof d==='string'&&d.includes('T')){
-                // Google Sheets DateTime -> YYYY-MM-DD (MSK)
-                d=d.split('T')[0]}
-              if(!cloudByDate[d])cloudByDate[d]={};
-              cloudByDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
-            });
-            const allDates=new Set();
-            for(let i=0;i<localStorage.length;i++){
-              const k=localStorage.key(i);
-              if(k.startsWith('zp_daily_')){allDates.add(k.replace('zp_daily_',''))}
-            }
-            for(const cd of Object.keys(cloudByDate)){allDates.add(cd)}
-            allDates.forEach(d=>{
-              const local=LS.get('zp_daily_'+d,{});
-              const cloud=cloudByDate[d]||{};
-              const merged={...cloud};
-              for(const eid in local){merged[eid]=local[eid]}
-              LS.set('zp_daily_'+d,merged);
-            });
-          }
-          // MERGE advances: локальные записи приоритет
-          if(data.advances){
-            const cloudByMonth={};
-            data.advances.forEach(r=>{
-              if(!cloudByMonth[r.month])cloudByMonth[r.month]={};
-              cloudByMonth[r.month][r.emp_id]=r.amount||0;
-            });
-            const allMonths=new Set();
-            for(let i=0;i<localStorage.length;i++){
-              const k=localStorage.key(i);
-              if(k.startsWith('zp_advances_')){allMonths.add(k.replace('zp_advances_',''))}
-            }
-            for(const cm of Object.keys(cloudByMonth)){allMonths.add(cm)}
-            allMonths.forEach(m=>{
-              const local=LS.get('zp_advances_'+m,{});
-              const cloud=cloudByMonth[m]||{};
-              const merged={...cloud};
-              for(const eid in local){merged[eid]=local[eid]}
-              LS.set('zp_advances_'+m,merged);
-            });
-          }
-          // MERGE schedule: локальные записи приоритет
-          if(data.schedule){
-            const cloudByMonth={};
-            data.schedule.forEach(r=>{
-              const parts=r.date.split('-');
-              const mKey=parts[0]+'_'+parts[1];
-              if(!cloudByMonth[mKey])cloudByMonth[mKey]={};
-              if(!cloudByMonth[mKey][r.emp_id])cloudByMonth[mKey][r.emp_id]={};
-              const day=parseInt(parts[2]);
-              cloudByMonth[mKey][r.emp_id][day]=r.status;
-            });
-            const allSchMonths=new Set();
-            for(let i=0;i<localStorage.length;i++){
-              const k=localStorage.key(i);
-              if(k.startsWith('zp_schedule_')){allSchMonths.add(k.replace('zp_schedule_',''))}
-            }
-            for(const cm of Object.keys(cloudByMonth)){allSchMonths.add(cm)}
-            allSchMonths.forEach(m=>{
-              const local=LS.get('zp_schedule_'+m,{});
-              const cloud=cloudByMonth[m]||{};
-              const merged={};
-              for(const eid in cloud){merged[eid]={...cloud[eid]}}
-              for(const eid in local){
-                if(!merged[eid])merged[eid]={};
-                for(const day in local[eid]){merged[eid][day]=local[eid][day]}
-              }
-              LS.set('zp_schedule_'+m,merged);
-            });
-          }
-          // НЕ синхронизируем employees и settings при автосинхронизации
-          // (только при ручной кнопке, чтобы права не слетали)
-          this.connected=true;
-          this.lastSync=new Date().toISOString();
-          this.errorCount=0;
-          // Перерендерить текущую вкладку если данные обновились
-          if(typeof renderTab==='function')renderTab();
-        }
-      } catch(e){
-        // Ошибка pull — не критично, пробуем в следующий раз
-      }
-    },15000);
+    // Auto-sync ОТКЛЮЧЕН — вызывает дублирование данных
+    // Используйте ручные кнопки: Загрузить / Выгрузить / Синхронизировать
   },
 
   _updateIcon(){
