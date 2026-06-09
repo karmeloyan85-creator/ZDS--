@@ -632,13 +632,24 @@ const Cloud={
 
       _syncQueue:[],
   queueSync(key){
-    // Отключена мгновенная отправка — только ручные кнопки
-    // чтобы не создавать дубли при каждом вводе
+    if(!this.config.url||!this.connected)return;
+    if(!this._syncQueue.includes(key)){
+      this._syncQueue.push(key);
+      this._updateIcon();
+    }
+    clearTimeout(this._sendTimer);
+    this._sendTimer=setTimeout(()=>{
+      const q=[...this._syncQueue];
+      this._syncQueue=[];
+      q.forEach(k=>this._sendOne(k));
+    },1000);
   },
 
   _startAutoSync(){
-    // Auto-sync ОТКЛЮЧЕН — вызывает дублирование данных
-    // Используйте ручные кнопки: Загрузить / Выгрузить / Синхронизировать
+    // Фоновая синхронизация: раз в 30 секунд подтягиваем изменения из облака
+    this._autoTimer=setInterval(()=>{
+      this.sync().then(ok=>{if(ok)render()});
+    },30000);
   },
 
   _updateIcon(){
@@ -927,7 +938,10 @@ function doLogin(){
   else if(role==='manager')state.tab='dashboard';
   else state.tab='report';
   render();
-  // Cloud sync on login disabled — use manual button in Settings
+  // Автозагрузка из облака при входе
+  if(Cloud.config.url&&Cloud.connected){Cloud.sync().then(ok=>{if(ok)render()})}
+  else{Cloud.init().then(()=>{Cloud.sync().then(ok=>{if(ok)render()})})}
+
 }
 
 function logout(){
@@ -1025,13 +1039,7 @@ function renderApp(){
           <span class="search-icon"><i data-feather="search"></i></span>
           <input type="search" placeholder="Поиск..." id="global-search">
         </div>
-        <span id="cloud-icon" class="cloud-icon" title="Облако" style="position:relative"><i data-feather="cloud"></i></span>
-        <div id="cloud-menu" class="cloud-menu">
-          <div class="cloud-menu-item" id="cm-sync"><i data-feather="refresh-cw"></i> Синхронизировать</div>
-          <div class="cloud-menu-item" id="cm-push">⬆️ Выгрузить в облако</div>
-          <div class="cloud-menu-item" id="cm-pull">⬇️ Загрузить из облака</div>
-          <div class="cloud-status-bar">${Cloud.connected?'✅ Подключено':'⚪ Не подключено'} · Последняя: ${cloudLastSync}</div>
-        </div>
+        <span id="cloud-icon" class="cloud-icon" title="Облако — ${Cloud.connected?'Подключено':'Не подключено'}" style="position:relative;cursor:default"><i data-feather="cloud"></i></span>
         <button id="theme-toggle" title="Сменить тему" style="font-size:16px;padding:6px 10px">${isDark?'☀️':'🌙'}</button>
       </div>
     </div>
@@ -1094,19 +1102,8 @@ function bindApp(){
   document.body.classList.remove('dark','light');
   document.body.classList.add(savedTheme);
 
-  // Cloud menu
-  const cloudIcon=document.getElementById('cloud-icon');
-  const cloudMenu=document.getElementById('cloud-menu');
-  if(cloudIcon&&cloudMenu){
-    cloudIcon.onclick=(e)=>{e.stopPropagation();cloudMenu.classList.toggle('show')};
-    document.addEventListener('click',()=>cloudMenu.classList.remove('show'));
-    const cmSync=document.getElementById('cm-sync');
-    const cmPush=document.getElementById('cm-push');
-    const cmPull=document.getElementById('cm-pull');
-    if(cmSync)cmSync.onclick=()=>{cloudMenu.classList.remove('show');Cloud.sync().then(ok=>{if(ok)render()})};
-    if(cmPush)cmPush.onclick=()=>{cloudMenu.classList.remove('show');Cloud.pushAll()};
-    if(cmPull)cmPull.onclick=()=>{cloudMenu.classList.remove('show');Cloud.sync().then(ok=>{if(ok)render()})};
-  }
+  // Cloud icon — just indicator, no menu
+  // All sync is automatic: save → upload, login → download
   bindTabContent();
 }
 
