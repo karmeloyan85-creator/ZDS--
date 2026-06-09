@@ -1350,7 +1350,20 @@ function bindMonthly(){
         advances[inp.dataset.id]=parseFloat(inp.value)||0;
         LS.set('zp_advances_'+state.month,advances);
         cloudSet('zp_advances_'+state.month,advances);
-        render();
+        toast('☁️ Аванс сохранён');
+        // Пересчитываем «К выдаче» без перерендера всей страницы
+        document.querySelectorAll('.advance-input').forEach(a=>{
+ const card=a.closest('.emp-card');
+ if(!card)return;
+ const empId=parseInt(a.dataset.id);
+ const advVal=parseFloat(a.value)||0;
+ const salaryEl=card.querySelector('.val-money');
+ const toPayEl=card.querySelector('.val-total');
+ if(salaryEl&&toPayEl){
+   const salary=parseInt(salaryEl.textContent.replace(/\s/g,''))||0;
+   toPayEl.textContent=(salary-advVal).toLocaleString('ru');
+ }
+});
       };
     });
   }
