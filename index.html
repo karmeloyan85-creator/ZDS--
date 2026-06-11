@@ -899,6 +899,7 @@ function addHistory(text){
   LS.set('zp_history',h);
 }
 
+function getCurrentEmp(){return state.empId?getEmps().find(e=>e.id===state.empId):null}
 function getEmps(){return LS.get('zp_employees',[])}
 function getActiveEmps(){return getEmps().filter(e=>e.active)}
 function getPositions(){return LS.get('zp_positions',[])}
@@ -1071,7 +1072,18 @@ function getTabs(){
     {id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'},
     {id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'}
   ];
-  return[{id:'report',icon:'<i data-feather="file-text" data-icon-color="#4A90D9"></i>',label:'Мой отчёт'}];
+  // Custom role (administrators with permissions)
+  const tabs=[{id:'report',icon:'<i data-feather="file-text" data-icon-color="#4A90D9"></i>',label:'Мой отчёт'}];
+  const emp=getCurrentEmp();
+  if(emp&&emp.permissions){
+    if(emp.permissions.canInput){
+      tabs.unshift({id:'daily',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'Ввод за день'});
+    }
+    if(emp.permissions.canFillReport){
+      tabs.push({id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'});
+    }
+  }
+  return tabs;
 }
 
 function getTabLabel(tabId){
