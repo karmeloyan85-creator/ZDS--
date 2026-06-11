@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<script>
+// This page tests if Supabase is accessible from the browser
+const BASE = 'https://mczykdnvwnyhsxxcuskc.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw';
+
+async function test() {
+  const log = document.getElementById('log');
+  log.textContent = 'Testing...';
+  try {
+    const r = await fetch(BASE + '/rest/v1/employees?select=emp_id&limit=1', {
+      headers: {
+        'apikey': KEY,
+        'Authorization': '***' + KEY
+      }
+    });
+    log.textContent = 'Status: ' + r.status + '\nBody: ' + await r.text();
+  } catch(e) {
+    log.textContent = 'ERROR: ' + e.message;
+  }
+}
+test();
+</script>
+</head><body><h2>Supabase Connection Test</h2><pre id="log"></pre></body></html>
