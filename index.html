@@ -457,28 +457,16 @@ const Cloud={
           id:parseInt(e.emp_id),
           name:e.name,
           position:e.position||'',
-          calcType: e.rate>=100?'fixed_day':(e.rate>=1000?'fixed_month':'percent'),
-          fixedDay:e.rate>=100&&e.rate<1000?e.rate:0,
-          fixedMonth:e.rate>=1000?e.rate:0,
-          percent:e.rate<100?e.rate:0,
-          active:e.is_active!==false,
-          appRole:'none'
+          calcType:e.calc_type||'fixed_day',
+          fixedDay:e.fixed_day||0,
+          fixedMonth:e.fixed_month||0,
+          percent:e.percent||0,
+          active:e.is_active!==false&&e.active!==false,
+          appRole:e.app_role||'',
+          login:e.login||'',
+          pass:e.pass||'',
+          permissions:e.permissions||''
         }));
-        // Preserve existing appRole/login/pass/permissions from localStorage
-        const oldEmps=LS.get('zp_employees',[]);
-        appEmps.forEach(ae=>{
-          const old=oldEmps.find(o=>o.id===ae.id);
-          if(old){
-            if(old.appRole)ae.appRole=old.appRole;
-            if(old.login)ae.login=old.login;
-            if(old.pass)ae.pass=old.pass;
-            if(old.permissions)ae.permissions=old.permissions;
-            if(old.calcType)ae.calcType=old.calcType;
-            if(old.fixedDay!==undefined)ae.fixedDay=old.fixedDay;
-            if(old.fixedMonth!==undefined)ae.fixedMonth=old.fixedMonth;
-            if(old.percent!==undefined)ae.percent=old.percent;
-          }
-        });
         LS.set('zp_employees',appEmps);
       }
 
@@ -569,8 +557,16 @@ const Cloud={
         emp_id:String(e.id),
         name:e.name,
         position:e.position||'',
-        rate:e.rate||e.percent||e.fixedDay||e.fixedMonth||0,
-        is_active:e.active!==false
+        rate:e.fixedDay||e.fixedMonth||e.percent||0,
+        calc_type:e.calcType||'fixed_day',
+        fixed_day:e.fixedDay||0,
+        fixed_month:e.fixedMonth||0,
+        percent:e.percent||0,
+        active:e.active!==false,
+        app_role:e.appRole||'',
+        login:e.login||'',
+        pass:e.pass||'',
+        permissions:e.permissions||''
       }));
 
       // Collect daily records
@@ -682,7 +678,10 @@ const Cloud={
         const emps=LS.get('zp_employees',[]);
         const records=emps.map(e=>({
           emp_id:String(e.id),name:e.name,position:e.position||'',
-          rate:e.rate||e.percent||e.fixedDay||e.fixedMonth||0,is_active:e.active!==false
+          rate:e.fixedDay||e.fixedMonth||e.percent||0,is_active:e.active!==false,
+          calc_type:e.calcType||'fixed_day',fixed_day:e.fixedDay||0,fixed_month:e.fixedMonth||0,
+          percent:e.percent||0,active:e.active!==false,app_role:e.appRole||'',
+          login:e.login||'',pass:e.pass||'',permissions:e.permissions||''
         }));
         if(records.length>0)await fetch(this._restUrl('employees'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
       }
