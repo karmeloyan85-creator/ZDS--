@@ -479,22 +479,39 @@ const Cloud={
       const schedRes=await fetch(this._restUrl('schedule')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
       const schedule=schedRes.ok?await schedRes.json():[];
 
-      // REPLACE employees — convert Supabase format to app format
+      // MERGE employees — don't overwrite local edits (names, passwords, permissions)
       if(employees&&employees.length>0){
-        const appEmps=employees.map(e=>({
-          id:parseInt(e.emp_id),
-          name:e.name,
-          position:e.position||'',
-          calcType:e.calc_type||'fixed_day',
-          fixedDay:e.fixed_day||0,
-          fixedMonth:e.fixed_month||0,
-          percent:e.percent||0,
-          active:e.is_active!==false&&e.active!==false,
-          appRole:e.app_role||'',
-          login:e.login||'',
-          pass:e.pass||'',
-          permissions:parsePerms(e.permissions||e.app_permissions||'')
-        }));
+        const localEmps=LS.get('zp_employees',[]);
+        const appEmps=employees.map(e=>{
+          const local=localEmps.find(l=>l.id===parseInt(e.emp_id));
+          if(local){
+            // Local exists — keep local name, login, pass, permissions
+            // Only update calc fields from Supabase
+            return{
+              ...local,
+              calcType:e.calc_type||local.calcType||'fixed_day',
+              fixedDay:e.fixed_day||local.fixedDay||0,
+              fixedMonth:e.fixed_month||local.fixedMonth||0,
+              percent:e.percent||local.percent||0
+            };
+          }else{
+            // New employee from Supabase
+            return{
+              id:parseInt(e.emp_id),
+              name:e.name,
+              position:e.position||'',
+              calcType:e.calc_type||'fixed_day',
+              fixedDay:e.fixed_day||0,
+              fixedMonth:e.fixed_month||0,
+              percent:e.percent||0,
+              active:e.is_active!==false&&e.active!==false,
+              appRole:e.app_role||'',
+              login:e.login||'',
+              pass:e.pass||'',
+              permissions:parsePerms(e.permissions||e.app_permissions||'')
+            };
+          }
+        });
         LS.set('zp_employees',appEmps);
       }
 
