@@ -827,18 +827,31 @@ function initDefaults(){
     LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
   }
 }
-const APP_VERSION='4.0';
+const APP_VERSION='4.2';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
-  // Собираем ключи перед удалением (не итерировать localStorage во время модификации)
+  // Сохраняем сотрудников и пароли перед очисткой
+  const savedEmps=LS.get('zp_employees',null);
+  const savedCreds=LS.get('zp_creds',null);
+  const savedAdvances={};
+  const savedCards={};
   const keysToRemove=[];
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_'))keysToRemove.push(k)}
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith('zp_'))keysToRemove.push(k);
+    if(k.startsWith('zp_advances_')){savedAdvances[k]=LS.get(k,{});keysToRemove.push(k)}
+    if(k.startsWith('zp_cards_')){savedCards[k]=LS.get(k,{});keysToRemove.push(k)}
+  }
   keysToRemove.forEach(k=>localStorage.removeItem(k));
+  // Восстанавливаем сотрудников и пароли
+  if(savedEmps)LS.set('zp_employees',savedEmps);
+  if(savedCreds)LS.set('zp_creds',savedCreds);
+  Object.entries(savedAdvances).forEach(([k,v])=>LS.set(k,v));
+  Object.entries(savedCards).forEach(([k,v])=>LS.set(k,v));
   LS.set('zp_version',APP_VERSION);
-  console.log('App updated to v'+APP_VERSION+', full cache cleaned');
+  console.log('App updated to v'+APP_VERSION+', preserved employees and passwords');
 }
-// Всегда принудительно обновляем creds
-LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
+// Устанавливаем creds только при первом запуске (не перезаписывать пользовательские пароли)
 
 // Инициализация ПОСЛЕ очистки кэша
 initDefaults();
