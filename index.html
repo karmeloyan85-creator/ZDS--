@@ -833,6 +833,8 @@ if(savedVersion!==APP_VERSION){
 LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
 
 // Встроенные данные за май (оригинал) — если в кэше пусто
+try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
+
 function seedMayData(){
   if(LS.get('zp_daily_2026-05-01',null)){return} // Данные уже есть — не перезаписываем
   const seed=SEED_DATA_MAY;
