@@ -802,18 +802,19 @@ initDefaults();
 // try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
 
 // Автоочистка при обновлении версии
-const APP_VERSION='3.0';
+const APP_VERSION='3.1';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
-  // Очищаем только daily данные и advances — сотрудники оставляем
+  // Полная очистка кэша при обновлении — Supabase источник правды
   for(let i=localStorage.length-1;i>=0;i--){
     const k=localStorage.key(i);
-    if(k.startsWith('zp_daily_')||k.startsWith('zp_advances_')||k.startsWith('zp_schedule_')){
-      localStorage.removeItem(k);
-    }
+    if(k.startsWith('zp_'))localStorage.removeItem(k);
   }
+  // Сбросить старые настройки облака (Google Apps Script)
+  LS.del('zp_cloud_url');
+  LS.del('zp_cloud_key');
   LS.set('zp_version',APP_VERSION);
-  console.log('App updated to v'+APP_VERSION+', cache cleaned');
+  console.log('App updated to v'+APP_VERSION+', full cache cleaned');
 }
 
 // Встроенные данные за май (оригинал) — если в кэше пусто
