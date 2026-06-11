@@ -802,7 +802,7 @@ initDefaults();
 // try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
 
 // Автоочистка при обновлении версии
-const APP_VERSION='3.1';
+const APP_VERSION='3.2';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
   // Полная очистка кэша при обновлении — Supabase источник правды
@@ -810,12 +810,11 @@ if(savedVersion!==APP_VERSION){
     const k=localStorage.key(i);
     if(k.startsWith('zp_'))localStorage.removeItem(k);
   }
-  // Сбросить старые настройки облака (Google Apps Script)
-  LS.del('zp_cloud_url');
-  LS.del('zp_cloud_key');
   LS.set('zp_version',APP_VERSION);
   console.log('App updated to v'+APP_VERSION+', full cache cleaned');
 }
+// Всегда принудительно обновляем creds при загрузке (Supabase источник правды)
+LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
 
 // Встроенные данные за май (оригинал) — если в кэше пусто
 function seedMayData(){
