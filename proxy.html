@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html><head><meta charset="UTF-8">
-<title>Test</title>
-</head><body style="font-family:monospace;padding:20px;font-size:16px">
-<div id="s">Starting...</div>
-<div id="r" style="margin-top:10px;white-space:pre-wrap"></div>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Test2</title>
+</head><body style="font-family:monospace;padding:20px;font-size:16px;background:#fff">
+<h2 id="h">Loading...</h2>
+<pre id="log" style="background:#f0f0f0;padding:10px;white-space:pre-wrap"></pre>
 <script>
-var s=document.getElementById('s');
-var r=document.getElementById('r');
-s.textContent='1. Script loaded OK';
+function log(msg){document.getElementById('log').textContent+=msg+'\n'}
+log('Step 1: JS works');
+log('Step 2: navigator.onLine=' + navigator.onLine);
+log('Step 3: Testing fetch to Supabase...');
 
-var url='https://mczykdnvwnyhsxxcuskc.supabase.co/rest/v1/employees?select=emp_id&limit=1';
 var key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw';
 
-s.textContent='2. Fetching '+url.substring(0,60)+'...';
-
-fetch(url,{
+fetch('https://mczykdnvwnyhsxxcuskc.supabase.co/rest/v1/employees?select=emp_id&limit=1',{
   headers:{'apikey':key}
-}).then(function(resp){
-  s.textContent='3. Status: '+resp.status;
-  return resp.text();
-}).then(function(body){
-  r.textContent='BODY:\n'+body;
-  s.textContent='4. Done!';
-}).catch(function(err){
-  s.textContent='ERROR: '+err.message;
-  r.textContent='Details: '+err.toString();
+}).then(function(r){
+  log('Step 4: HTTP '+r.status);
+  return r.text();
+}).then(function(t){
+  log('Step 5: '+t);
+  document.getElementById('h').textContent='Done!';
+}).catch(function(e){
+  log('ERROR: '+e.message);
+  document.getElementById('h').textContent='Failed';
 });
 </script>
 </body></html>
