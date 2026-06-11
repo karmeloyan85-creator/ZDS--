@@ -498,6 +498,15 @@ const Cloud={
           byMonth[r.month][r.emp_id]=r.amount||0;
         });
         Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_advances_'+m,v));
+        // Extract card_amounts
+        const cardsByMonth={};
+        advances.forEach(r=>{
+          if(r.card_amount&&r.card_amount>0){
+            if(!cardsByMonth[r.month])cardsByMonth[r.month]={};
+            cardsByMonth[r.month][r.emp_id]=r.card_amount;
+          }
+        });
+        Object.entries(cardsByMonth).forEach(([m,v])=>LS.set('zp_cards_'+m,v));
       }
 
       // REPLACE schedule
@@ -655,6 +664,14 @@ const Cloud={
           records.push({date,emp_id:eid,worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
         });
         if(records.length>0)await fetch(this._restUrl('daily'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key.startsWith('zp_cards_')){
+        const month=key.replace('zp_cards_','');
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,v])=>{
+          records.push({emp_id:eid,month,card_amount:v||0});
+        });
+        if(records.length>0)await fetch(this._restUrl('advances'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
       }else if(key.startsWith('zp_advances_')){
         const month=key.replace('zp_advances_','');
         const data=LS.get(key,{});
@@ -1331,6 +1348,7 @@ function renderMonthly(){
   const days=monthDays(state.month);
   const emps=getActiveEmps();
   const advances=LS.get('zp_advances_'+state.month,{});
+  const cards=LS.get('zp_cards_'+state.month,{});
   const isOwner=state.role==='owner';
   const isManager=state.role==='manager';
   let totalAll=0;
@@ -1357,7 +1375,8 @@ function renderMonthly(){
       salary=calcSalary({...emp,_ownRevenue:totalOwnRevenue},totalWorked,totalOwnRevenue);
     }
     const advance=advances[emp.id]||0;
-    const toPay=salary-advance;
+    const card=cards[emp.id]||0;
+    const toPay=salary-advance-card;
     totalAll+=toPay;
     totalRevAll+=totalOwnRevenue;
 
@@ -1373,6 +1392,7 @@ function renderMonthly(){
         <div><div class="label">Пациентов</div><div class="val">${totalPatients}</div></div>
         ${showSalary?`<div><div class="label">Начислено ₽</div><div class="val val-money">${salary.toLocaleString('ru')}</div></div>`:''}
         ${showAdvances?`<div><div class="label">Аванс ₽</div><div class="val">${isOwner?`<input type="number" class="advance-input" data-id="${emp.id}" value="${advance}" min="0" style="width:80px">`:(advance.toLocaleString('ru')+' ₽')}</div></div>`:''}
+        ${showAdvances?`<div><div class="label">На карточку ₽</div><div class="val">${isOwner?`<input type="number" class="card-input" data-id="${emp.id}" value="${card}" min="0" style="width:80px">`:(card.toLocaleString('ru')+' ₽')}</div></div>`:''}
         ${showSalary?`<div><div class="label">К выдаче ₽</div><div class="val val-total">${toPay.toLocaleString('ru')}</div></div>`:''}
       </div>
     </div>`;
@@ -1409,36 +1429,54 @@ function bindMonthly(){
         LS.set('zp_advances_'+state.month,advances);
         cloudSet('zp_advances_'+state.month,advances);
         toast('☁️ Аванс сохранён');
-        // Пересчитываем «К выдаче» без перерендера всей страницы
-        document.querySelectorAll('.advance-input').forEach(a=>{
- const card=a.closest('.emp-card');
- if(!card)return;
- const empId=parseInt(a.dataset.id);
- const advVal=parseFloat(a.value)||0;
- const salaryEl=card.querySelector('.val-money');
- const toPayEl=card.querySelector('.val-total');
- if(salaryEl&&toPayEl){
-   const salary=parseInt(salaryEl.textContent.replace(/\s/g,''))||0;
-   toPayEl.textContent=(salary-advVal).toLocaleString('ru');
- }
-});
+        recalcToPay();
+      };
+    });
+    document.querySelectorAll('.card-input').forEach(inp=>{
+      inp.onchange=()=>{
+        const cards=LS.get('zp_cards_'+state.month,{});
+        cards[inp.dataset.id]=parseFloat(inp.value)||0;
+        LS.set('zp_cards_'+state.month,cards);
+        cloudSet('zp_cards_'+state.month,cards);
+        toast('☁️ На карточку сохранено');
+        recalcToPay();
       };
     });
   }
   if(exp)exp.onclick=()=>exportCSV();
 }
 
+function recalcToPay(){
+  const advances=LS.get('zp_advances_'+state.month,{});
+  const cards=LS.get('zp_cards_'+state.month,{});
+  document.querySelectorAll('.emp-card').forEach(card=>{
+    const advInp=card.querySelector('.advance-input');
+    const cardInp=card.querySelector('.card-input');
+    const salaryEl=card.querySelector('.val-money');
+    const toPayEl=card.querySelector('.val-total');
+    if(salaryEl&&toPayEl){
+      const salary=parseInt(salaryEl.textContent.replace(/\s/g,''))||0;
+      const empId=advInp?advInp.dataset.id:(cardInp?cardInp.dataset.id:null);
+      const adv=advInp?parseFloat(advInp.value)||0:(advances[empId]||0);
+      const crd=cardInp?parseFloat(cardInp.value)||0:(cards[empId]||0);
+      toPayEl.textContent=(salary-adv-crd).toLocaleString('ru');
+    }
+  });
+}
+
 function exportCSV(){
   const days=monthDays(state.month);
   const emps=getActiveEmps();
   const advances=LS.get('zp_advances_'+state.month,{});
-  let csv='\uFEFFСотрудник;Должность;Дней;Пациентов;Выручка;Начислено;Аванс;К выдаче\n';
+  let csv='\uFEFFСотрудник;Должность;Дней;Пациентов;Выручка;Начислено;Аванс;На карточку;К выдаче\n';
+  const cards=LS.get('zp_cards_'+state.month,{});
   for(const emp of emps){
     let tw=0,tp=0,trv=0;
     for(const day of days){const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});tw+=d.worked||0;tp+=d.patients||0;trv+=d.revenue||0}
     const sal=calcSalary({...emp,_ownRevenue:trv},tw,trv);
     const adv=advances[emp.id]||0;
-    csv+=`${emp.name};${emp.position};${tw};${tp};${trv};${sal};${adv};${sal-adv}\n`;
+    const crd=cards[emp.id]||0;
+    csv+=`${emp.name};${emp.position};${tw};${tp};${trv};${sal};${adv};${crd};${sal-adv-crd}\n`;
   }
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='payroll_'+state.month+'.csv';a.click();
