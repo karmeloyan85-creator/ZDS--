@@ -1,4 +1,2593 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=./app.html">
-<script>window.location.href='./app.html?v='+Date.now();</script>
-</head><body></body></html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<title>Зарплаты — Земский доктор-стоматолог</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700}
+:root{
+  --bg:#f0f2f5;
+  --bg-light:#ffffff;
+  --bg-lighter:#f7f8fa;
+  --bg-sidebar:#0d1520;
+  --surface:#2b5278;
+  --accent:#4f8cf7;
+  --accent-dark:#3a75d9;
+  --accent-hover:#5e9bff;
+  --green:#22c55e;
+  --yellow:#f59e0b;
+  --red:#ef4444;
+  --text:#1e293b;
+  --text-dim:#64748b;
+  --text-muted:#94a3b8;
+  --text-sidebar:#94a3b8;
+  --text-sidebar-active:#ffffff;
+  --bubble-out:#ffffff;
+  --bubble-in:#f0f2f5;
+  --border:rgba(0,0,0,0.08);
+  --input-bg:#ffffff;
+  --input-border:#d1d9e0;
+  --hover:rgba(0,0,0,0.04);
+  --radius:12px;
+  --radius-sm:8px;
+  --radius-lg:16px;
+  --card-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sidebar-width:250px;
+  --sidebar-collapsed:0px;
+  /* Aliases for compatibility */
+  --card-solid:var(--bg-light);
+  --card:var(--bg-light);
+  --text2:var(--text-dim);
+  --shadow:var(--card-shadow);
+  --radius-btn:var(--radius-sm);
+}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;background:linear-gradient(145deg,#e8ecf1 0%,#f0f4f8 50%,#e2e8f0 100%);background-attachment:fixed;color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* Login */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#0d1520 0%,#1a2940 50%,#0d1520 100%)}
+.login-box{background:#ffffff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:48px 36px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.login-box h2{margin-bottom:6px;color:var(--text);font-size:20px;font-weight:600}
+.login-box .login-sub{margin-bottom:28px;color:var(--text-muted);font-size:13px}
+.login-box input{width:100%;padding:14px 16px;margin:8px 0;background:var(--bg-lighter);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;transition:border .2s}
+.login-box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,247,0.15)}
+.login-box button{width:100%;padding:14px;margin-top:20px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:15px;font-weight:600;transition:background .2s}
+.login-box button:hover{background:var(--accent-hover)}
+
+/* App Layout */
+.app-layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:var(--sidebar-width);background:var(--bg-sidebar);position:fixed;top:0;left:0;bottom:0;z-index:1000;display:flex;flex-direction:column;transition:transform .3s ease;overflow-y:auto;overflow-x:hidden}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sidebar-logo .logo-name{color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-sub{color:var(--text-sidebar);font-size:11px;margin-top:4px;padding-left:30px}
+.sidebar-nav{flex:1;padding:12px 0}
+.sidebar-nav .nav-section{padding:8px 20px 6px;font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.25);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--text-sidebar);font-size:14px;cursor:pointer;transition:all .15s;text-decoration:none;position:relative;border-radius:0;margin:1px 8px;border-radius:var(--radius-sm);width:calc(100% - 16px)}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#d1d5db}
+.nav-item.active{background:rgba(79,140,247,0.15);color:var(--text-sidebar-active);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 2px 2px 0}
+.nav-item .nav-icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.06)}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sidebar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#818cf8);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sidebar-user-info .su-name{color:#fff;font-size:13px;font-weight:600;line-height:1.3}
+.sidebar-user-info .su-role{color:var(--text-sidebar);font-size:11px}
+.sidebar-logout{display:flex;align-items:center;gap:8px;color:var(--red);font-size:13px;cursor:pointer;padding:8px 12px;border-radius:var(--radius-sm);transition:background .15s;background:none;border:none;width:100%;text-align:left}
+.sidebar-logout:hover{background:rgba(239,68,68,0.1)}
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;opacity:0;transition:opacity .3s}
+.sidebar-overlay.show{display:block;opacity:1}
+
+/* Main content area */
+.main-wrap{margin-left:var(--sidebar-width);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.main-header{background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.3);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100}
+.main-header .mh-left{display:flex;align-items:center;gap:14px}
+.main-header .hamburger{display:none;background:none;border:none;font-size:44px;cursor:pointer;color:var(--text);padding:4px;line-height:1}
+.main-header h1{font-size:17px;color:var(--text);font-weight:700}
+.main-header .mh-right{display:flex;align-items:center;gap:10px}
+.main-header .mh-search{position:relative}
+.main-header .mh-search input{width:220px;padding:8px 12px 8px 34px;background:var(--bg-lighter);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;transition:all .2s}
+.main-header .mh-search input:focus{outline:none;border-color:var(--accent);width:280px;box-shadow:0 0 0 3px rgba(79,140,247,0.1)}
+.main-header .mh-search .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-muted)}
+.main-header button{background:none;border:none;color:var(--text-dim);padding:8px;border-radius:var(--radius-sm);cursor:pointer;font-size:15px;transition:all .15s}
+.main-header button:hover{color:var(--accent);background:var(--hover)}
+
+.main-content{padding:24px;flex:1;max-width:1200px;width:100%}
+
+/* Cards with glassmorphism */
+.card{background:rgba(255,255,255,0.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.3);border-radius:var(--radius-lg);padding:22px;margin-bottom:18px;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+.card h3{margin-bottom:14px;color:var(--text);font-size:16px;font-weight:700}
+.card h4{margin-bottom:8px;color:var(--text);font-size:14px;font-weight:600}
+
+/* Metric cards for dashboard */
+.metric-card{background:rgba(255,255,255,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:var(--radius-lg);padding:22px;box-shadow:0 4px 20px rgba(0,0,0,0.06);transition:transform .2s,box-shadow .2s}
+.metric-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.1)}
+.metric-card .mc-label{font-size:13px;color:var(--text-dim);margin-bottom:8px}
+.metric-card .mc-value{font-size:28px;font-weight:700}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+th{color:var(--text-dim);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px;background:var(--bg-lighter)}
+tr:hover td{background:var(--hover)}
+
+/* Inputs */
+input[type=number],input[type=text],input[type=time],input[type=password],input[type=date],input[type=search],select,textarea{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);color:var(--text);padding:8px 12px;font-size:14px;width:100%}
+input[type=number]{width:90px}
+input[type=time]{width:100px}
+/* Tom Select overrides */
+.ts-wrapper.single .ts-control{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);color:var(--text);padding:8px 12px;font-size:14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;min-height:38px;box-shadow:none}
+.ts-wrapper.single .ts-control::after{content:'';border:5px solid transparent;border-top:6px solid var(--text-dim);margin-right:10px;right:12px;top:50%}
+.ts-wrapper.single.focus .ts-control{border-color:var(--accent);box-shadow:0 0 0 2px rgba(79,140,247,0.2)}
+.ts-dropdown{background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);box-shadow:0 4px 12px rgba(0,0,0,0.1);max-height:220px;overflow-y:auto;z-index:9999}
+.ts-dropdown .option,.ts-dropdown .optgroup .option{padding:8px 12px;font-size:13px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;color:var(--text);cursor:pointer}
+.ts-dropdown .option:hover,.ts-dropdown .option.active{background:var(--hover);color:var(--text)}
+.ts-dropdown .option.selected{background:rgba(79,140,247,0.1);color:var(--accent)}
+.ts-dropdown .no-results{padding:8px 12px;color:var(--text-dim);font-size:13px}
+.ts-wrapper .ts-control>input{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;color:var(--text)}
+body.dark .ts-wrapper.single .ts-control{background:var(--bg-lighter);border-color:var(--border);color:var(--text)}
+body.dark .ts-dropdown{background:var(--bg-lighter);border-color:var(--border);color:var(--text)}
+body.dark .ts-dropdown .option:hover{background:var(--hover)}
+.ts-clear{color:var(--text-muted)}
+select{cursor:pointer}
+textarea{resize:vertical;min-height:60px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,140,247,0.1)}
+
+/* Buttons */
+.btn{padding:8px 16px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-warning{background:var(--yellow);color:#1a1a1a}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text-dim)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Month nav */
+.month-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.month-nav button{background:var(--bg-lighter);border:none;color:var(--text-dim);padding:7px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;transition:all .15s}
+.month-nav button:hover{color:var(--accent);background:var(--hover)}
+.month-nav span{font-size:15px;font-weight:600;min-width:160px;text-align:center}
+
+/* Employee cards */
+.emp-card{background:rgba(255,255,255,0.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,0.06)}
+.emp-card:hover{border-color:var(--accent);box-shadow:0 6px 30px rgba(79,140,247,0.12);transform:translateY(-2px)}
+.emp-card .emp-name{font-weight:600;font-size:15px;margin-bottom:2px}
+.emp-card .emp-pos{color:var(--text-dim);font-size:13px;margin-bottom:12px}
+.emp-card .emp-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;font-size:14px}
+.emp-card .emp-stats div{background:var(--bg-lighter);padding:10px;border-radius:var(--radius-sm)}
+.emp-card .emp-stats .label{color:var(--text-dim);font-size:12px}
+.emp-card .emp-stats .val{font-weight:600;font-size:15px}
+.val-money{color:var(--green)}
+.val-total{color:var(--accent);font-size:17px!important}
+.fot-total{text-align:right;padding:14px;font-size:18px;font-weight:700;color:var(--accent)}
+.row-btns{display:flex;gap:4px;flex-wrap:wrap}
+.table-wrap{overflow-x:auto}
+
+/* Settings */
+.settings-section{margin-bottom:20px}
+.settings-section h3,.settings-section h4{margin-bottom:10px;color:var(--accent);font-size:14px}
+.settings-row{display:flex;gap:10px;align-items:end;margin-bottom:8px;flex-wrap:wrap}
+.settings-row label{font-size:12px;color:var(--text-dim);min-width:100px}
+.settings-row input,.settings-row select{max-width:200px}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);border:1px solid var(--accent);color:var(--accent);padding:10px 18px;border-radius:var(--radius);font-size:13px;z-index:9999;opacity:0;transition:opacity .3s}
+.toast.show{opacity:1}
+.empty-msg{color:var(--text-muted);text-align:center;padding:24px;font-size:13px}
+.position-tag{display:inline-block;background:var(--bg-lighter);border:none;padding:4px 10px;border-radius:var(--radius-sm);margin:3px;font-size:12px;color:var(--text)}
+.position-tag .del-pos{cursor:pointer;color:var(--red);margin-left:5px}
+.hidden{display:none!important}
+
+/* Patient type toggle */
+.patient-type-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;user-select:none;padding:3px 8px;border-radius:12px;transition:all .15s;font-weight:600}
+.patient-type-toggle.is-primary{background:rgba(34,197,94,0.15);color:#16a34a}
+.patient-type-toggle.is-secondary{background:rgba(245,158,11,0.15);color:#b45309}
+.patient-type-toggle:hover{opacity:.8}
+
+/* Feather Icons — global color inheritance */
+svg.feather,[data-feather] svg,.feather{stroke:currentColor!important;fill:none!important}
+
+/* Feather icon color classes (applied to parent containers) */
+.feather-brand{color:var(--accent)}
+.nav-icon [data-icon-color="#4A90D9"],.nav-icon .ic-blue{color:#4A90D9}
+.nav-icon [data-icon-color="#8B5CF6"],.nav-icon .ic-purple{color:#8B5CF6}
+.nav-icon [data-icon-color="#22C55E"],.nav-icon .ic-green{color:#22C55E}
+.nav-icon [data-icon-color="#F59E0B"],.nav-icon .ic-yellow{color:#F59E0B}
+.nav-icon [data-icon-color="#64748B"],.nav-icon .ic-gray{color:#64748B}
+.cloud-icon{color:#64748B}
+.cloud-icon.green{color:#22C55E}
+.cloud-icon.yellow{color:#F59E0B}
+.cloud-icon.red{color:#ef4444}
+.metric-card [data-icon-color="#22C55E"]{color:#22C55E}
+.metric-card [data-icon-color="#4A90D9"]{color:#4A90D9}
+.metric-card [data-icon-color="#F59E0B"]{color:#F59E0B}
+.metric-card [data-icon-color="#8B5CF6"]{color:#8B5CF6}
+.btn [data-icon-color="#fff"]{color:#fff}
+.btn [data-icon-color="#64748B"]{color:#64748B}
+[data-icon-color="#ef4444"]{color:#ef4444}
+[data-icon-color="#F59E0B"]{color:#F59E0B}
+.sidebar-avatar svg.feather{color:#fff}
+
+/* Schedule Calendar */
+.schedule-wrap{overflow-x:auto;margin-top:14px}
+.schedule-table{border-collapse:collapse;font-size:12px;min-width:100%}
+.schedule-table th,.schedule-table td{padding:4px 6px;text-align:center;border:1px solid var(--border);min-width:36px;max-width:44px;height:36px;vertical-align:middle}
+.schedule-table th.name-col{position:sticky;left:0;z-index:2;min-width:160px;max-width:180px;text-align:left;background:var(--bg-light);font-weight:600;color:var(--text);font-size:12px;border-right:2px solid var(--border)}
+.schedule-table td.name-col{position:sticky;left:0;z-index:2;min-width:160px;max-width:180px;text-align:left;background:var(--bg-light);font-weight:500;font-size:12px;border-right:2px solid var(--border)}
+.schedule-table .day-header{font-size:11px;position:relative}
+.schedule-table .day-header.weekend{background:rgba(239,68,68,0.06);color:var(--red)}
+.schedule-table .day-header.today{background:rgba(79,140,247,0.1);box-shadow:inset 0 -2px 0 var(--accent)}
+.schedule-table .day-num{font-weight:600;font-size:12px}
+.schedule-table .day-name{font-size:10px;color:var(--text-muted)}
+.schedule-table .shift-cell{cursor:pointer;transition:background .15s;position:relative}
+.schedule-table .shift-cell:hover{background:rgba(79,140,247,0.08)}
+.schedule-table .shift-cell.working{background:rgba(34,197,94,0.1)}.schedule-table .shift-cell.vacation{background:rgba(79,140,247,0.08);color:var(--accent)}.schedule-table .shift-cell.practice{background:rgba(168,85,247,0.08);color:#a855f7}.schedule-table .shift-cell.weekend{background:rgba(239,68,68,0.04)}.schedule-table .shift-cell.weekend.off{background:rgba(239,68,68,0.1);color:var(--red)}.schedule-table .shift-cell .shift-label{font-size:11px;font-weight:600}.schedule-table .shift-cell .shift-label.s-work{color:var(--green)}.schedule-table .shift-cell .shift-label.s-vacation{color:var(--accent)}.schedule-table .shift-cell .shift-label.s-off{color:var(--red)}.schedule-table .shift-cell .shift-label.s-practice{color:#a855f7}.schedule-table .day-header.today-col{outline:2px solid var(--accent);outline-offset:-2px;border-radius:2px}
+.schedule-table .shift-cell.today-cell{outline:2px solid var(--accent);outline-offset:-2px;border-radius:2px}
+.schedule-controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+
+/* Role badge */
+.role-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.role-badge.owner{background:rgba(79,140,247,0.12);color:var(--accent)}
+.role-badge.manager{background:rgba(34,197,94,0.12);color:#16a34a}
+.role-badge.admin{background:rgba(245,158,11,0.12);color:#b45309}
+.role-badge.none{background:var(--bg-lighter);color:var(--text-muted)}
+
+/* Cloud sync indicator */
+.cloud-icon{font-size:18px;cursor:pointer;position:relative;transition:opacity .3s;user-select:none;line-height:1}
+.cloud-icon.green{filter:none}.cloud-icon.yellow{animation:cloud-pulse 2s infinite}@keyframes cloud-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.cloud-icon.red{opacity:.7}
+.cloud-menu{position:absolute;top:100%;right:0;background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px;z-index:9999;min-width:180px;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.cloud-menu.show{display:block}
+.cloud-menu-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text);transition:background .15s;white-space:nowrap}
+.cloud-menu-item:hover{background:var(--hover)}
+.cloud-menu-item .cmi-status{font-size:11px;color:var(--text-muted);margin-left:auto}
+.cloud-status-bar{font-size:11px;color:var(--text-muted);padding:4px 8px;border-top:1px solid var(--border);margin-top:4px}
+.cloud-config{background:var(--bg-lighter);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.cloud-config h4{color:var(--accent);font-size:14px;margin-bottom:12px}
+.cloud-config .cc-row{display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.cloud-config .cc-row label{font-size:12px;color:var(--text-dim);min-width:120px}
+.cloud-config .cc-row input{max-width:400px}
+.cloud-config .cc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cloud-syncing{color:var(--yellow)!important;pointer-events:none}
+
+/* DARK THEME */
+body.dark{
+  --bg:#0a0e18;
+  --bg-light:rgba(20,28,45,0.85);
+  --bg-lighter:rgba(30,40,60,0.85);
+  --input-bg:rgba(25,35,55,0.9);
+  --input-border:rgba(60,75,100,0.5);
+  --bubble-out:rgba(20,28,45,0.85);
+  --bubble-in:rgba(30,40,60,0.85);
+  --border:rgba(100,120,160,0.15);
+  --text:#f1f5f9;
+  --text-dim:#b0bdd0;
+  --text-muted:#7b8da5;
+  --hover:rgba(255,255,255,0.06);
+  --card-shadow:0 4px 30px rgba(0,0,0,0.4);
+  background:linear-gradient(145deg,#0a0e18 0%,#111827 50%,#0a0e18 100%);background-attachment:fixed;
+}
+body.dark .main-header{background:rgba(10,14,24,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom-color:rgba(100,120,160,0.12)}
+body.dark .main-header .mh-search input{background:rgba(30,40,60,0.9);border-color:rgba(60,75,100,0.4);color:var(--text)}
+body.dark .main-header .mh-search input:focus{box-shadow:0 0 0 3px rgba(79,140,247,0.2)}
+body.dark .metric-card{background:rgba(20,28,45,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(100,120,160,0.18);border-radius:var(--radius-lg);box-shadow:0 4px 24px rgba(0,0,0,0.4)}
+body.dark .metric-card:hover{box-shadow:0 8px 36px rgba(79,140,247,0.12);transform:translateY(-3px)}
+body.dark .metric-card .mc-value{color:#f1f5f9}
+body.dark .emp-card{background:rgba(20,28,45,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(100,120,160,0.18);border-radius:var(--radius-lg);box-shadow:0 4px 24px rgba(0,0,0,0.4)}
+body.dark .emp-card:hover{border-color:rgba(79,140,247,0.4);box-shadow:0 8px 30px rgba(79,140,247,0.15);transform:translateY(-2px)}
+body.dark .emp-card .emp-name{color:#f1f5f9}
+body.dark .emp-card .emp-pos{color:#b0bdd0}
+body.dark .emp-card .emp-stats .val{color:#f1f5f9}
+body.dark .emp-card .emp-stats .label{color:#7b8da5}
+body.dark .card{background:rgba(20,28,45,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(100,120,160,0.18);border-radius:var(--radius-lg);box-shadow:0 4px 30px rgba(0,0,0,0.4)}
+body.dark .card h3{color:#f1f5f9}
+body.dark .card h4{color:#dde5f0}
+body.dark th{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark td{border-color:rgba(255,255,255,0.04)}
+body.dark .fot-total{color:var(--accent)}
+body.dark .schedule-table th{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark .schedule-table td.name-col{background:var(--bg-light)}
+body.dark .position-tag{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark .role-badge.owner{background:rgba(79,140,247,0.15);color:var(--accent)}
+body.dark .role-badge.manager{background:rgba(34,197,94,0.15);color:var(--green)}
+body.dark .role-badge.admin{background:rgba(245,158,11,0.15);color:var(--yellow)}
+body.dark .role-badge.none{background:var(--bg-lighter);color:var(--text-muted)}
+body.dark .toast{background:var(--bg-light);color:var(--accent);border-color:rgba(255,255,255,0.06)}
+body.dark .cloud-menu{background:var(--bg-light);border-color:rgba(255,255,255,0.06);box-shadow:0 4px 12px rgba(0,0,0,0.4)}
+body.dark .month-nav button{background:var(--bg-lighter);color:var(--text-dim)}
+body.dark .settings-section{border-color:rgba(255,255,255,0.06)}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-wrap{margin-left:0}
+  .main-header .hamburger{display:block}
+  .main-content{padding:16px}
+  .main-header{padding:12px 16px}
+  .main-header .mh-search input{width:160px}
+  .main-header .mh-search input:focus{width:200px}
+  .card{padding:14px}
+  .emp-card .emp-stats{grid-template-columns:1fr 1fr}
+  .schedule-table th,.schedule-table td{min-width:30px;padding:3px 4px}
+}
+@media(max-width:480px){
+  .main-header .mh-search{display:none}
+  .main-content{padding:12px}
+}
+</style>
+</head>
+<body class="dark">
+
+<div id="app"><div id="html-login" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,#0d1520 0%,#1a2940 50%,#0d1520 100%)"><div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:48px 36px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)"><h2 style="margin-bottom:6px;color:#1e293b;font-size:20px;font-weight:600">Земский доктор-стоматолог</h2><p style="margin-bottom:28px;color:#64748b;font-size:13px">Система управления зарплатами</p><form id="fb-form" onsubmit="return false"><input type="text" id="fb-login" placeholder="Логин" autocomplete="username" style="width:100%;padding:14px 16px;margin:8px 0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;color:#1e293b;font-size:14px;box-sizing:border-box"><input type="password" id="fb-pass" placeholder="Пароль" autocomplete="current-password" style="width:100%;padding:14px 16px;margin:8px 0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;color:#1e293b;font-size:14px;box-sizing:border-box"><button type="submit" onclick="try{var l=document.getElementById('fb-login').value.trim(),p=document.getElementById('fb-pass').value;if(!l||!p){alert('Введите логин и пароль');return}var creds=JSON.parse(localStorage.getItem('zp_creds')||'{}');var ok=false;for(var r in creds){if(creds[r].login===l&&creds[r].pass===p){ok=true;break}}if(ok){localStorage.setItem('zp_session',JSON.stringify({login:l,role:r,empId:null}));location.reload()}else{alert('Неверный логин или пароль')}}catch(e){alert('Загрузите страницу в Safari: '+e.message)}" style="width:100%;padding:14px;margin-top:20px;background:#4A90D9;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer">Войти</button></form><p style="margin-top:16px;font-size:11px;color:#94a3b8">Для лучшей работы откройте в Safari</p></div></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const SEED_DATA_MAY={"2026-05-01":{"1":{"worked":1,"revenue":74000,"patients":8},"2":{"worked":1,"revenue":24850,"patients":4},"9":{"worked":1,"revenue":0,"patients":0},"11":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-03":{"4":{"worked":1,"revenue":13350,"patients":4},"7":{"worked":1,"revenue":0,"patients":0}},"2026-05-04":{"4":{"worked":1,"revenue":26950,"patients":4},"2":{"worked":1,"revenue":26950,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-05":{"3":{"worked":1,"revenue":18800,"patients":5},"2":{"worked":1,"revenue":28500,"patients":4},"1":{"worked":1,"revenue":4300,"patients":1},"8":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-06":{"1":{"worked":1,"revenue":112950,"patients":10},"2":{"worked":1,"revenue":49050,"patients":5},"9":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-07":{"3":{"worked":1,"revenue":27200,"patients":9},"2":{"worked":1,"revenue":10400,"patients":4},"9":{"worked":1,"revenue":0,"patients":0},"11":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-08":{"1":{"worked":1,"revenue":96850,"patients":11},"2":{"worked":1,"revenue":25300,"patients":6},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-11":{"1":{"worked":1,"revenue":18950,"patients":11},"4":{"worked":1,"revenue":28100,"patients":5},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-12":{"3":{"worked":1,"revenue":18100,"patients":8},"2":{"worked":1,"revenue":42250,"patients":7},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-13":{"1":{"worked":1,"revenue":74400,"patients":9},"2":{"worked":1,"revenue":31000,"patients":7},"9":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-14":{"3":{"worked":1,"revenue":74450,"patients":8},"2":{"worked":1,"revenue":26950,"patients":5},"9":{"worked":1,"revenue":0,"patients":0},"11":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-15":{"1":{"worked":1,"revenue":85200,"patients":10},"2":{"worked":1,"revenue":26650,"patients":5},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0}},"2026-05-16":{"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-17":{"4":{"worked":1,"revenue":26050,"patients":5},"5":{"worked":1,"revenue":34100,"patients":7},"11":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-18":{"1":{"worked":1,"revenue":57500,"patients":10},"4":{"worked":1,"revenue":22450,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"8":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-19":{"3":{"worked":1,"revenue":20400,"patients":3},"2":{"worked":1,"revenue":25900,"patients":3},"6":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-20":{"1":{"worked":1,"revenue":110700,"patients":11},"2":{"worked":1,"revenue":29900,"patients":4},"9":{"worked":1,"revenue":0,"patients":0},"6":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0}},"2026-05-21":{"2":{"worked":1,"revenue":38700,"patients":6},"8":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0}},"2026-05-22":{"1":{"worked":1,"revenue":71550,"patients":13},"2":{"worked":1,"revenue":40800,"patients":7},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-24":{"4":{"worked":1,"revenue":23400,"patients":4},"5":{"worked":1,"revenue":23550,"patients":5},"11":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-25":{"2":{"worked":1,"revenue":21800,"patients":5},"4":{"worked":1,"revenue":17200,"patients":4},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-26":{"3":{"worked":1,"revenue":19350,"patients":6},"2":{"worked":1,"revenue":28150,"patients":6},"11":{"worked":1,"revenue":0,"patients":0},"8":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-27":{"1":{"worked":1,"revenue":92200,"patients":11},"2":{"worked":1,"revenue":33650,"patients":4},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-28":{"3":{"worked":1,"revenue":63950,"patients":6},"2":{"worked":1,"revenue":26850,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-29":{"1":{"worked":1,"revenue":134850,"patients":13},"2":{"worked":1,"revenue":24875,"patients":6},"6":{"worked":1,"revenue":0,"patients":0},"9":{"worked":1,"revenue":0,"patients":0},"15":{"worked":1,"revenue":0,"patients":0},"16":{"worked":1,"revenue":0,"patients":0},"14":{"worked":1,"revenue":0,"patients":0}},"2026-05-23":{"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-30":{"17":{"worked":1,"revenue":0,"patients":0}},"2026-05-31":{"5":{"worked":1,"revenue":15950,"patients":5},"4":{"worked":1,"revenue":14850,"patients":3},"11":{"worked":1,"revenue":0,"patients":0},"17":{"worked":1,"revenue":0,"patients":0}}};
+(function(){
+const LS={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){localStorage.setItem(k,JSON.stringify(v))},
+  del(k){localStorage.removeItem(k)}
+};
+
+// ==================== COLORED FEATHER ICONS ====================
+function colorFeatherIcons(){
+  const colors={
+    'home':'#4A90D9','arrow-left':'#4A90D9','arrow-right':'#4A90D9','menu':'#4A90D9',
+    'users':'#8B5CF6','heart':'#8B5CF6','user':'#94a3b8',
+    'dollar-sign':'#22C55E','credit-card':'#22C55E','trending-up':'#4A90D9',
+    'calendar':'#F59E0B','file-text':'#4A90D9','bar-chart-2':'#4A90D9',
+    'settings':'#64748B','cloud':'#64748B','log-out':'#ef4444','cloud-off':'#ef4444',
+    'loader':'#F59E0B','activity':'var(--accent)',
+    'plus':'#64748B','edit-2':'#64748B','trash-2':'#ef4444',
+    'check':'#fff','x':'#fff','download':'#fff','upload':'#fff',
+    'search':'#06B6D4','refresh-cw':'#64748B','star':'#F59E0B',
+    'lock':'#64748B','database':'#64748B','pause':'#fff','play':'#fff',
+    'award':'#F59E0B'
+  };
+  document.querySelectorAll('svg.feather').forEach(svg=>{
+    // Determine icon name from data-feather attribute on parent
+    const parent=svg.closest('[data-feather]');
+    const name=parent?parent.getAttribute('data-feather'):'';
+    if(colors[name]&&name){
+      svg.style.stroke=colors[name];
+      svg.style.color=colors[name];
+    }
+  });
+}
+// Helper: call feather.replace() + colorFeatherIcons() together
+function featherReplace(){
+  if(typeof feather!=='undefined')feather.replace();
+  colorFeatherIcons();
+}
+window.featherReplace=featherReplace;
+
+// Safe permissions parser — handles both string and object formats
+function parsePerms(p){
+  if(!p)return null;
+  if(typeof p==='object')return p;
+  if(typeof p==='string'){
+    try{return JSON.parse(p)}catch(e){return null}
+  }
+  return null;
+}
+
+// ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
+
+// Polyfill: AbortSignal.timeout for Safari/iOS
+if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
+const Cloud={
+  defaults:{
+    url:'https://mczykdnvwnyhsxxcuskc.supabase.co',
+    key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw'
+  },
+  config:{
+    url:LS.get('zp_cloud_url','https://mczykdnvwnyhsxxcuskc.supabase.co'),
+    key:LS.get('zp_cloud_key','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw')
+  },
+  connected:false,
+  lastSync:null,
+  syncing:false,
+  errorCount:0,
+  _cache:{},
+  _syncTimer:null,
+  _syncQueue:[],
+
+  _headers(){
+    return{
+      'apikey':this.config.key,
+      'Authorization':'Bearer '+this.config.key,
+      'Content-Type':'application/json',
+      'Prefer':'return=minimal'
+    };
+  },
+
+  _restUrl(table){
+    return this.config.url+'/rest/v1/'+table;
+  },
+
+  async ping(){
+    if(!this.config.url)return{ok:false,error:'URL не настроен'};
+    try{
+      const r=await fetch(this._restUrl('employees')+'?select=id&limit=1',{
+        headers:this._headers(),
+        signal:AbortSignal.timeout(15000)
+      });
+      if(r.ok){this.connected=true;this.errorCount=0;return{ok:true}}
+      return{ok:false,error:'HTTP '+r.status};
+    }catch(e){
+      this.connected=false;this.errorCount++;
+      return{ok:false,error:'Не удалось подключиться'};
+    }
+  },
+
+  async init(){
+    this.config.url=LS.get('zp_cloud_url',this.defaults.url);
+    this.config.key=LS.get('zp_cloud_key',this.defaults.key);
+    if(!this.config.url)return;
+    const p=await this.ping();
+    if(p.ok)this._startAutoSync();
+    this._updateIcon();
+  },
+
+  async sync(){
+    if(this.syncing)return;
+    this.syncing=true;
+    this._updateIcon();
+    try{
+      const headers=this._headers();
+      const timeout=30000; // 30 секунд для мобильных
+      // Загружаем по очереди (не параллельно) — надёжнее на мобильных
+      
+      // 1. Employees
+      const empRes=await fetch(this._restUrl('employees')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
+      if(!empRes.ok){toast('☁️ Ошибка загрузки сотрудников');return false}
+      const employees=await empRes.json();
+
+      // 2. Daily (порциями по 500)
+      let daily=[];
+      let offset=0;
+      while(true){
+        const dr=await fetch(this._restUrl('daily')+'?select=*&order=date&offset='+offset+'&limit=500',{headers,signal:AbortSignal.timeout(timeout)});
+        if(!dr.ok)break;
+        const batch=await dr.json();
+        if(batch.length===0)break;
+        daily=daily.concat(batch);
+        offset+=batch.length;
+        if(batch.length<500)break;
+      }
+
+      // 3. Advances
+      const advRes=await fetch(this._restUrl('advances')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
+      const advances=advRes.ok?await advRes.json():[];
+
+      // 4. Schedule
+      const schedRes=await fetch(this._restUrl('schedule')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
+      const schedule=schedRes.ok?await schedRes.json():[];
+
+      // MERGE employees — don't overwrite local edits (names, passwords, permissions)
+      if(employees&&employees.length>0){
+        const localEmps=LS.get('zp_employees',[]);
+        const appEmps=employees.map(e=>{
+          const local=localEmps.find(l=>l.id===parseInt(e.emp_id));
+          if(local){
+            // Local exists — keep local name, login, pass, permissions
+            // Only update calc fields from Supabase
+            return{
+              ...local,
+              calcType:e.calc_type||local.calcType||'fixed_day',
+              fixedDay:e.fixed_day||local.fixedDay||0,
+              fixedMonth:e.fixed_month||local.fixedMonth||0,
+              percent:e.percent||local.percent||0
+            };
+          }else{
+            // New employee from Supabase
+            return{
+              id:parseInt(e.emp_id),
+              name:e.name,
+              position:e.position||'',
+              calcType:e.calc_type||'fixed_day',
+              fixedDay:e.fixed_day||0,
+              fixedMonth:e.fixed_month||0,
+              percent:e.percent||0,
+              active:e.is_active!==false&&e.active!==false,
+              appRole:e.app_role||'',
+              login:e.login||'',
+              pass:e.pass||'',
+              permissions:parsePerms(e.permissions||e.app_permissions||'')
+            };
+          }
+        });
+        LS.set('zp_employees',appEmps);
+      }
+
+      // REPLACE daily
+      if(daily){
+        const keysToRemove=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_daily_'))keysToRemove.push(k)}
+        keysToRemove.forEach(k=>localStorage.removeItem(k));
+
+        const byDate={};
+        daily.forEach(r=>{
+          const d=this.normDate(r.date);
+          if(!d)return;
+          if(!byDate[d])byDate[d]={};
+          byDate[d][r.emp_id]={worked:r.worked||0,revenue:r.revenue||0,patients:r.patients||0};
+        });
+        Object.entries(byDate).forEach(([d,v])=>LS.set('zp_daily_'+d,v));
+      }
+
+      // REPLACE advances
+      if(advances){
+        const keysToRemove=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_advances_'))keysToRemove.push(k)}
+        keysToRemove.forEach(k=>localStorage.removeItem(k));
+
+        const byMonth={};
+        advances.forEach(r=>{
+          if(!byMonth[r.month])byMonth[r.month]={};
+          byMonth[r.month][r.emp_id]=r.amount||0;
+        });
+        Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_advances_'+m,v));
+        // Extract card_amounts
+        const cardsByMonth={};
+        advances.forEach(r=>{
+          if(r.card_amount&&r.card_amount>0){
+            if(!cardsByMonth[r.month])cardsByMonth[r.month]={};
+            cardsByMonth[r.month][r.emp_id]=r.card_amount;
+          }
+        });
+        Object.entries(cardsByMonth).forEach(([m,v])=>LS.set('zp_cards_'+m,v));
+      }
+
+      // REPLACE schedule
+      if(schedule){
+        const keysToRemove=[];
+        for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_schedule_'))keysToRemove.push(k)}
+        keysToRemove.forEach(k=>localStorage.removeItem(k));
+
+        const byMonth={};
+        schedule.forEach(r=>{
+          const parts=r.date.split('-');
+          const mKey=parts[0]+'_'+parts[1];
+          if(!byMonth[mKey])byMonth[mKey]={};
+          if(!byMonth[mKey][r.emp_id])byMonth[mKey][r.emp_id]={};
+          const day=parseInt(parts[2]);
+          const status=r.start_time||r.end_time?'Р':'В';
+          byMonth[mKey][r.emp_id][day]=status;
+        });
+        Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_schedule_'+m,v));
+      }
+
+      this.connected=true;
+      this.lastSync=new Date().toISOString();
+      this.errorCount=0;
+      this._syncQueue=[];
+      toast('☁️ Загружено: '+employees.length+' сотр., '+daily.length+' записей, '+advances.length+' авансов');
+      return true;
+    }catch(e){
+      this.connected=false;this.errorCount++;
+      toast('☁️ Ошибка: '+e.message);
+      console.error('Sync error:',e);
+      return false;
+    }finally{
+      this.syncing=false;
+      this._updateIcon();
+    }
+  },
+
+  normDate(d){
+    if(!d)return null;
+    const s=String(d);
+    if(s.length<=10)return s;
+    return s.substring(0,10);
+  },
+
+  async pushAll(){
+    if(this.syncing)return;
+    this.syncing=true;
+    this._updateIcon();
+    try{
+      const headers=this._headers();
+      const deleteHeaders={...headers,'Prefer':'return=minimal'};
+
+      const employees=LS.get('zp_employees',[]);
+
+      // Convert app employees to Supabase format
+      const sbEmployees=employees.map(e=>({
+        emp_id:String(e.id),
+        name:e.name,
+        position:e.position||'',
+        rate:e.fixedDay||e.fixedMonth||e.percent||0,
+        calc_type:e.calcType||'fixed_day',
+        fixed_day:e.fixedDay||0,
+        fixed_month:e.fixedMonth||0,
+        percent:e.percent||0,
+        active:e.active!==false,
+        app_role:e.appRole||'',
+        login:e.login||'',
+        pass:e.pass||'',
+        permissions:e.permissions||''
+      }));
+
+      // Collect daily records
+      const sbDaily=[];
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k.startsWith('zp_daily_')){
+          const date=this.normDate(k.replace('zp_daily_',''));
+          if(!date)continue;
+          const d=LS.get(k,{});
+          Object.entries(d).forEach(([eid,v])=>{
+            sbDaily.push({date,emp_id:eid,worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
+          });
+        }
+      }
+
+      // Collect advances
+      const sbAdvances=[];
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k.startsWith('zp_advances_')){
+          const month=k.replace('zp_advances_','');
+          const a=LS.get(k,{});
+          Object.entries(a).forEach(([eid,v])=>{
+            sbAdvances.push({emp_id:eid,month,amount:v||0});
+          });
+        }
+      }
+
+      // Collect schedule
+      const sbSchedule=[];
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k.startsWith('zp_schedule_')){
+          const parts=k.replace('zp_schedule_','').split('_');
+          const month=parts[0]+'-'+parts[1];
+          const sch=LS.get(k,{});
+          Object.entries(sch).forEach(([eid,days])=>{
+            Object.entries(days).forEach(([day,status])=>{
+              sbSchedule.push({emp_id:eid,date:month+'-'+String(day).padStart(2,'0'),start_time:status==='off'?'':'09:00',end_time:status==='off'?'':'18:00'});
+            });
+          });
+        }
+      }
+
+      // Bulk replace: delete all then insert
+      await Promise.all([
+        fetch(this._restUrl('employees')+'?emp_id=neq.null',{method:'DELETE',headers:deleteHeaders}),
+        fetch(this._restUrl('daily')+'?id=gt.0',{method:'DELETE',headers:deleteHeaders}),
+        fetch(this._restUrl('advances')+'?id=gt.0',{method:'DELETE',headers:deleteHeaders}),
+        fetch(this._restUrl('schedule')+'?id=gt.0',{method:'DELETE',headers:deleteHeaders})
+      ]);
+
+      // Insert all data
+      const insertHeaders={...headers,'Prefer':'resolution=merge-duplicates,return=minimal'};
+      await Promise.all([
+        sbEmployees.length>0?fetch(this._restUrl('employees'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbEmployees)}):Promise.resolve(),
+        sbDaily.length>0?fetch(this._restUrl('daily'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbDaily)}):Promise.resolve(),
+        sbAdvances.length>0?fetch(this._restUrl('advances'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbAdvances)}):Promise.resolve(),
+        sbSchedule.length>0?fetch(this._restUrl('schedule'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbSchedule)}):Promise.resolve()
+      ]);
+
+      this.connected=true;
+      this.lastSync=new Date().toISOString();
+      this._syncQueue=[];
+      toast('☁️ Данные выгружены в облако ('+sbDaily.length+' записей)');
+      return true;
+    }catch(e){
+      toast('☁️ Ошибка выгрузки');return false;
+    }finally{
+      this.syncing=false;
+      this._updateIcon();
+    }
+  },
+
+  async _sendOne(key){
+    if(this.syncing)return;
+    try{
+      const headers=this._headers();
+      const upsertHeaders={...headers,'Prefer':'resolution=merge-duplicates,return=minimal'};
+      if(key.startsWith('zp_daily_')){
+        const date=key.replace('zp_daily_','');
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,v])=>{
+          records.push({date,emp_id:eid,worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
+        });
+        if(records.length>0)await fetch(this._restUrl('daily'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key.startsWith('zp_cards_')){
+        const month=key.replace('zp_cards_','');
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,v])=>{
+          records.push({emp_id:eid,month,card_amount:v||0});
+        });
+        if(records.length>0)await fetch(this._restUrl('advances'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key.startsWith('zp_advances_')){
+        const month=key.replace('zp_advances_','');
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,v])=>{
+          records.push({emp_id:eid,month,amount:v||0});
+        });
+        if(records.length>0)await fetch(this._restUrl('advances'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key.startsWith('zp_schedule_')){
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,days])=>{
+          Object.entries(days).forEach(([day,status])=>{
+            const md=key.replace('zp_schedule_','');
+            const date=md.replace('_','-')+'-'+String(day).padStart(2,'0');
+            records.push({emp_id:eid,date,start_time:status==='off'?'':'09:00',end_time:status==='off'?'':'18:00'});
+          });
+        });
+        if(records.length>0)await fetch(this._restUrl('schedule'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key==='zp_employees'){
+        const emps=LS.get('zp_employees',[]);
+        const records=emps.map(e=>({
+          emp_id:String(e.id),name:e.name,position:e.position||'',
+          rate:e.fixedDay||e.fixedMonth||e.percent||0,is_active:e.active!==false,
+          calc_type:e.calcType||'fixed_day',fixed_day:e.fixedDay||0,fixed_month:e.fixedMonth||0,
+          percent:e.percent||0,active:e.active!==false,app_role:e.appRole||'',
+          login:e.login||'',pass:e.pass||'',permissions:e.permissions||''
+        }));
+        if(records.length>0)await fetch(this._restUrl('employees'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }
+      this._syncQueue=this._syncQueue.filter(k=>k!==key);
+      this._updateIcon();
+    }catch(e){}
+  },
+
+  queueSync(key){
+    if(!this.config.url||!this.connected)return;
+    if(!this._syncQueue.includes(key)){
+      this._syncQueue.push(key);
+      this._updateIcon();
+    }
+    clearTimeout(this._sendTimer);
+    this._sendTimer=setTimeout(()=>{
+      const q=[...this._syncQueue];
+      this._syncQueue=[];
+      q.forEach(k=>this._sendOne(k));
+    },1000);
+  },
+
+  _startAutoSync(){
+    // Background sync OFF — only sync on login (pull) + on save (push)
+  },
+
+  _updateIcon(){
+    const icon=document.getElementById('cloud-icon');
+    if(!icon)return;
+    icon.className='cloud-icon';
+    const state_=this.syncing?'syncing':(!this.config.url?'disconnected':(this._syncQueue.length>0?'pending':(this.connected?'connected':'error')));
+    const iconMap={syncing:'<i data-feather="loader"></i>',disconnected:'<i data-feather="cloud-off"></i>',pending:'<i data-feather="cloud"></i>',connected:'<i data-feather="cloud"></i>',error:'<i data-feather="cloud-off"></i>'};
+    icon.innerHTML=iconMap[state_]||'<i data-feather="cloud"></i>';
+    if(this.syncing)icon.classList.add('yellow');
+    else if(!this.config.url)icon.classList.add('');
+    else if(this._syncQueue.length>0)icon.classList.add('yellow');
+    else if(this.connected)icon.classList.add('green');
+    else icon.classList.add('red');
+    featherReplace();
+  },
+
+  configure(url,key){
+    this.config.url=url.trim().replace(/\/$/,'');
+    this.config.key=key.trim();
+    LS.set('zp_cloud_url',this.config.url);
+    LS.set('zp_cloud_key',this.config.key);
+    if(this.config.url){
+      this.ping().then(p=>{
+        this._updateIcon();
+        if(p.ok)this._startAutoSync();
+      });
+    }else{
+      this.connected=false;
+      if(this._syncTimer){clearInterval(this._syncTimer);this._syncTimer=null}
+    }
+    this._updateIcon();
+  }
+};
+
+function cloudGet(k,d){
+  return LS.get(k,d);
+}
+function cloudSet(k,v){
+  LS.set(k,v);
+  if(Cloud.config.url && Cloud.connected){
+    Cloud.queueSync(k);
+  }
+}
+
+function initDefaults(){
+  if(!LS.get('zp_employees')){
+    const emps=[
+      {id:1,name:'Мелоян Карен Наирович',position:'Врач-стоматолог',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true,appRole:'owner',login:'Karen',pass:'Karen1985'},
+      {id:2,name:'Баласанян Амаля Арамовна',position:'Врач-терапевт',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true},
+      {id:3,name:'Кялоян Мгер Шаваршович',position:'Врач-хирург',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true},
+      {id:4,name:'Сидорейко Илья Михайлович',position:'Врач-терапевт',calcType:'percent',fixedDay:0,fixedMonth:0,percent:25,active:true},
+      {id:5,name:'Громов Ростислав Евгеньевич',position:'Врач-хирург',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true},
+      {id:6,name:'Меркулова Ангелина Олеговна',position:'Медсестра',calcType:'fixed_day_percent',fixedDay:1200,fixedMonth:0,percent:5,active:true,appRole:'employee'},
+      {id:7,name:'Соколова Елизавета Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Liza',pass:'admin1',permissions:{seeSchedule:true,isOwner:false,seeSalaries:false,seeRevenue:true,canFillReport:true,seeExpenses:true,canInput:true}},
+      {id:8,name:'Алферова Татьяна Алексеевна',position:'Ассистент',calcType:'fixed_day',fixedDay:2000,fixedMonth:0,percent:0,active:true},
+      {id:9,name:'Белова Ирина Юрьевна',position:'Ассистент',calcType:'fixed_day',fixedDay:2800,fixedMonth:0,percent:0,active:true},
+      {id:10,name:'Киреева Ирина Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Irina',pass:'admin2',permissions:{seeExpenses:true,canInput:true,seeRevenue:true,canFillReport:true,seeSchedule:true,isOwner:false,seeSalaries:false}},
+      {id:11,name:'Собиров Азим',position:'Подмена',calcType:'fixed_day',fixedDay:5000,fixedMonth:0,percent:0,active:true,appRole:'employee'},
+      {id:12,name:'Максименко Надежда Петровна',position:'Другое',calcType:'fixed_month',fixedDay:0,fixedMonth:12000,percent:0,active:true,appRole:'employee'},
+      {id:13,name:'Москалева Ольга Алексеевна',position:'Бухгалтер',calcType:'fixed_month',fixedDay:0,fixedMonth:30000,percent:0,active:true,appRole:'employee'},
+      {id:14,name:'Азарко Оксана Владимировна',position:'Администратор',calcType:'fixed_month',fixedDay:0,fixedMonth:30000,percent:0,active:true,appRole:'custom',login:'Azarko',pass:'admin3',permissions:{seeRevenue:true,canFillReport:true,canInput:true,seeExpenses:true,seeSchedule:true,isOwner:false,seeSalaries:false}},
+      {id:15,name:'Титяева Оксана Дмитриевна',position:'Ассистент',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true},
+      {id:16,name:'Скобелева Юлия Сергеевна',position:'Ассистент',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true},
+      {id:17,name:'Линникова Вероника Максимовна',position:'Администратор',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Vika',pass:'admin4',permissions:{canFillReport:true,seeRevenue:true,canInput:true,seeExpenses:true,seeSalaries:false,seeSchedule:true,isOwner:false}}
+    ];
+    LS.set('zp_employees',emps);
+  }
+  if(!LS.get('zp_positions')){
+    LS.set('zp_positions',['Врач-стоматолог','Врач-хирург','Врач-терапевт','Ассистент','Администратор','Медсестра','Гигиенист','Управляющий','Другое']);
+  }
+  if(!LS.get('zp_creds')){
+    LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
+  }
+}
+const APP_VERSION='4.2';
+const savedVersion=LS.get('zp_version','0');
+if(savedVersion!==APP_VERSION){
+  // Сохраняем сотрудников и пароли перед очисткой
+  const savedEmps=LS.get('zp_employees',null);
+  const savedCreds=LS.get('zp_creds',null);
+  const savedAdvances={};
+  const savedCards={};
+  const keysToRemove=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith('zp_'))keysToRemove.push(k);
+    if(k.startsWith('zp_advances_')){savedAdvances[k]=LS.get(k,{});keysToRemove.push(k)}
+    if(k.startsWith('zp_cards_')){savedCards[k]=LS.get(k,{});keysToRemove.push(k)}
+  }
+  keysToRemove.forEach(k=>localStorage.removeItem(k));
+  // Восстанавливаем сотрудников и пароли
+  if(savedEmps)LS.set('zp_employees',savedEmps);
+  if(savedCreds)LS.set('zp_creds',savedCreds);
+  Object.entries(savedAdvances).forEach(([k,v])=>LS.set(k,v));
+  Object.entries(savedCards).forEach(([k,v])=>LS.set(k,v));
+  LS.set('zp_version',APP_VERSION);
+  console.log('App updated to v'+APP_VERSION+', preserved employees and passwords');
+}
+// Устанавливаем creds только при первом запуске (не перезаписывать пользовательские пароли)
+
+// Инициализация ПОСЛЕ очистки кэша
+initDefaults();
+
+// Встроенные данные за май — если в кэше пусто
+try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
+
+function seedMayData(){
+  if(LS.get('zp_daily_2026-05-01',null)){return} // Данные уже есть — не перезаписываем
+  const seed=SEED_DATA_MAY;
+  if(!seed||typeof seed!=='object'){return}
+  for(const[date,emps]of Object.entries(seed)){
+    LS.set('zp_daily_'+date,emps);
+  }
+  console.log('Seeded '+Object.keys(seed).length+' days of May data');
+}
+
+function getLastMonthWithData(){
+  const d=new Date();
+  for(let i=0;i<=6;i++){
+    const y=d.getFullYear();
+    const m=d.getMonth()+1-i;
+    const mm=((m-1+12)%12)+1;
+    const yy=y-Math.floor((m-1)/12);
+    const key='zp_daily_'+yy+'-'+String(mm).padStart(2,'0')+'-01';
+    const sKey='zp_schedule_'+yy+'_'+String(mm).padStart(2,'0');
+    if(LS.get(sKey,null)){return yy+'-'+String(mm).padStart(2,'0')}
+    for(let j=0;j<localStorage.length;j++){
+      const k=localStorage.key(j);
+      if(k.startsWith('zp_daily_'+yy+'-'+String(mm).padStart(2,'0'))){return yy+'-'+String(mm).padStart(2,'0')}
+    }
+  }
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+let state={
+  role:null,
+  empId:null,
+  tab:'dashboard',
+  month:getLastMonthWithData(),
+  reportDate:todayStr()
+};
+
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+function empIdGen(){const emps=LS.get('zp_employees',[]);return emps.length?Math.max(...emps.map(e=>e.id))+1:1}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function addHistory(text){
+  const h=LS.get('zp_history',[]);
+  h.unshift({date:todayStr(),time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}),text,user:state.role||'system'});
+  if(h.length>200)h.length=200;
+  LS.set('zp_history',h);
+}
+
+function getCurrentEmp(){return state.empId?getEmps().find(e=>e.id===state.empId):null}
+function getEmps(){return LS.get('zp_employees',[])}
+function getActiveEmps(){return getEmps().filter(e=>e.active)}
+function getPositions(){return LS.get('zp_positions',[])}
+
+function calcSalary(emp,worked,totalRevenue){
+  const ct=emp.calcType;
+  let salary=0;
+  if(ct==='fixed_day') salary=Math.round(emp.fixedDay*worked);
+  else if(ct==='fixed_month') salary=emp.fixedMonth;
+  else if(ct==='percent') salary=Math.round(totalRevenue*emp.percent/100);
+  else if(ct==='fixed_day_percent') salary=Math.round(emp.fixedDay*worked+totalRevenue*emp.percent/100);
+  else if(ct==='fixed_month_percent') salary=Math.round(emp.fixedMonth+totalRevenue*emp.percent/100);
+  else if(ct==='fixed_day_percent_own') salary=Math.round(emp.fixedDay*worked+(emp._ownRevenue||0)*emp.percent/100);
+  return salary;
+}
+
+function calcSalaryByDays(emp,days){
+  const ct=emp.calcType;
+  if(ct!=='fixed_day_percent') return null;
+  let salary=0;
+  for(const day of days){
+    const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});
+    const worked=d.worked||0;
+    if(worked>0){
+      const dayData=LS.get('zp_daily_'+day,{});
+      let dayClinicRevenue=0;
+      for(const eid in dayData){dayClinicRevenue+=dayData[eid].revenue||0}
+      salary+=Math.round(emp.fixedDay*worked+dayClinicRevenue*emp.percent/100);
+    }
+  }
+  return salary;
+}
+
+function monthDays(ym){
+  const[y,m]=ym.split('-').map(Number);
+  const days=[];
+  const d=new Date(y,m-1,1);
+  while(d.getMonth()===m-1){days.push(fmtDate(d));d.setDate(d.getDate()+1)}
+  return days;
+}
+
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+function monthName(ym){
+  const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  return months[(parseInt(ym.split('-')[1]))-1]+' '+ym.split('-')[0];
+}
+
+function isDoctor(emp){
+  return emp.position.includes('Врач');
+}
+
+function roleLabel(r){
+  if(r==='owner')return 'Владелец';
+  if(r==='manager')return 'Управляющая';
+  if(r==='admin')return 'Администратор';
+  return '';
+}
+
+function getGreeting(){
+  const h=new Date().getHours();
+  if(h<6)return 'Доброй ночи';
+  if(h<12)return 'Доброе утро';
+  if(h<18)return 'Добрый день';
+  return 'Добрый вечер';
+}
+
+function getCurrentUserName(){
+  const sess=LS.get('zp_session',{});
+  if(sess.empId){
+    const emp=getEmps().find(e=>e.id===sess.empId);
+    return emp?emp.name.split(' ')[0]:sess.login;
+  }
+  return sess.login||'';
+}
+
+function render(){
+  const app=document.getElementById('app');
+  const session=LS.get('zp_session',null);
+  if(!session||!session.role){
+    app.innerHTML=renderLogin();
+    bindLogin();
+  } else {
+    state.role=session.role;
+    state.empId=session.empId||null;
+    app.innerHTML=renderApp();
+    bindApp();
+  }
+  featherReplace();
+}
+
+// ========== LOGIN ==========
+function renderLogin(){
+  return `<div class="login-wrap"><div class="login-box">
+    <h2><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор-стоматолог</h2>
+    <div class="login-sub">Система управления зарплатами</div>
+    <input type="text" id="login-input" placeholder="Логин" autocomplete="username">
+    <input type="password" id="pass-input" placeholder="Пароль" autocomplete="current-password">
+    <button id="login-btn">Войти</button>
+  </div></div>`;
+}
+
+function bindLogin(){
+  const btn=document.getElementById('login-btn');
+  const enter=()=>doLogin();
+  btn.onclick=enter;
+  document.getElementById('pass-input').onkeydown=e=>{if(e.key==='Enter')enter()};
+}
+
+function doLogin(){
+  const login=document.getElementById('login-input').value.trim();
+  const pass=document.getElementById('pass-input').value;
+  if(!login||!pass){toast('Введите логин и пароль');return}
+
+  const creds=LS.get('zp_creds',{});
+  let role=null;
+  for(const[r,c] of Object.entries(creds)){
+    if(c.login===login&&c.pass===pass){role=r;break}
+  }
+
+  let empMatchId=null;
+  if(!role){
+    const emps=getEmps();
+    for(const e of emps){
+      if(e.appRole&&e.appRole!=='none'&&e.login===login&&e.pass===pass){
+        role=e.appRole;
+        empMatchId=e.id;
+        break;
+      }
+    }
+  }
+
+  if(!role){toast('Неверный логин или пароль');return}
+  LS.set('zp_session',{login,role,empId:empMatchId});
+  addHistory('Вход: '+login+' ('+role+')');
+  state.role=role;
+  state.empId=empMatchId;
+  if(role==='owner')state.tab='dashboard';
+  else if(role==='manager')state.tab='dashboard';
+  else state.tab='report';
+  render();
+  // Автозагрузка из облака при входе
+  Cloud.init().then(()=>{Cloud.sync().then(ok=>{if(ok)render()})})
+
+}
+
+function logout(){
+  LS.del('zp_session');
+  state.role=null;
+  state.empId=null;
+  render();
+}
+
+// ========== TABS ==========
+function getTabs(){
+  const r=state.role;
+  if(r==='owner')return[
+    {id:'dashboard',icon:'<i data-feather="home" data-icon-color="#4A90D9"></i>',label:'Главная'},
+    {id:'daily',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'Ввод за день'},
+    {id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'},
+    {id:'month-report',icon:'<i data-feather="file-text" data-icon-color="#4A90D9"></i>',label:'Отчёт за месяц'},
+    {id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'},
+    {id:'admin-report',icon:'<i data-feather="bar-chart-2" data-icon-color="#4A90D9"></i>',label:'Отчёт администратора'},
+    {id:'employees',icon:'<i data-feather="users" data-icon-color="#8B5CF6"></i>',label:'Сотрудники'},
+    {id:'settings',icon:'<i data-feather="settings" data-icon-color="#64748B"></i>',label:'Настройки'}
+  ];
+  if(r==='manager')return[
+    {id:'dashboard',icon:'<i data-feather="home" data-icon-color="#4A90D9"></i>',label:'Главная'},
+    {id:'daily',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'Ввод за день'},
+    {id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'},
+    {id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'}
+  ];
+  // Custom role (administrators with permissions)
+  const tabs=[{id:'report',icon:'<i data-feather="file-text" data-icon-color="#4A90D9"></i>',label:'Мой отчёт'}];
+  const emp=getCurrentEmp();
+  if(emp&&emp.permissions){
+    if(emp.permissions.canInput){
+      tabs.unshift({id:'daily',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'Ввод за день'});
+    }
+    if(emp.permissions.canFillReport){
+      tabs.push({id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'});
+    }
+    // Schedule: view only for admins, editable only for owner/manager
+    tabs.push({id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'});
+  }
+  return tabs;
+}
+
+function getTabLabel(tabId){
+  const tabs=getTabs();
+  const t=tabs.find(t=>t.id===tabId);
+  return t?t.label:'';
+}
+
+function renderSidebar(){
+  const tabs=getTabs();
+  const userName=getCurrentUserName();
+  const userRole=roleLabel(state.role);
+
+  let html=`<div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-name"><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор-стоматолог</div>
+      <div class="logo-sub">Система управления</div>
+    </div>
+    <div class="sidebar-nav">`;
+
+  html+=`<div class="nav-section">Меню</div>`;
+  for(const t of tabs){
+    html+=`<div class="nav-item ${t.id===state.tab?'active':''}" data-tab="${t.id}">
+      <span class="nav-icon">${t.icon}</span>
+      <span>${t.label}</span>
+    </div>`;
+  }
+
+  html+=`</div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar"><i data-feather="user"></i></div>
+        <div class="sidebar-user-info">
+          <div class="su-name">${userName}</div>
+          <div class="su-role">${userRole}</div>
+        </div>
+      </div>
+      <button class="sidebar-logout" onclick="logout()"><i data-feather="log-out"></i> Выйти</button>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>`;
+
+  return html;
+}
+
+function renderApp(){
+  const tabs=getTabs();
+  if(!tabs.find(t=>t.id===state.tab))state.tab=tabs[0].id;
+  const cloudLastSync=Cloud.lastSync?new Date(Cloud.lastSync).toLocaleString('ru-RU'):'никогда';
+  const isDark=LS.get('zp_theme','dark')==='dark';
+
+  let html=`<div class="app-layout">`;
+
+  // Sidebar
+  html+=renderSidebar();
+
+  // Main area
+  html+=`<div class="main-wrap">
+    <div class="main-header">
+      <div class="mh-left">
+        <button class="hamburger" id="hamburger-btn"><i data-feather="menu"></i></button>
+        <h1>${getTabLabel(state.tab)}</h1>
+      </div>
+      <div class="mh-right">
+        <div class="mh-search">
+          <span class="search-icon"><i data-feather="search"></i></span>
+          <input type="search" placeholder="Поиск..." id="global-search">
+        </div>
+        <span id="cloud-icon" class="cloud-icon" title="Облако — ${Cloud.connected?'Подключено':'Не подключено'}" style="position:relative;cursor:default"><i data-feather="cloud"></i></span>
+        <button id="theme-toggle" title="Сменить тему" style="font-size:16px;padding:6px 10px">${isDark?'☀️':'🌙'}</button>
+      </div>
+    </div>
+    <div class="main-content">${renderTab()}</div>
+  </div></div>`;
+
+  return html;
+}
+
+function renderTab(){
+  if(state.tab==='dashboard')return renderDashboard();
+  if(state.tab==='daily')return renderDaily();
+  if(state.tab==='monthly')return renderMonthly();
+  if(state.tab==='month-report')return renderMonthReport();
+  if(state.tab==='schedule')return renderSchedule();
+  if(state.tab==='admin-report')return renderAdminReportView();
+  if(state.tab==='employees')return renderEmployees();
+  if(state.tab==='settings')return renderSettings();
+  if(state.tab==='report')return renderAdminForm();
+  return'';
+}
+
+function switchTab(tab){state.tab=tab;empEditId=null;showAddEmp=false;empSearchQ='';render();closeSidebar()}
+
+function openSidebar(){
+  document.getElementById('sidebar')?.classList.add('open');
+  document.getElementById('sidebar-overlay')?.classList.add('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('sidebar-overlay')?.classList.remove('show');
+}
+
+function bindApp(){
+  // Sidebar nav items
+  document.querySelectorAll('.nav-item[data-tab]').forEach(el=>{
+    el.onclick=()=>switchTab(el.dataset.tab);
+  });
+
+  // Hamburger
+  const hamburger=document.getElementById('hamburger-btn');
+  if(hamburger)hamburger.onclick=openSidebar;
+
+  // Sidebar overlay close
+  const overlay=document.getElementById('sidebar-overlay');
+  if(overlay)overlay.onclick=closeSidebar;
+
+  // Theme toggle
+  const themeBtn=document.getElementById('theme-toggle');
+  if(themeBtn)themeBtn.onclick=()=>{
+    const cur=LS.get('zp_theme','dark');
+    const next=cur==='dark'?'light':'dark';
+    LS.set('zp_theme',next);
+    document.body.classList.remove('dark','light');
+    document.body.classList.add(next);
+    themeBtn.textContent=next==='dark'?'☀️':'🌙';
+  };
+  // Apply saved theme
+  const savedTheme=LS.get('zp_theme','dark');
+  document.body.classList.remove('dark','light');
+  document.body.classList.add(savedTheme);
+
+  // Cloud icon — just indicator, no menu
+  // All sync is automatic: save → upload, login → download
+  bindTabContent();
+}
+
+function bindTabContent(){
+  if(state.tab==='dashboard')bindDashboard();
+  if(state.tab==='daily')bindDaily();
+  if(state.tab==='monthly')bindMonthly();
+  if(state.tab==='month-report')bindMonthReport();
+  if(state.tab==='schedule')bindSchedule();
+  if(state.tab==='admin-report')bindAdminReportView();
+  if(state.tab==='employees')bindEmployees();
+  if(state.tab==='settings')bindSettings();
+  if(state.tab==='report')bindAdminForm();
+}
+
+// ========== DASHBOARD ==========
+function metricCard(label, value, color){
+  return '<div class="metric-card"><div class="mc-label">'+label+'</div><div class="mc-value" style="color:'+color+'">'+value+'</div></div>';
+}
+
+function renderDashboard(){
+  const today=todayStr();
+  const emps=getActiveEmps();
+  const isOwner=state.role==='owner';
+  const isManager=state.role==='manager';
+
+  // Вчера
+  const d=new Date();
+  d.setDate(d.getDate()-1);
+  const yesterday=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+
+  // Метрики сегодня
+  let todayRevenue=0, todayPatients=0;
+  const todayData=LS.get('zp_daily_'+today,{});
+  for(const eid in todayData){todayRevenue+=todayData[eid].revenue||0;todayPatients+=todayData[eid].patients||0}
+
+  // Вчера
+  let yesterdayRevenue=0;
+  const yData=LS.get('zp_daily_'+yesterday,{});
+  for(const eid in yData){yesterdayRevenue+=yData[eid].revenue||0}
+
+  // За неделю
+  let weekRevenue=0;
+  for(let i=0;i<7;i++){
+    const wd=new Date();wd.setDate(wd.getDate()-i);
+    const wds=wd.getFullYear()+'-'+String(wd.getMonth()+1).padStart(2,'0')+'-'+String(wd.getDate()).padStart(2,'0');
+    const wdd=LS.get('zp_daily_'+wds,{});
+    for(const eid in wdd)weekRevenue+=wdd[eid].revenue||0;
+  }
+
+  // Топ врачи за месяц
+  const days=monthDays(state.month);
+  const docs={};
+  for(const day of days){
+    const dd=LS.get('zp_daily_'+day,{});
+    for(const e of emps){
+      if(e.position.includes('Врач')){
+        const d=dd[e.id]||{};
+        if(!docs[e.name])docs[e.name]={revenue:0,patients:0};
+        docs[e.name].revenue+=d.revenue||0;
+        docs[e.name].patients+=d.patients||0;
+      }
+    }
+  }
+  const topDocs=Object.entries(docs).sort((a,b)=>b[1].revenue-a[1].revenue);
+
+  const greeting=getGreeting();
+  const userName=getCurrentUserName();
+
+  let html='<div class="card"><h3>'+greeting+', '+userName+' 👋</h3></div>';
+
+  // Метрики
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px">';
+  if(isOwner){
+    html+=metricCard('<i data-feather="dollar-sign"></i> Выручка сегодня', todayRevenue.toLocaleString('ru')+' ₽', 'var(--green)');
+    html+=metricCard('<i data-feather="trending-up"></i> Вчера', yesterdayRevenue.toLocaleString('ru')+' ₽', 'var(--accent)');
+    html+=metricCard('<i data-feather="calendar"></i> За неделю', weekRevenue.toLocaleString('ru')+' ₽', 'var(--yellow)');
+  }
+  html+=metricCard('<i data-feather="heart"></i> Пациентов сегодня', todayPatients, 'var(--accent)');
+  html+='</div>';
+
+  // На смене сегодня
+  html+='<div class="card"><h3><i data-feather="users"></i> На смене сегодня</h3>';
+  const workingEmps=emps.filter(e=>{
+    if(e.calcType==='fixed_month')return false;
+    const d=todayData[e.id]||{};
+    return d.worked>0;
+  });
+  if(workingEmps.length){
+    html+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    for(const e of workingEmps){
+      html+='<span class="position-tag" style="font-size:13px;padding:6px 14px">'+e.name+' — '+e.position+'</span>';
+    }
+    html+='</div>';
+  }else{
+    html+='<div class="empty-msg">Нет данных за сегодня</div>';
+  }
+  html+='</div>';
+
+  // Топ врачей
+  if(topDocs.length&&isOwner){
+    html+='<div class="card"><h3><i data-feather="award"></i> Топ врачей за '+monthName(state.month)+'</h3>';
+    for(const[name,data] of topDocs){
+      html+='<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><span>'+name+'</span><span style="font-weight:600;color:var(--green)">'+data.revenue.toLocaleString('ru')+' ₽ ('+data.patients+' пациент.)</span></div>';
+    }
+    html+='</div>';
+  }
+
+  return html;
+}
+
+function bindDashboard(){
+  // Can add interactivity later
+}
+
+// ========== DAILY INPUT ==========
+function renderDaily(){
+  const today=todayStr();
+  const emps=getActiveEmps();
+  const data=LS.get('zp_daily_'+today,{});
+  const isOwner=state.role==='owner';
+  const isManager=state.role==='manager';
+  let html=`<div class="card"><h3><i data-feather="calendar"></i> Ввод данных за день</h3>
+    <div style="margin-bottom:14px"><label>Дата: </label><input type="date" id="daily-date" value="${today}"></div>
+    <div class="table-wrap"><table>
+    <tr><th>Сотрудник</th><th>Должность</th><th>Смен/дней</th>${isOwner?'<th>Выручка ₽</th>':''}<th>Пациентов</th></tr>`;
+  for(const e of emps){
+    if(e.calcType==='fixed_month')continue;
+    const d=data[e.id]||{};
+    const canSeeRevenue=isOwner||(isManager&&e.id===state.empId);
+    html+=`<tr data-emp="${e.id}">
+      <td>${e.name}</td><td>${e.position}</td>
+      <td><input type="number" class="daily-worked" data-id="${e.id}" value="${d.worked||0}" min="0" step="0.5"></td>
+      ${canSeeRevenue?`<td><input type="number" class="daily-revenue" data-id="${e.id}" value="${d.revenue||0}" min="0"></td>`:''}
+      <td><input type="number" class="daily-patients" data-id="${e.id}" value="${d.patients||0}" min="0"></td>
+    </tr>`;
+  }
+  html+=`</table></div>
+    <button class="btn btn-success" id="save-daily" style="margin-top:14px"><i data-feather="check"></i> Сохранить</button>
+  </div>`;
+  return html;
+}
+
+function bindDaily(){
+  const saveBtn=document.getElementById('save-daily');
+  if(saveBtn)saveBtn.onclick=()=>{
+    const date=document.getElementById('daily-date').value;
+    if(!date){toast('Выберите дату');return}
+    const data={};
+    document.querySelectorAll('tr[data-emp]').forEach(tr=>{
+      const id=parseInt(tr.dataset.emp);
+      const worked=parseFloat(tr.querySelector('.daily-worked')?.value)||0;
+      const revEl=tr.querySelector('.daily-revenue');
+      const pat=parseInt(tr.querySelector('.daily-patients')?.value)||0;
+      const prev=data[id]||{};
+      // Если поле выручки есть в форме — берём из него, иначе сохраняем предыдущее значение
+      const rev=revEl?(parseFloat(revEl.value)||0):(prev.revenue||0);
+      if(worked||rev||pat)data[id]={worked,revenue:rev,patients:pat};
+    });
+    LS.set('zp_daily_'+date,data);
+    cloudSet('zp_daily_'+date,data);
+    addHistory('Сохранён ввод за '+date);
+    toast('Сохранено за '+date);
+  };
+}
+
+// ========== MONTHLY ==========
+function renderMonthly(){
+  const days=monthDays(state.month);
+  const emps=getActiveEmps();
+  const advances=LS.get('zp_advances_'+state.month,{});
+  const cards=LS.get('zp_cards_'+state.month,{});
+  const isOwner=state.role==='owner';
+  const isManager=state.role==='manager';
+  let totalAll=0;
+  let totalRevAll=0;
+
+  let html=`<div class="month-nav">
+    <button id="prev-month"><i data-feather="arrow-left"></i></button><span>${monthName(state.month)}</span><button id="next-month"><i data-feather="arrow-right"></i></button>
+    <button class="btn btn-primary btn-sm" id="export-csv" style="margin-left:auto"><i data-feather="download"></i> Экспорт CSV</button>
+  </div>`;
+
+  for(const emp of emps){
+    let totalWorked=0,totalPatients=0,totalOwnRevenue=0;
+    for(const day of days){
+      const d=LS.get('zp_daily_'+day,{})[emp.id]||{};
+      totalWorked+=d.worked||0;
+      totalPatients+=d.patients||0;
+      totalOwnRevenue+=d.revenue||0;
+    }
+    if(emp.calcType==='fixed_month'){totalWorked=0;totalOwnRevenue=0}
+    let salary;
+    if(emp.calcType==='fixed_day_percent'){
+      salary=calcSalaryByDays(emp,days)||0;
+    } else {
+      salary=calcSalary({...emp,_ownRevenue:totalOwnRevenue},totalWorked,totalOwnRevenue);
+    }
+    const advance=advances[emp.id]||0;
+    const card=cards[emp.id]||0;
+    const toPay=salary-advance-card;
+    totalAll+=toPay;
+    totalRevAll+=totalOwnRevenue;
+
+    const showSalary=isOwner||(isManager&&emp.id===state.empId);
+    const showAdvances=isOwner||(isManager&&emp.id===state.empId);
+    const showRevenue=isOwner;
+    html+=`<div class="emp-card">
+      <div class="emp-name">${emp.name}</div>
+      <div class="emp-pos">${emp.position} · ${emp.calcType.replace(/_/g,' ')}</div>
+      <div class="emp-stats">
+        <div><div class="label">Дней/смен</div><div class="val">${totalWorked}</div></div>
+        ${showRevenue?`<div><div class="label">Выручка ₽</div><div class="val val-money">${totalOwnRevenue.toLocaleString('ru')}</div></div>`:''}
+        <div><div class="label">Пациентов</div><div class="val">${totalPatients}</div></div>
+        ${showSalary?`<div><div class="label">Начислено ₽</div><div class="val val-money">${salary.toLocaleString('ru')}</div></div>`:''}
+        ${showAdvances?`<div><div class="label">Аванс ₽</div><div class="val">${isOwner?`<input type="number" class="advance-input" data-id="${emp.id}" value="${advance}" min="0" style="width:80px">`:(advance.toLocaleString('ru')+' ₽')}</div></div>`:''}
+        ${showAdvances?`<div><div class="label">На карточку ₽</div><div class="val">${isOwner?`<input type="number" class="card-input" data-id="${emp.id}" value="${card}" min="0" style="width:80px">`:(card.toLocaleString('ru')+' ₽')}</div></div>`:''}
+        ${showSalary?`<div><div class="label">К выдаче ₽</div><div class="val val-total">${toPay.toLocaleString('ru')}</div></div>`:''}
+      </div>
+    </div>`;
+  }
+
+  if(isOwner){
+    html+=`<div class="fot-total">ФОТ: ${totalAll.toLocaleString('ru')} ₽ · Выручка: ${totalRevAll.toLocaleString('ru')} ₽</div>`;
+  }
+
+  return html;
+}
+
+function bindMonthly(){
+  const prev=document.getElementById('prev-month');
+  const next=document.getElementById('next-month');
+  const exp=document.getElementById('export-csv');
+  if(prev)prev.onclick=()=>{
+    const[y,m]=state.month.split('-').map(Number);
+    let nm=m-1,ny=y;if(nm<1){nm=12;ny--}
+    state.month=ny+'-'+String(nm).padStart(2,'0');
+    render();
+  };
+  if(next)next.onclick=()=>{
+    const[y,m]=state.month.split('-').map(Number);
+    let nm=m+1,ny=y;if(nm>12){nm=1;ny++}
+    state.month=ny+'-'+String(nm).padStart(2,'0');
+    render();
+  };
+  if(state.role==='owner'){
+    document.querySelectorAll('.advance-input').forEach(inp=>{
+      inp.onchange=()=>{
+        const advances=LS.get('zp_advances_'+state.month,{});
+        advances[inp.dataset.id]=parseFloat(inp.value)||0;
+        LS.set('zp_advances_'+state.month,advances);
+        cloudSet('zp_advances_'+state.month,advances);
+        toast('☁️ Аванс сохранён');
+        recalcToPay();
+      };
+    });
+    document.querySelectorAll('.card-input').forEach(inp=>{
+      inp.onchange=()=>{
+        const cards=LS.get('zp_cards_'+state.month,{});
+        cards[inp.dataset.id]=parseFloat(inp.value)||0;
+        LS.set('zp_cards_'+state.month,cards);
+        cloudSet('zp_cards_'+state.month,cards);
+        toast('☁️ На карточку сохранено');
+        recalcToPay();
+      };
+    });
+  }
+  if(exp)exp.onclick=()=>exportCSV();
+}
+
+function recalcToPay(){
+  const advances=LS.get('zp_advances_'+state.month,{});
+  const cards=LS.get('zp_cards_'+state.month,{});
+  document.querySelectorAll('.emp-card').forEach(card=>{
+    const advInp=card.querySelector('.advance-input');
+    const cardInp=card.querySelector('.card-input');
+    const salaryEl=card.querySelector('.val-money');
+    const toPayEl=card.querySelector('.val-total');
+    if(salaryEl&&toPayEl){
+      const salary=parseInt(salaryEl.textContent.replace(/\s/g,''))||0;
+      const empId=advInp?advInp.dataset.id:(cardInp?cardInp.dataset.id:null);
+      const adv=advInp?parseFloat(advInp.value)||0:(advances[empId]||0);
+      const crd=cardInp?parseFloat(cardInp.value)||0:(cards[empId]||0);
+      toPayEl.textContent=(salary-adv-crd).toLocaleString('ru');
+    }
+  });
+}
+
+function exportCSV(){
+  const days=monthDays(state.month);
+  const emps=getActiveEmps();
+  const advances=LS.get('zp_advances_'+state.month,{});
+  let csv='\uFEFFСотрудник;Должность;Дней;Пациентов;Выручка;Начислено;Аванс;На карточку;К выдаче\n';
+  const cards=LS.get('zp_cards_'+state.month,{});
+  for(const emp of emps){
+    let tw=0,tp=0,trv=0;
+    for(const day of days){const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});tw+=d.worked||0;tp+=d.patients||0;trv+=d.revenue||0}
+    const sal=emp.calcType==='fixed_day_percent'?(calcSalaryByDays(emp,days)||0):calcSalary({...emp,_ownRevenue:trv},tw,trv);
+    const adv=advances[emp.id]||0;
+    const crd=cards[emp.id]||0;
+    csv+=`${emp.name};${emp.position};${tw};${tp};${trv};${sal};${adv};${crd};${sal-adv-crd}\n`;
+  }
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='payroll_'+state.month+'.csv';a.click();
+  toast('CSV экспортирован');
+}
+
+// ========== MONTH REPORT ==========
+function renderMonthReport(){
+  const days=monthDays(state.month);
+  const emps=getActiveEmps();
+  const advances=LS.get('zp_advances_'+state.month,{});
+  const isOwner=state.role==='owner';
+
+  let totalRevenue=0,totalExpenses=0,totalFOT=0,totalPatients=0;
+  let revenueByDay={};
+  let doctorsRevenue={};
+
+  for(const day of days){
+    let dayRev=0,dayExp=0,dayPat=0;
+    const daily=LS.get('zp_daily_'+day,{});
+    const report=LS.get('zp_report_'+day,null);
+    for(const e of emps){
+      const d=daily[e.id]||{};
+      dayRev+=d.revenue||0;
+      dayPat+=d.patients||0;
+      if(e.position.includes('Врач')){
+        doctorsRevenue[e.name]=(doctorsRevenue[e.name]||0)+(d.revenue||0);
+      }
+    }
+    if(report){
+      for(const p of(report.patients||[])){dayRev+=p.cash||0;dayPat++}
+      for(const e of(report.expenses||[])){dayExp+=e.amount||0}
+    }
+    revenueByDay[day]=dayRev;
+    totalRevenue+=dayRev;
+    totalExpenses+=dayExp;
+    totalPatients+=dayPat;
+  }
+
+  for(const emp of emps){
+    let tw=0,trv=0;
+    for(const day of days){const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});tw+=d.worked||0;trv+=d.revenue||0}
+    let sal;
+    if(emp.calcType==='fixed_day_percent'){
+      sal=calcSalaryByDays(emp,days)||0;
+    } else {
+      sal=calcSalary({...emp,_ownRevenue:trv},tw,trv);
+    }
+    const adv=advances[emp.id]||0;
+    totalFOT+=sal;
+  }
+
+  const margin=totalRevenue-totalFOT-totalExpenses;
+  const avgCheck=totalPatients>0?Math.round(totalRevenue/totalPatients):0;
+  const workDays=Object.values(revenueByDay).filter(v=>v>0).length;
+  const avgDayRev=workDays>0?Math.round(totalRevenue/workDays):0;
+  const topDay=Object.entries(revenueByDay).sort((a,b)=>b[1]-a[1])[0];
+  const lowDays=Object.entries(revenueByDay).filter(([d,v])=>v>0&&v<avgDayRev*0.5);
+
+  const sortedDocs=Object.entries(doctorsRevenue).sort((a,b)=>b[1]-a[1]);
+
+  let html=`<div class="card"><h3><i data-feather="bar-chart-2"></i> Отчёт за ${monthName(state.month)}</h3>
+    <div class="month-nav">
+      <button id="mr-prev-month"><i data-feather="arrow-left"></i></button><span>${monthName(state.month)}</span><button id="mr-next-month"><i data-feather="arrow-right"></i></button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:16px">
+      ${isOwner?`<div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Общая выручка</div>
+        <div style="font-size:22px;font-weight:700;color:var(--accent);margin-top:4px">${totalRevenue.toLocaleString('ru')} ₽</div>
+      </div>
+      <div class="metric-card" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Расходы</div>
+        <div style="font-size:22px;font-weight:700;color:var(--red);margin-top:4px">${totalExpenses.toLocaleString('ru')} ₽</div>
+      </div>
+      <div class="metric-card" style="background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">ФОТ</div>
+        <div style="font-size:22px;font-weight:700;color:var(--green);margin-top:4px">${totalFOT.toLocaleString('ru')} ₽</div>
+      </div>
+      <div class="metric-card" style="background:rgba(79,140,247,0.06);border-color:rgba(79,140,247,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Маржа</div>
+        <div style="font-size:22px;font-weight:700;color:${margin>=0?'var(--green)':'var(--red)'};margin-top:4px">${margin.toLocaleString('ru')} ₽</div>
+      </div>
+      <div class="metric-card" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.15)">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Средний чек</div>
+        <div style="font-size:22px;font-weight:700;color:var(--yellow);margin-top:4px">${avgCheck.toLocaleString('ru')} ₽</div>
+      </div>`:''}
+      <div class="metric-card">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Пациентов</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${totalPatients}</div>
+      </div>
+      <div class="metric-card">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Рабочих дней</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${workDays}</div>
+      </div>
+      ${isOwner?`<div class="metric-card">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px">Ср. выручка/день</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);margin-top:4px">${avgDayRev.toLocaleString('ru')} ₽</div>
+      </div>`:''}
+    </div>
+    ${isOwner&&(topDay?`<div style="margin-top:14px;padding:10px 14px;background:rgba(34,197,94,0.06);border-radius:var(--radius-sm);font-size:13px"><i data-feather="award"></i> <b>Лучший день:</b> ${topDay[0]} — <b style="color:var(--green)">${topDay[1].toLocaleString('ru')} ₽</b></div>`:'')}
+    ${isOwner&&(lowDays.length?`<div style="margin-top:8px;padding:10px 14px;background:rgba(239,68,68,0.06);border-radius:var(--radius-sm);font-size:13px">⚠️ <b>Ниже среднего (менее 50% от нормы):</b> ${lowDays.map(([d])=>d).join(', ')}</div>`:'')}`;
+
+  if(sortedDocs.length&&isOwner){
+    html+=`<div style="margin-top:16px"><h4 style="margin-bottom:10px">👨‍⚕️ Выручка по врачам</h4><div style="display:grid;gap:6px">`;
+    for(const[name,rev] of sortedDocs){
+      const pct=totalRevenue>0?Math.round(rev/totalRevenue*100):0;
+      html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-lighter);border-radius:var(--radius-sm)"><span>${name}</span><span style="font-weight:600;color:var(--accent)">${rev.toLocaleString('ru')} ₽ <span style="color:var(--text-dim);font-size:12px">(${pct}%)</span></span></div>`;
+    }
+    html+=`</div></div>`;
+  }
+
+  html+=`</div>`;
+  return html;
+}
+
+function bindMonthReport(){
+  const prev=document.getElementById('mr-prev-month');
+  const next=document.getElementById('mr-next-month');
+  if(prev)prev.onclick=()=>{
+    const[y,m]=state.month.split('-').map(Number);let nm=m-1,ny=y;if(nm<1){nm=12;ny--}
+    state.month=ny+'-'+String(nm).padStart(2,'0');render();
+  };
+  if(next)next.onclick=()=>{
+    const[y,m]=state.month.split('-').map(Number);let nm=m+1,ny=y;if(nm>12){nm=1;ny++}
+    state.month=ny+'-'+String(nm).padStart(2,'0');render();
+  };
+}
+
+// ========== SCHEDULE CALENDAR ==========
+function renderSchedule(){
+  const[y,m]=state.month.split('-').map(Number);
+  const daysInMonth=new Date(y,m,0).getDate();
+  const dayNames=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const emps=getActiveEmps();
+  const scheduleKey='zp_schedule_'+state.month.replace('-','_');
+  const schedule=LS.get(scheduleKey,{});
+  const today=todayStr();
+
+  let html=`<div class="card"><h3><i data-feather="calendar"></i> График работы</h3>
+    <div class="schedule-controls">
+      <button id="sch-prev-month"><i data-feather="arrow-left"></i></button>
+      <span style="font-weight:600">${monthName(state.month)}</span>
+      <button id="sch-next-month"><i data-feather="arrow-right"></i></button>
+      <button class="btn btn-success btn-sm" id="save-schedule" style="margin-left:auto"><i data-feather="check"></i> Сохранить</button>
+      <button class="btn btn-primary btn-sm" id="print-schedule" style="margin-left:8px">📄 PDF</button>
+    </div>`;
+
+  html+=`<div class="schedule-wrap"><table class="schedule-table"><thead><tr><th class="name-col">Сотрудник</th>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateObj=new Date(y,m-1,d);
+    const dow=dateObj.getDay();
+    const mappedDow=dow===0?6:dow-1;
+    const isWeekend=dow===0||dow===6;
+    const isToday=fmtDate(dateObj)===today;
+    let cls='day-header';
+    if(isWeekend)cls+=' weekend';
+    if(isToday)cls+=' today-col';
+    html+=`<th class="${cls}"><div class="day-num">${d}</div><div class="day-name">${dayNames[mappedDow]}</div></th>`;
+  }
+  html+=`</tr></thead><tbody>`;
+
+  const statusCycle=['Р','О','В','П'];
+  const statusLabels={Р:'Рабочий',О:'Отпуск',В:'Выходной',П:'Практика'};
+  const statusCls={Р:'working',О:'vacation',В:'off',П:'practice'};
+  const statusLblCls={Р:'s-work',О:'s-vacation',В:'s-off',П:'s-practice'};
+  for(const emp of emps){
+    const empSch=schedule[emp.id]||{};
+    html+=`<tr><td class="name-col">${emp.name}</td>`;
+    for(let d=1;d<=daysInMonth;d++){
+      const dateObj=new Date(y,m-1,d);
+      const dow=dateObj.getDay();
+      const isWeekend=dow===0||dow===6;
+      const isToday=fmtDate(dateObj)===today;
+      const val=empSch[d]||(isWeekend?'В':'Р');
+      let cls='shift-cell';
+      cls+=' '+statusCls[val];
+      if(isWeekend)cls+=' weekend';
+      if(isToday)cls+=' today-cell';
+      const label=`<span class="shift-label ${statusLblCls[val]}">${val}</span>`;
+      html+=`<td class="${cls}" data-emp="${emp.id}" data-day="${d}" data-val="${val}" title="${emp.name} — ${d}: ${statusLabels[val]}">${label}</td>`;
+    }
+    html+=`</tr>`;
+  }
+
+  html+=`</tbody></table></div></div>`;
+  return html;
+}
+
+function bindSchedule(){
+  const prev=document.getElementById('sch-prev-month');
+  const next=document.getElementById('sch-next-month');
+  const save=document.getElementById('save-schedule');
+
+  if(prev)prev.onclick=()=>{
+    const[y,m]=state.month.split('-').map(Number);
+    let nm=m-1,ny=y;if(nm<1){nm=12;ny--}
+    state.month=ny+'-'+String(nm).padStart(2,'0');
+    render();
+  };
+  if(next)next.onclick=()=>{
+    const[y,m]=state.month.split('-').map(Number);
+    let nm=m+1,ny=y;if(nm>12){nm=1;ny++}
+    state.month=ny+'-'+String(nm).padStart(2,'0');
+    render();
+  };
+
+  const canEdit=state.role==='owner'||state.role==='manager';
+  document.querySelectorAll('.shift-cell').forEach(cell=>{
+    if(canEdit){
+    cell.onclick=()=>{
+      const empId=parseInt(cell.dataset.emp);
+      const day=parseInt(cell.dataset.day);
+      const scheduleKey='zp_schedule_'+state.month.replace('-','_');
+      const schedule=LS.get(scheduleKey,{});
+      if(!schedule[empId])schedule[empId]={};
+      const cur=cell.dataset.val||'Р';
+      const idx=statusCycle.indexOf(cur);
+      const next=statusCycle[(idx+1)%statusCycle.length];
+      const dateObj=new Date(parseInt(state.month.split('-')[0]),parseInt(state.month.split('-')[1])-1,day);
+      const isWeekend=dateObj.getDay()===0||dateObj.getDay()===6;
+      const defaultVal=isWeekend?'В':'Р';
+      if(next===defaultVal)delete schedule[empId][day];
+      else schedule[empId][day]=next;
+      LS.set(scheduleKey,schedule);
+      render();
+    };
+    } // end if(canEdit)
+  });
+
+  if(save&&canEdit){
+    save.onclick=()=>{
+      cloudSet('zp_schedule_'+state.month.replace('-','_'),LS.get('zp_schedule_'+state.month.replace('-','_'),{}));
+      toast('График сохранён');
+      addHistory('Сохранён график за '+state.month);
+    };
+  }
+  const printBtn=document.getElementById('print-schedule');
+  if(printBtn)printBtn.onclick=()=>{
+    const el=document.querySelector('.schedule-wrap');
+    if(!el)return;
+    const win=window.open('','_blank');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>График ${monthName(state.month)}</title><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700;padding:20px;color:#1e293b}h2{color:#0c1929;margin-bottom:12px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #cbd5e1;padding:6px 8px;text-align:center}th{background:#f1f5f9;font-weight:600}.name-col{text-align:left;font-weight:600;min-width:140px}.s-work{color:#166534;font-weight:700}.s-vacation{color:#b91c1c;font-weight:700}.s-off{color:#64748b}.s-practice{color:#0284c7;font-weight:700}.weekend{background:#fef2f2}.today-cell{outline:2px solid #38bdf8}@media print{body{padding:10px}table{font-size:10px}th,td{padding:4px 5px}}</style></head><body><h2><i data-feather="activity" class="feather-brand" style="margin-right:6px"></i>Земский доктор — График ${monthName(state.month)}</h2>${el.outerHTML}<scr`+`ipt>setTimeout(()=>window.print(),300)</scr`+`ipt></body></html>`);
+    win.document.close();
+  };
+}
+
+// ========== ADMIN REPORT VIEW (owner) ==========
+function renderAdminReportView(){
+  let html=`<div class="card"><h3><i data-feather="bar-chart-2"></i> Отчёт администратора</h3>
+    <div style="margin-bottom:14px"><label>Дата: </label><input type="date" id="admin-report-date" value="${state.reportDate}"></div>
+    <div id="admin-report-content"></div>
+  </div>`;
+  return html;
+}
+
+function bindAdminReportView(){
+  const dateInput=document.getElementById('admin-report-date');
+  const load=()=>{
+    state.reportDate=dateInput.value;
+    const data=LS.get('zp_report_'+state.reportDate,null);
+    const cont=document.getElementById('admin-report-content');
+    if(!data){cont.innerHTML='<div class="empty-msg">Нет отчёта за эту дату</div>';return}
+    cont.innerHTML=renderReportReadonly(data);
+  };
+  dateInput.onchange=load;
+  load();
+}
+
+function renderReportReadonly(data){
+  let html='<h4 style="margin-bottom:8px">Сотрудники на смене</h4><div class="table-wrap"><table><tr><th>ФИО</th><th>Должность</th><th>Начало</th><th>Конец</th><th>Часов</th><th>Опоздание</th><th>Примечание</th></tr>';
+  for(const s of(data.shifts||[])){
+    html+=`<tr><td>${s.name}</td><td>${s.position}</td><td>${s.start||''}</td><td>${s.end||''}</td><td>${s.hours||''}</td><td>${s.late||0}</td><td>${s.note||''}</td></tr>`;
+  }
+  html+='</table></div>';
+
+  html+='<h4 style="margin:14px 0 8px">Приём пациентов и оплата</h4><div class="table-wrap"><table><tr><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Нал ₽</th><th>Безнал ₽</th><th>Способ</th><th>Итого</th><th>Тип</th></tr>';
+  let tNal=0,tBez=0;
+  for(const p of(data.patients||[])){
+    tNal+=p.cash||0;tBez+=p.cashless||0;
+    const isPrimary=p.isPrimary!==false;
+    html+=`<tr><td>${p.patientName}</td><td>${p.doctor}</td><td>${p.service||''}</td><td>${(p.cash||0).toLocaleString('ru')}</td><td>${(p.cashless||0).toLocaleString('ru')}</td><td>${p.method||''}</td><td>${((p.cash||0)+(p.cashless||0)).toLocaleString('ru')}</td><td><span class="patient-type-toggle ${isPrimary?'is-primary':'is-secondary'}">${isPrimary?'🟢 Первичный':'🟡 Вторичный'}</span></td></tr>`;
+  }
+  html+=`<tr style="font-weight:700;color:var(--green)"><td colspan=3>ИТОГО</td><td>${tNal.toLocaleString('ru')}</td><td>${tBez.toLocaleString('ru')}</td><td></td><td>${(tNal+tBez).toLocaleString('ru')}</td><td></td></tr>`;
+  html+=`</table></div>`;
+
+  html+='<h4 style="margin:14px 0 8px">Расходы за день</h4><div class="table-wrap"><table><tr><th>Категория</th><th>Описание</th><th>Кому/Куда</th><th>Сумма ₽</th><th>Нал/Безнал</th><th>Документ</th><th>Примечание</th></tr>';
+  let tExp=0;
+  for(const e of(data.expenses||[])){
+    tExp+=e.amount||0;
+    html+=`<tr><td>${e.category}</td><td>${e.description||''}</td><td>${e.destination||''}</td><td>${(e.amount||0).toLocaleString('ru')}</td><td>${e.type||''}</td><td>${e.document||''}</td><td>${e.note||''}</td></tr>`;
+  }
+  html+=`<tr style="font-weight:700;color:var(--red)"><td colspan=3>ИТОГО РАСХОДЫ</td><td>${tExp.toLocaleString('ru')}</td><td colspan=3></td></tr>`;
+  html+='</table></div>';
+  return html;
+}
+
+// ========== ADMIN FORM ==========
+function renderAdminForm(){
+  const today=todayStr();
+  const data=LS.get('zp_report_'+today,{shifts:[],patients:[],expenses:[]});
+  const emps=getActiveEmps();
+  const doctors=emps.filter(e=>e.position.includes('Врач')||e.position.includes('Хирург')||e.position.includes('Терапевт'));
+
+  let html=`<div class="card"><h3><i data-feather="file-text"></i> Мой отчёт за ${today}</h3>
+    <h4 style="margin-bottom:8px">Сотрудники на смене</h4>
+    <div class="table-wrap"><table id="shifts-table">
+    <tr><th>ФИО</th><th>Должность</th><th>Начало</th><th>Конец</th><th>Часов</th><th>Опоздание</th><th>Примечание</th><th></th></tr>`;
+  for(const s of data.shifts){
+    html+=shiftRow(s,emps);
+  }
+  html+=`</table></div><button class="btn btn-outline btn-sm" id="add-shift" style="margin-top:8px">+ Добавить строку</button>`;
+
+  html+=`<h4 style="margin:18px 0 8px">Приём пациентов и оплата</h4>
+    <div class="table-wrap"><table id="patients-table">
+    <tr><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Нал ₽</th><th>Безнал ₽</th><th>Способ</th><th>Итого</th><th>Тип</th><th></th></tr>`;
+  for(const p of data.patients){
+    html+=patientRow(p,doctors);
+  }
+  html+=`</table></div>
+    <div id="patients-totals" style="text-align:right;margin-top:8px;font-weight:600;color:var(--green)"></div>
+    <button class="btn btn-outline btn-sm" id="add-patient" style="margin-top:8px">+ Добавить пациента</button>`;
+
+  html+=`<h4 style="margin:18px 0 8px">Расходы за день</h4>
+    <div class="table-wrap"><table id="expenses-table">
+    <tr><th>Категория</th><th>Описание</th><th>Кому/Куда</th><th>Сумма ₽</th><th>Нал/Безнал</th><th>Документ</th><th>Примечание</th><th></th></tr>`;
+  for(const e of data.expenses){
+    html+=expenseRow(e);
+  }
+  html+=`</table></div>
+    <div id="expenses-total" style="text-align:right;margin-top:8px;font-weight:600;color:var(--red)"></div>
+    <button class="btn btn-outline btn-sm" id="add-expense" style="margin-top:8px">+ Добавить расход</button>`;
+
+  html+=`<div style="margin-top:20px"><button class="btn btn-success" id="save-report"><i data-feather="check"></i> Сохранить отчёт</button></div></div>`;
+
+  return html;
+}
+
+function shiftRow(s,emps){
+  const opts=emps.map(e=>`<option value="${e.name}" ${e.name===s.name?'selected':''}>${e.name}</option>`).join('');
+  const positionOptions=['Врач стоматолог ортопед','Врач стоматолог хирург','Врач стоматолог терапевт','Врач ортопед','Врач хирург','Врач терапевт','Ассистент','Администратор','Управляющая'].map(p=>`<option value="${p}" ${s.position===p?'selected':''}>${p}</option>`).join('');
+  return `<tr class="shift-row"><td><select class="shift-name">${opts}<option value="">-- вручную --</option></select>
+    <input type="text" class="shift-name-manual" value="${s.name==='opts'?'':s.name}" style="display:none;margin-top:4px"></td>
+    <td><select class="shift-position"><option value="">-- должность --</option>${positionOptions}</select></td>
+    <td><input type="time" class="shift-start" value="${s.start||''}"></td>
+    <td><input type="time" class="shift-end" value="${s.end||''}"></td>
+    <td class="shift-hours">${s.hours||''}</td>
+    <td><input type="number" class="shift-late" value="${s.late||0}" min="0"></td>
+    <td><input type="text" class="shift-note" value="${s.note||''}"></td>
+    <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
+}
+
+function patientRow(p,doctors){
+  const opts=doctors.map(e=>`<option value="${e.name}" ${e.name===p.doctor?'selected':''}>${e.name}</option>`).join('');
+  const serviceOptions=['Ортопедия','Терапия','Хирургия','Имплантация'].map(s=>`<option value="${s}" ${p.service===s?'selected':''}>${s}</option>`).join('');
+  return `<tr class="patient-row"><td><input type="text" class="pat-name" value="${p.patientName||''}"></td>
+    <td><select class="pat-doctor"><option value="">--</option>${opts}</select></td>
+    <td><select class="pat-service"><option value="">-- услуга --</option>${serviceOptions}</select></td>
+    <td><input type="number" class="pat-cash" value="${p.cash||0}" min="0"></td>
+    <td><input type="number" class="pat-cashless" value="${p.cashless||0}" min="0"></td>
+    <td><select class="pat-method"><option value="">—</option><option value="Сбер" ${p.method==='Сбер'?'selected':''}>Сбер</option><option value="ВТБ" ${p.method==='ВТБ'?'selected':''}>ВТБ</option><option value="Т-Банк" ${p.method==='Т-Банк'?'selected':''}>Т-Банк</option><option value="СБП QR" ${p.method==='СБП QR'?'selected':''}>СБП QR</option><option value="Другое" ${p.method==='Другое'?'selected':''}>Другое</option></select></td>
+    <td class="pat-total">${((p.cash||0)+(p.cashless||0)).toLocaleString('ru')}</td>
+    <td><span class="patient-type-toggle ${p.isPrimary!==false?'is-primary':'is-secondary'}" data-primary="${p.isPrimary!==false}" title="Нажмите для переключения">${p.isPrimary!==false?'🟢 Первичный':'🟡 Вторичный'}</span></td>
+    <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
+}
+
+function expenseRow(e){
+  return `<tr class="expense-row">
+    <td><select class="exp-category"><option value="Медикаменты" ${e.category==='Медикаменты'?'selected':''}>Медикаменты</option><option value="Расходные материалы" ${e.category==='Расходные материалы'?'selected':''}>Расходные материалы</option><option value="Ремонт" ${e.category==='Ремонт'?'selected':''}>Ремонт</option><option value="Хознужды" ${e.category==='Хознужды'?'selected':''}>Хознужды</option><option value="Зарплатные" ${e.category==='Зарплатные'?'selected':''}>Зарплатные</option><option value="Налоги" ${e.category==='Налоги'?'selected':''}>Налоги</option><option value="Другие" ${e.category==='Другие'?'selected':''}>Другие</option></select></td>
+    <td><input type="text" class="exp-desc" value="${e.description||''}"></td>
+    <td><input type="text" class="exp-dest" value="${e.destination||''}"></td>
+    <td><input type="number" class="exp-amount" value="${e.amount||0}" min="0"></td>
+    <td><select class="exp-type"><option value="Нал" ${e.type==='Нал'?'selected':''}>Нал</option><option value="Безнал" ${e.type==='Безнал'?'selected':''}>Безнал</option></select></td>
+    <td><input type="text" class="exp-doc" value="${e.document||''}"></td>
+    <td><input type="text" class="exp-note" value="${e.note||''}"></td>
+    <td><button class="btn btn-danger btn-sm del-row"><i data-feather="x"></i></button></td></tr>`;
+}
+
+function bindAdminForm(){
+  const addShift=document.getElementById('add-shift');
+  const addPat=document.getElementById('add-patient');
+  const addExp=document.getElementById('add-expense');
+  const saveBtn=document.getElementById('save-report');
+
+  if(addShift)addShift.onclick=()=>{
+    const tbody=document.getElementById('shifts-table');
+    tbody.insertAdjacentHTML('beforeend',shiftRow({},getActiveEmps()));
+    bindShiftRowEvents(tbody.lastElementChild);
+  };
+  if(addPat)addPat.onclick=()=>{
+    const emps=getActiveEmps();
+    const doctors=emps.filter(e=>e.position.includes('Врач')||e.position.includes('Хирург')||e.position.includes('Терапевт'));
+    const tbody=document.getElementById('patients-table');
+    tbody.insertAdjacentHTML('beforeend',patientRow({},doctors));
+    bindPatientRowEvents(tbody.lastElementChild);
+  };
+  if(addExp)addExp.onclick=()=>{
+    const tbody=document.getElementById('expenses-table');
+    tbody.insertAdjacentHTML('beforeend',expenseRow({}));
+    bindExpenseRowEvents(tbody.lastElementChild);
+  };
+
+  document.querySelectorAll('.shift-row').forEach(bindShiftRowEvents);
+  document.querySelectorAll('.patient-row').forEach(bindPatientRowEvents);
+  document.querySelectorAll('.expense-row').forEach(bindExpenseRowEvents);
+  calcReportTotals();
+
+  if(saveBtn)saveBtn.onclick=()=>{
+    const today=todayStr();
+    const data={shifts:[],patients:[],expenses:[]};
+    document.querySelectorAll('.shift-row').forEach(tr=>{
+      const nameSel=tr.querySelector('.shift-name');
+      const nameMan=tr.querySelector('.shift-name-manual');
+      const name=nameSel.value==='-- вручную --'?(nameMan.value||''):nameSel.value;
+      data.shifts.push({
+        name,
+        position:tr.querySelector('.shift-position').value,
+        start:tr.querySelector('.shift-start').value,
+        end:tr.querySelector('.shift-end').value,
+        hours:tr.querySelector('.shift-hours').textContent,
+        late:parseInt(tr.querySelector('.shift-late').value)||0,
+        note:tr.querySelector('.shift-note').value
+      });
+    });
+    document.querySelectorAll('.patient-row').forEach(tr=>{
+      const cash=parseInt(tr.querySelector('.pat-cash').value)||0;
+      const cashless=parseInt(tr.querySelector('.pat-cashless').value)||0;
+      const patToggle=tr.querySelector('.patient-type-toggle');
+      data.patients.push({
+        patientName:tr.querySelector('.pat-name').value,
+        doctor:tr.querySelector('.pat-doctor').value,
+        service:tr.querySelector('.pat-service').value,
+        cash,cashless,
+        method:tr.querySelector('.pat-method').value,
+        isPrimary:patToggle?patToggle.dataset.primary==='true':true
+      });
+    });
+    document.querySelectorAll('.expense-row').forEach(tr=>{
+      data.expenses.push({
+        category:tr.querySelector('.exp-category').value,
+        description:tr.querySelector('.exp-desc').value,
+        destination:tr.querySelector('.exp-dest').value,
+        amount:parseInt(tr.querySelector('.exp-amount').value)||0,
+        type:tr.querySelector('.exp-type').value,
+        document:tr.querySelector('.exp-doc').value,
+        note:tr.querySelector('.exp-note').value
+      });
+    });
+    LS.set('zp_report_'+today,data);
+    cloudSet('zp_report_'+today,data);
+    addHistory('Сохранён отчёт администратора за '+today);
+    toast('Отчёт сохранён');
+  };
+}
+
+function bindShiftRowEvents(tr){
+  const nameSel=tr.querySelector('.shift-name');
+  const nameMan=tr.querySelector('.shift-name-manual');
+  if(nameSel){
+    nameSel.onchange=()=>{
+      nameMan.style.display=nameSel.value==='-- вручную --'?'block':'none';
+      if(nameSel.value!=='-- вручную --'){
+        const emp=getActiveEmps().find(e=>e.name===nameSel.value);
+        if(emp){
+          const posSel=tr.querySelector('.shift-position');
+          if(posSel._ts){posSel._ts.setValue(emp.position)}
+          else{posSel.value=emp.position}
+        }
+      }
+    };
+  }
+  const start=tr.querySelector('.shift-start');
+  const end=tr.querySelector('.shift-end');
+  const updHours=()=>{
+    if(start.value&&end.value){
+      const[sh,sm]=start.value.split(':').map(Number);
+      const[eh,em]=end.value.split(':').map(Number);
+      let h=(eh+em/60)-(sh+sm/60);
+      if(h<0)h+=24;
+      tr.querySelector('.shift-hours').textContent=h.toFixed(1);
+    }else{tr.querySelector('.shift-hours').textContent=''}
+  };
+  if(start)start.onchange=updHours;
+  if(end)end.onchange=updHours;
+  tr.querySelector('.del-row').onclick=()=>tr.remove();
+  // Initialize Tom Select for position dropdown
+  const posSel=tr.querySelector('.shift-position');
+  if(posSel&&!posSel.tomselect){
+    posSel._ts=new TomSelect(posSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'},dropdownParent:'body'});
+  }
+}
+
+function bindPatientRowEvents(tr){
+  const cashInp=tr.querySelector('.pat-cash');
+  const cashlessInp=tr.querySelector('.pat-cashless');
+  const upd=()=>{
+    const c=parseInt(cashInp.value)||0;
+    const b=parseInt(cashlessInp.value)||0;
+    tr.querySelector('.pat-total').textContent=(c+b).toLocaleString('ru');
+    calcReportTotals();
+  };
+  cashInp.oninput=upd;cashlessInp.oninput=upd;
+  tr.querySelector('.del-row').onclick=()=>{tr.remove();calcReportTotals()};
+  // Initialize Tom Select for service dropdown
+  const svcSel=tr.querySelector('.pat-service');
+  if(svcSel&&!svcSel.tomselect){
+    svcSel._ts=new TomSelect(svcSel,{create:false,allowEmptyOption:true,sortField:{field:'text',direction:'asc'},dropdownParent:'body'});
+  }
+  // Toggle primary/secondary
+  const toggle=tr.querySelector('.patient-type-toggle');
+  if(toggle){
+    toggle.onclick=()=>{
+      const isPrimary=toggle.dataset.primary==='true';
+      toggle.dataset.primary=String(!isPrimary);
+      toggle.className='patient-type-toggle '+(isPrimary?'is-secondary':'is-primary');
+      toggle.textContent=isPrimary?'🟡 Вторичный':'🟢 Первичный';
+    };
+  }
+}
+
+function bindExpenseRowEvents(tr){
+  const amtInp=tr.querySelector('.exp-amount');
+  amtInp.oninput=calcReportTotals;
+  tr.querySelector('.del-row').onclick=()=>{tr.remove();calcReportTotals()};
+}
+
+function calcReportTotals(){
+  let tCash=0,tBez=0;
+  document.querySelectorAll('.patient-row').forEach(tr=>{
+    tCash+=parseInt(tr.querySelector('.pat-cash').value)||0;
+    tBez+=parseInt(tr.querySelector('.pat-cashless').value)||0;
+  });
+  const pt=document.getElementById('patients-totals');
+  if(pt)pt.textContent=`Нал: ${tCash.toLocaleString('ru')} · Безнал: ${tBez.toLocaleString('ru')} · Всего: ${(tCash+tBez).toLocaleString('ru')} · Пациентов: ${document.querySelectorAll('.patient-row').length}`;
+
+  let tExp=0;
+  document.querySelectorAll('.expense-row').forEach(tr=>{
+    tExp+=parseInt(tr.querySelector('.exp-amount').value)||0;
+  });
+  const et=document.getElementById('expenses-total');
+  if(et)et.textContent=`Итого расходы: ${tExp.toLocaleString('ru')} ₽`;
+}
+
+// ========== EMPLOYEES ==========
+let empEditId=null;
+let showAddEmp=false;
+let empSearchQ='';
+
+function renderEmployees(){
+  let allEmps=getEmps();
+  if(allEmps.length===0&&LS.get('zp_employees')){LS.del('zp_employees');initDefaults();allEmps=getEmps();}
+  const emps=allEmps.filter(e=>{
+    if(!empSearchQ)return true;
+    const q=empSearchQ.toLowerCase();
+    return e.name.toLowerCase().includes(q)||e.position.toLowerCase().includes(q);
+  });
+  const positions=getPositions();
+  const editingEmp=empEditId?emps.find(e=>e.id===empEditId):null;
+  const currentRole=editingEmp?editingEmp.appRole||'none':'none';
+  const currentLogin=editingEmp?(editingEmp.login||''):'';
+  const currentPass=editingEmp?(editingEmp.pass||''):'';
+
+  let html=`<div class="card"><h3><i data-feather="users"></i> Сотрудники (${getEmps().length})</h3>
+    <div style="margin-bottom:12px"><input type="text" id="emp-search" placeholder="Поиск по ФИО или должности..." value="${empSearchQ}" style="width:100%;max-width:320px;padding:10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px"></div>
+    <button class="btn btn-primary btn-sm" id="toggle-add-emp" style="margin-bottom:14px">+ Добавить сотрудника</button>
+    <div id="add-emp-form" class="${showAddEmp?'':'hidden'}" style="margin-bottom:18px">
+      <div class="card" style="background:var(--bg-lighter)">
+        <h4 id="emp-form-title">Новый сотрудник</h4>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:10px">
+          <div><label style="font-size:12px;color:var(--text-dim)">ФИО</label><input type="text" id="emp-fio" autocomplete="off"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Должность</label><select id="emp-position">${positions.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="__new__">+ Новая должность...</option></select><input type="text" id="emp-position-new" style="display:none;margin-top:4px" placeholder="Новая должность"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Тип расчёта</label><select id="emp-calc">
+            <option value="fixed_day">Фикс за смену</option>
+            <option value="fixed_month">Фикс за месяц</option>
+            <option value="percent">Процент</option>
+            <option value="fixed_day_percent">Фикс/смен + %</option>
+            <option value="fixed_month_percent">Фикс/мес + %</option>
+            <option value="fixed_day_percent_own">Фикс/смен + % от своей выручки</option>
+          </select></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Фикс за смену ₽</label><input type="number" id="emp-fixed-day" value="0" min="0"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Фикс за месяц ₽</label><input type="number" id="emp-fixed-month" value="0" min="0"></div>
+          <div><label style="font-size:12px;color:var(--text-dim)">Процент %</label><input type="number" id="emp-percent" value="0" min="0" max="100"></div>
+          <div><label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="emp-can-login" ${currentRole!=='none'?'checked':''}> Вход в приложение</label></div>
+          <div id="emp-cred-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text-dim)">Логин</label><input type="text" id="emp-login" value="${currentLogin}" autocomplete="new-password" placeholder="Логин"></div>
+          <div id="emp-pass-fields" style="${currentRole==='none'?'display:none':''}"><label style="font-size:12px;color:var(--text-dim)">Пароль</label><input type="password" id="emp-pass" value="${currentPass}" autocomplete="new-password" placeholder="Пароль"></div>
+          <div id="emp-perms-section" style="grid-column:1/-1;${currentRole==='none'?'display:none':''}"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:8px"><i data-feather="lock"></i> Права доступа</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-salaries" class="emp-perm" data-perm="seeSalaries" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSalaries?'checked':''}> 👁 Видеть зарплаты</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-revenue" class="emp-perm" data-perm="seeRevenue" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeRevenue?'checked':''}> 👁 Видеть выручку</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-schedule" class="emp-perm" data-perm="seeSchedule" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeSchedule?'checked':''}> 👁 Видеть график</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-see-expenses" class="emp-perm" data-perm="seeExpenses" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.seeExpenses?'checked':''}> 👁 Видеть расходы</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-input" class="emp-perm" data-perm="canInput" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canInput?'checked':''}> <i data-feather="edit-2"></i> Вводить данные</label>
+            <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="perm-can-report" class="emp-perm" data-perm="canFillReport" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.canFillReport?'checked':''}> <i data-feather="edit-2"></i> Заполнять отчёт</label>
+            <label style="font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600"><input type="checkbox" id="perm-is-owner" class="emp-perm" data-perm="isOwner" ${editingEmp&&editingEmp.permissions&&editingEmp.permissions.isOwner?'checked':''}> <i data-feather="star"></i> Полный доступ</label>
+          </div></div>
+        </div>
+        <button class="btn btn-success btn-sm" id="save-emp"><i data-feather="check"></i> Сохранить</button>
+        <button class="btn btn-outline btn-sm" id="cancel-emp" style="margin-left:8px">Отмена</button>
+      </div>
+    </div>
+    <div class="table-wrap"><table>
+    <tr><th>ФИО</th><th>Должность</th><th>Тип расчёта</th><th>Фикс/день</th><th>Фикс/мес</th><th>%</th><th>Доступ</th><th>Статус</th><th></th></tr>`;
+  for(const e of emps){
+    const permCount = e.permissions ? Object.values(e.permissions).filter(v=>v).length : 0;
+    const permText = !e.permissions || permCount===0 ? '—' : (e.permissions.isOwner ? '<i data-feather="star"></i> Владелец' : permCount + ' прав');
+    const permColor = !e.permissions || permCount===0 ? 'var(--text-dim)' : (e.permissions.isOwner ? 'var(--accent)' : 'var(--green)');
+    html+=`<tr><td>${e.name}</td><td>${e.position}</td><td>${e.calcType.replace(/_/g,' ')}</td>
+      <td>${e.fixedDay||''}</td><td>${e.fixedMonth||''}</td><td>${e.percent||''}</td>
+      <td><span style="color:${permColor};font-size:12px;font-weight:600">${permText}</span></td>
+      <td><span style="color:${e.active?'var(--green)':'var(--red)'}">${e.active?'Активен':'Неактивен'}</span></td>
+      <td class="row-btns">
+        <button class="btn btn-outline btn-sm edit-emp" data-id="${e.id}"><i data-feather="edit-2"></i></button>
+        <button class="btn ${e.active?'btn-warning':'btn-success'} btn-sm toggle-emp" data-id="${e.id}">${e.active?'<i data-feather="pause"></i>':'<i data-feather="play"></i>'}</button>
+        <button class="btn btn-danger btn-sm del-emp" data-id="${e.id}"><i data-feather="trash-2"></i></button>
+      </td></tr>`;
+  }
+  html+=`</table></div></div>`;
+
+  html+=`<div class="card"><h3>📌 Должности</h3>
+    <div style="margin-bottom:10px;display:flex;gap:8px">
+      <input type="text" id="new-position" placeholder="Новая должность" style="max-width:200px">
+      <button class="btn btn-primary btn-sm" id="add-position">+</button>
+    </div><div>`;
+  for(const p of positions){
+    const hasEmp=emps.some(e=>e.position===p);
+    html+=`<span class="position-tag">${p}${!hasEmp?` <span class="del-pos" data-pos="${p}" title="Удалить"><i data-feather="x"></i></span>`:''}</span>`;
+  }
+  html+=`</div></div>`;
+
+  return html;
+}
+
+function bindEmployees(){
+  const toggleAdd=document.getElementById('toggle-add-emp');
+  if(toggleAdd)toggleAdd.onclick=()=>{
+    showAddEmp=!showAddEmp;
+    empEditId=null;
+    render();
+  };
+
+  const searchInput=document.getElementById('emp-search');
+  if(searchInput)searchInput.oninput=()=>{empSearchQ=searchInput.value;render()};
+
+  const canLogin=document.getElementById('emp-can-login');
+  function toggleCredFields(){
+    const show=canLogin&&canLogin.checked;
+    const credFields=document.getElementById('emp-cred-fields');
+    const passFields=document.getElementById('emp-pass-fields');
+    const permsSection=document.getElementById('emp-perms-section');
+    if(credFields)credFields.style.display=show?'':'none';
+    if(passFields)passFields.style.display=show?'':'none';
+    if(permsSection)permsSection.style.display=show?'':'none';
+  }
+  if(canLogin)canLogin.onchange=toggleCredFields;
+  toggleCredFields();
+
+  const ownerCheck=document.getElementById('perm-is-owner');
+  if(ownerCheck)ownerCheck.onchange=()=>{
+    document.querySelectorAll('.emp-perm').forEach(cb=>{if(cb.id!=='perm-is-owner')cb.checked=ownerCheck.checked});
+  };
+
+  const posSel=document.getElementById('emp-position');
+  if(posSel)posSel.onchange=()=>{
+    document.getElementById('emp-position-new').style.display=posSel.value==='__new__'?'block':'none';
+  };
+
+  const cancelBtn=document.getElementById('cancel-emp');
+  if(cancelBtn)cancelBtn.onclick=()=>{showAddEmp=false;empEditId=null;render()};
+
+  const saveBtn=document.getElementById('save-emp');
+  if(saveBtn)saveBtn.onclick=()=>{
+    const posSel=document.getElementById('emp-position');
+    let position=posSel.value;
+    if(position==='__new__'){
+      position=document.getElementById('emp-position-new').value.trim();
+      if(!position){toast('Введите название должности');return}
+      const ps=getPositions();
+      if(!ps.includes(position)){ps.push(position);LS.set('zp_positions',ps)}
+    }
+    const name=document.getElementById('emp-fio').value.trim();
+    if(!name){toast('Введите ФИО');return}
+    const canLogin=document.getElementById('emp-can-login').checked;
+    const login=canLogin?(document.getElementById('emp-login').value.trim()):'';
+    const pass=canLogin?(document.getElementById('emp-pass').value):'';
+    if(canLogin&&(!login||!pass)){toast('Укажите логин и пароль');return}
+    const permissions={};
+    document.querySelectorAll('.emp-perm').forEach(cb=>{permissions[cb.dataset.perm]=cb.checked});
+    // Определяем appRole: при редактировании сохраняем оригинальную роль (owner/manager/admin), иначе 'custom'
+    let appRole=canLogin?'custom':'none';
+    if(empEditId&&canLogin){
+      const origEmp=getEmps().find(e=>e.id===empEditId);
+      if(origEmp&&origEmp.appRole&&origEmp.appRole!=='none'&&origEmp.appRole!=='custom'){appRole=origEmp.appRole}
+    }
+    const obj={
+      name,
+      position,
+      calcType:document.getElementById('emp-calc').value,
+      fixedDay:parseInt(document.getElementById('emp-fixed-day').value)||0,
+      fixedMonth:parseInt(document.getElementById('emp-fixed-month').value)||0,
+      percent:parseInt(document.getElementById('emp-percent').value)||0,
+      active:true,
+      appRole,
+      login:login||undefined,
+      pass:pass||undefined,
+      permissions:canLogin?permissions:undefined
+    };
+    const emps=getEmps();
+    if(empEditId){
+      const idx=emps.findIndex(e=>e.id===empEditId);
+      if(idx>=0){
+        obj.id=empEditId;
+        obj.active=emps[idx].active;
+        emps[idx]=obj;
+      }
+      addHistory('Изменён сотрудник: '+name);
+    }else{
+      obj.id=empIdGen();
+      emps.push(obj);
+      addHistory('Добавлен сотрудник: '+name);
+    }
+    LS.set('zp_employees',emps);
+    cloudSet('zp_employees',emps);
+    // Синхронизируем логин/пароль в zp_creds для manager/admin
+    if(canLogin&&login&&pass){
+      const creds=LS.get('zp_creds',{});
+      if(appRole==='manager'){creds.manager={login,pass}}
+      if(appRole==='admin'){creds.admin={login,pass}}
+      if(appRole==='owner'){creds.owner={login,pass}}
+      LS.set('zp_creds',creds);
+    }
+    showAddEmp=false;empEditId=null;
+    render();toast('Сохранено');
+  };
+
+  document.querySelectorAll('.edit-emp').forEach(b=>{
+    b.onclick=()=>{
+      empEditId=parseInt(b.dataset.id);
+      const emp=getEmps().find(e=>e.id===empEditId);
+      if(!emp)return;
+      showAddEmp=true;render();
+      setTimeout(()=>{
+        document.getElementById('emp-fio').value=emp.name;
+        const posSel=document.getElementById('emp-position');
+        const posOpts=Array.from(posSel.options).map(o=>o.value);
+        if(posOpts.includes(emp.position)){posSel.value=emp.position}
+        else{
+          posSel.value='__new__';
+          document.getElementById('emp-position-new').style.display='block';
+          document.getElementById('emp-position-new').value=emp.position;
+        }
+        document.getElementById('emp-calc').value=emp.calcType;
+        document.getElementById('emp-fixed-day').value=emp.fixedDay;
+        document.getElementById('emp-fixed-month').value=emp.fixedMonth;
+        document.getElementById('emp-percent').value=emp.percent;
+        document.getElementById('emp-login').value=emp.login||'';
+        document.getElementById('emp-pass').value=emp.pass||'';
+        document.getElementById('emp-form-title').textContent='Редактирование: '+emp.name;
+        const canLogin=emp.appRole&&emp.appRole!=='none';
+        document.getElementById('emp-can-login').checked=canLogin;
+        const credFields=document.getElementById('emp-cred-fields');
+        const passFields=document.getElementById('emp-pass-fields');
+        const permsSection=document.getElementById('emp-perms-section');
+        if(credFields)credFields.style.display=canLogin?'':'none';
+        if(passFields)passFields.style.display=canLogin?'':'none';
+        if(permsSection)permsSection.style.display=canLogin?'':'none';
+        if(emp.permissions){
+          document.querySelectorAll('.emp-perm').forEach(cb=>{
+            const perm=cb.dataset.perm;
+            cb.checked=!!emp.permissions[perm];
+          });
+        }
+      },50);
+    };
+  });
+
+  document.querySelectorAll('.toggle-emp').forEach(b=>{
+    b.onclick=()=>{
+      const id=parseInt(b.dataset.id);
+      const emps=getEmps();
+      const idx=emps.findIndex(e=>e.id===id);
+      if(idx>=0){emps[idx].active=!emps[idx].active;LS.set('zp_employees',emps);cloudSet('zp_employees',emps);addHistory((emps[idx].active?'Активирован':'Деактивирован')+': '+emps[idx].name);render()}
+    };
+  });
+
+  document.querySelectorAll('.del-emp').forEach(b=>{
+    b.onclick=()=>{
+      if(!confirm('Удалить сотрудника?'))return;
+      const id=parseInt(b.dataset.id);
+      let emps=getEmps();emps=emps.filter(e=>e.id!==id);LS.set('zp_employees',emps);cloudSet('zp_employees',emps);addHistory('Удалён сотрудник id='+id);render();toast('Удалён');
+    };
+  });
+
+  const addPos=document.getElementById('add-position');
+  if(addPos)addPos.onclick=()=>{
+    const inp=document.getElementById('new-position');
+    const val=inp.value.trim();
+    if(!val)return;
+    const ps=getPositions();
+    if(ps.includes(val)){toast('Уже есть');return}
+    ps.push(val);LS.set('zp_positions',ps);addHistory('Добавлена должность: '+val);render();
+  };
+
+  document.querySelectorAll('.del-pos').forEach(s=>{
+    s.onclick=()=>{
+      const pos=s.dataset.pos;
+      let ps=getPositions();ps=ps.filter(p=>p!==pos);LS.set('zp_positions',ps);addHistory('Удалена должность: '+pos);render();
+    };
+  });
+}
+
+// ========== SETTINGS ==========
+function renderSettings(){
+  const creds=LS.get('zp_creds',{});
+  const emps=getEmps();
+  const mgrEmp=emps.find(e=>e.appRole==='manager');
+  const admEmp=emps.find(e=>e.appRole==='admin');
+  const mgrPerms=mgrEmp?.permissions||{};
+  const admPerms=admEmp?.permissions||{};
+  function permCheckboxes(prefix,perms){
+    const items=[
+      {key:'seeSalaries',label:'👁 Видеть зарплаты'},
+      {key:'seeRevenue',label:'👁 Видеть выручку'},
+      {key:'seeSchedule',label:'👁 Видеть график'},
+      {key:'seeExpenses',label:'👁 Видеть расходы'},
+      {key:'canInput',label:'✏️ Вводить данные'},
+      {key:'canFillReport',label:'📝 Заполнять отчёт'},
+      {key:'isOwner',label:'⭐ Полный доступ'}
+    ];
+    return items.map(it=>`<label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="${prefix}-${it.key}" class="${prefix}-perm" data-perm="${it.key}" ${perms[it.key]?'checked':''}> ${it.label}</label>`).join('');
+  }
+  let html=`<div class="card"><h3><i data-feather="settings"></i> Настройки</h3>
+
+    <div class="settings-section">
+      <h4>🔑 Пароль управляющей</h4>
+      <div class="settings-row"><label>Логин</label><input type="text" id="mgr-login" value="${creds.manager?.login||''}"></div>
+      <div class="settings-row"><label>Пароль</label><input type="text" id="mgr-pass" value="${creds.manager?.pass||''}"></div>
+      <div style="margin-top:8px;margin-bottom:8px"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:6px">Права доступа:</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px">${permCheckboxes('mgr',mgrPerms)}</div></div>
+      <button class="btn btn-primary btn-sm" id="save-mgr">Сохранить</button>
+    </div>
+
+    <div class="settings-section">
+      <h4>🔑 Пароль администратора</h4>
+      <div class="settings-row"><label>Логин</label><input type="text" id="adm-login" value="${creds.admin?.login||''}"></div>
+      <div class="settings-row"><label>Пароль</label><input type="text" id="adm-pass" value="${creds.admin?.pass||''}"></div>
+      <div style="margin-top:8px;margin-bottom:8px"><label style="font-size:13px;color:var(--accent);font-weight:600;display:block;margin-bottom:6px">Права доступа:</label><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px">${permCheckboxes('adm',admPerms)}</div></div>
+      <button class="btn btn-primary btn-sm" id="save-adm">Сохранить</button>
+    </div>
+
+    <div class="settings-section">
+      <h4><i data-feather="database"></i> Данные</h4>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-success btn-sm" id="export-json"><i data-feather="download"></i> Экспорт JSON</button>
+        <button class="btn btn-primary btn-sm" id="import-json"><i data-feather="upload"></i> Импорт JSON</button>
+        <button class="btn btn-danger btn-sm" id="clear-data"><i data-feather="trash-2"></i> Очистить все данные</button>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none">
+    </div>
+
+    <div class="settings-section">
+      <h4>☁️ Облачное хранилище (Supabase)</h4>
+      <div class="cloud-config">
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Синхронизация данных через Supabase. Приложение работает без интернета — данные кэшируются локально.</p>
+        <div class="cc-row"><label>Supabase URL</label><input type="text" id="cloud-url" value="${Cloud.config.url||''}" placeholder="https://xxxxx.supabase.co"></div>
+        <div class="cc-row"><label>Anon Key</label><input type="password" id="cloud-key" value="${Cloud.config.key||''}" placeholder="eyJhbGci..."></div>
+        <div class="cc-btns">
+          <button class="btn btn-outline btn-sm" id="cloud-check"><i data-feather="search"></i> Проверить</button>
+          <button class="btn btn-primary btn-sm" id="cloud-save-config"><i data-feather="check"></i> Сохранить настройки</button>
+          <button class="btn btn-outline btn-sm" id="cloud-reset-config" style="color:var(--red);border-color:var(--red)"><i data-feather="arrow-left"></i> Сбросить по умолчанию</button>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:var(--bg-lighter);border-radius:var(--radius-sm);font-size:12px;color:var(--text-dim)">
+          Статус: <span id="cloud-status-text" style="color:${Cloud.connected?'var(--green)':'var(--yellow)'}">${Cloud.connected?'✅ Подключено':'⚪ Не настроено'}</span>
+          ${Cloud.lastSync?'<span style=color:var(--text-muted)> · Последняя синхронизация: </span>'+new Date(Cloud.lastSync).toLocaleString("ru-RU"):""}
+        </div>
+        <div class="cc-btns" style="margin-top:12px">
+          <button class="btn btn-success btn-sm" id="cloud-pull" ${Cloud.config.url?'':'disabled'}>⬇️ Загрузить из облака</button>
+          <button class="btn btn-primary btn-sm" id="cloud-push" ${Cloud.config.url?'':'disabled'}>⬆️ Выгрузить в облако</button>
+          <button class="btn btn-warning btn-sm" id="cloud-sync" ${Cloud.config.url?'':'disabled'}><i data-feather="refresh-cw"></i> Синхронизировать</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  return html;
+}
+
+function bindSettings(){
+  // "Полный доступ" чекбокс включает все остальные
+  ['mgr','adm'].forEach(prefix=>{
+    const ownerCb=document.getElementById(prefix+'-isOwner');
+    if(ownerCb)ownerCb.onchange=()=>{
+      document.querySelectorAll('.'+prefix+'-perm').forEach(cb=>{if(cb.id!==prefix+'-isOwner')cb.checked=ownerCb.checked});
+    };
+  });
+  const saveMgr=document.getElementById('save-mgr');
+  if(saveMgr)saveMgr.onclick=()=>{
+    const creds=LS.get('zp_creds',{});
+    creds.manager={login:document.getElementById('mgr-login').value.trim(),pass:document.getElementById('mgr-pass').value};
+    LS.set('zp_creds',creds);
+    // Обновляем логин/пароль/права в записи сотрудника
+    const emps=getEmps();
+    const emp=emps.find(e=>e.appRole==='manager');
+    if(emp){
+      emp.login=creds.manager.login;emp.pass=creds.manager.pass;
+      const perms={};
+      document.querySelectorAll('.mgr-perm').forEach(cb=>{perms[cb.dataset.perm]=cb.checked});
+      emp.permissions=perms;
+      LS.set('zp_employees',emps);
+      cloudSet('zp_employees',emps);
+    }
+    toast('Сохранено');addHistory('Изменён пароль управляющей');
+  };
+  const saveAdm=document.getElementById('save-adm');
+  if(saveAdm)saveAdm.onclick=()=>{
+    const creds=LS.get('zp_creds',{});
+    creds.admin={login:document.getElementById('adm-login').value.trim(),pass:document.getElementById('adm-pass').value};
+    LS.set('zp_creds',creds);
+    // Обновляем логин/пароль/права в записи сотрудника
+    const emps=getEmps();
+    const emp=emps.find(e=>e.appRole==='admin');
+    if(emp){
+      emp.login=creds.admin.login;emp.pass=creds.admin.pass;
+      const perms={};
+      document.querySelectorAll('.adm-perm').forEach(cb=>{perms[cb.dataset.perm]=cb.checked});
+      emp.permissions=perms;
+      LS.set('zp_employees',emps);
+      cloudSet('zp_employees',emps);
+    }
+    toast('Сохранено');addHistory('Изменён пароль администратора');
+  };
+  const expBtn=document.getElementById('export-json');
+  if(expBtn)expBtn.onclick=()=>{
+    const data={};
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k.startsWith('zp_'))data[k]=LS.get(k);
+    }
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='payroll_backup_'+todayStr()+'.json';a.click();
+    toast('Экспорт выполнен');
+  };
+  const impBtn=document.getElementById('import-json');
+  const impFile=document.getElementById('import-file');
+  if(impBtn)impBtn.onclick=()=>impFile.click();
+  if(impFile)impFile.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        for(const[k,v] of Object.entries(data)){LS.set(k,v)}
+        toast('Импорт выполнен');addHistory('Импорт данных');render();
+      }catch(e){toast('Ошибка: неверный JSON')}
+    };
+    reader.readAsText(file);
+  };
+  const clearBtn=document.getElementById('clear-data');
+  if(clearBtn)clearBtn.onclick=()=>{
+    if(!confirm('Удалить ВСЕ данные? Это необратимо!'))return;
+    const keys=[];
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_'))keys.push(k)}
+    keys.forEach(k=>localStorage.removeItem(k));
+    initDefaults();
+    try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
+    toast('Все данные очищены');render();
+  };
+  const cloudCheck=document.getElementById('cloud-check');
+  if(cloudCheck)cloudCheck.onclick=async()=>{
+    const url=document.getElementById('cloud-url').value.trim();
+    if(!url){toast('Введите Supabase URL');return}
+    cloudCheck.disabled=true;cloudCheck.textContent='⏳ Проверка...';
+    const oldUrl=Cloud.config.url;Cloud.config.url=url.replace(/\/$/,'');
+    const p=await Cloud.ping();
+    Cloud.config.url=oldUrl;
+    cloudCheck.disabled=false;cloudCheck.textContent=' Проверить';
+    const st=document.getElementById('cloud-status-text');
+    if(p.ok){st.textContent='✅ Подключено (v'+(p.data?.version||'?')+')';st.style.color='var(--green)';toast('Облако доступно')}
+    else{st.textContent='❌ Ошибка: '+p.error;st.style.color='var(--red)';toast('Не удалось подключиться')}
+  };
+  const cloudSave=document.getElementById('cloud-save-config');
+  if(cloudSave)cloudSave.onclick=()=>{
+    const url=document.getElementById('cloud-url').value.trim();
+    const key=document.getElementById('cloud-key').value.trim();
+    Cloud.configure(url,key);
+    const st=document.getElementById('cloud-status-text');
+    st.textContent='⏳ Проверка...';st.style.color='var(--yellow)';
+    setTimeout(async()=>{
+      const p=await Cloud.ping();
+      if(p.ok){st.textContent='✅ Подключено';st.style.color='var(--green)';toast('Настройки облака сохранены')}
+      else{st.textContent='❌ Ошибка подключения';st.style.color='var(--red)';toast('URL сохранён, но подключиться не удалось')}
+    },500);
+  };
+  const cloudPull=document.getElementById('cloud-pull');
+  if(cloudPull)cloudPull.onclick=()=>{
+    if(!confirm('Заменить ВСЕ локальные данные данными из облака?'))return;
+    cloudPull.disabled=true;cloudPull.textContent='⏳ Загрузка...';
+    Cloud.sync().then(ok=>{
+      cloudPull.disabled=false;cloudPull.textContent='⬇️ Загрузить из облака';
+      if(ok)render();
+    });
+  };
+  const cloudPush=document.getElementById('cloud-push');
+  if(cloudPush)cloudPush.onclick=()=>{
+    cloudPush.disabled=true;cloudPush.textContent='⏳ Выгрузка...';
+    Cloud.pushAll().then(ok=>{
+      cloudPush.disabled=false;cloudPush.textContent='⬆️ Выгрузить в облако';
+    });
+  };
+  const cloudSyncBtn=document.getElementById('cloud-sync');
+  if(cloudSyncBtn)cloudSyncBtn.onclick=()=>{
+    cloudSyncBtn.disabled=true;cloudSyncBtn.textContent='⏳ Синхронизация...';
+    Cloud.sync().then(ok=>{
+      cloudSyncBtn.disabled=false;cloudSyncBtn.textContent=' Синхронизировать';
+      if(ok)render();
+    });
+  };
+  const cloudReset=document.getElementById('cloud-reset-config');
+  if(cloudReset)cloudReset.onclick=()=>{
+    if(!confirm('Сбросить настройки облака к значениям по умолчанию?'))return;
+    LS.del('zp_cloud_url');LS.del('zp_cloud_key');
+    document.getElementById('cloud-url').value=Cloud.defaults.url;
+    document.getElementById('cloud-key').value=Cloud.defaults.key;
+    Cloud.configure(Cloud.defaults.url,Cloud.defaults.key);
+    toast('Настройки облака сброшены');
+  };
+}
+
+window.logout=logout;
+
+// Auto-clear old Google Apps Script cloud config (one-time)
+(function(){
+  const saved=LS.get('zp_cloud_url','');
+  if(saved && saved.includes('script.google.com')){LS.del('zp_cloud_url');LS.del('zp_cloud_key');console.log('Old GAS cloud config auto-cleared')}
+})();
+
+// Инициализация облачного хранилища
+// Show login IMMEDIATELY (synchronous), then cloud in background
+document.getElementById('html-login')?.remove();
+try{render()}catch(e){console.error('Render error:',e)}
+try{Cloud.init()}catch(e){}
+
+})();
+</script>
+<script>featherReplace();</script>
+</body>
+</html>
