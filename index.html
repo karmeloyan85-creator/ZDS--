@@ -547,11 +547,12 @@ const Cloud={
       this.lastSync=new Date().toISOString();
       this.errorCount=0;
       this._syncQueue=[];
-      toast('☁️ Данные загружены из облака');
+      toast('☁️ Загружено: '+employees.length+' сотр., '+daily.length+' записей, '+advances.length+' авансов');
       return true;
     }catch(e){
       this.connected=false;this.errorCount++;
-      toast('☁️ Ошибка синхронизации');
+      toast('☁️ Ошибка: '+e.message);
+      console.error('Sync error:',e);
       return false;
     }finally{
       this.syncing=false;
