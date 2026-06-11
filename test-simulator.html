@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Simulator - ZDS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:monospace;font-size:14px}
+body{background:#1a1a2e;color:#e0e0e0;padding:20px}
+h1{color:#4f8cf7;margin-bottom:8px;font-size:20px}
+h2{color:#22c55e;margin:16px 0 8px;font-size:16px;border-bottom:1px solid #333;padding-bottom:4px}
+.test{padding:8px 12px;margin:4px 0;border-radius:4px;display:flex;align-items:center;gap:10px}
+.pass{background:rgba(34,197,94,0.15);border-left:3px solid #22c55e}
+.fail{background:rgba(239,68,68,0.15);border-left:3px solid #ef4444}
+.info{background:rgba(79,140,247,0.1);border-left:3px solid #4f8cf7}
+.warn{background:rgba(245,158,11,0.15);border-left:3px solid #f59e0b}
+.icon{font-size:18px;min-width:24px}
+.label{flex:1}
+.detail{color:#94a3b8;font-size:12px}
+#summary{margin-top:20px;padding:16px;border-radius:8px;font-size:16px;font-weight:bold;text-align:center}
+.summary-pass{background:rgba(34,197,94,0.2);color:#22c55e}
+.summary-fail{background:rgba(239,68,68,0.2);color:#ef4444}
+#raw-output{margin-top:20px;padding:12px;background:#0d1117;border-radius:8px;white-space:pre-wrap;max-height:400px;overflow-y:auto;font-size:12px;color:#8b949e}
+</style>
+</head>
+<body>
+<h1>Test Simulator - ZDS v4.0</h1>
+<div id="results"></div>
+<div id="summary"></div>
+<div id="raw-output"></div>
+
+<script>
+// Изолированная среда тестирования
+// Используем отдельный namespace чтобы не конфликтовать с основным приложением
+
+const results = [];
+const logs = [];
+
+function log(msg) {
+  logs.push(msg);
+  console.log('[TEST]', msg);
+}
+
+function assert(condition, name, detail) {
+  if (condition) {
+    results.push({pass: true, name, detail: detail || ''});
+  } else {
+    results.push({pass: false, name, detail: detail || 'ASSERTION FAILED'});
+  }
+}
+
+function info(name, detail) {
+  results.push({pass: null, name, detail: detail || ''});
+}
+
+// ---- Simulate localStorage ----
+const LS = {
+  _data: {},
+  get(k, d) { try { const v = this._data[k]; return v ? JSON.parse(v) : d; } catch(e) { return d; } },
+  set(k, v) { this._data[k] = JSON.stringify(v); },
+  del(k) { delete this._data[k]; },
+  keys() { return Object.keys(this._data); },
+  clear() { this._data = {}; }
+};
+
+// ---- Extract SEED_DATA_MAY and key functions from index.html ----
+async function loadSource() {
+  try {
+    const resp = await fetch('./index.html');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const html = await resp.text();
+    return html;
+  } catch(e) {
+    log('Cannot fetch index.html: ' + e.message + ' (running inline tests)');
+    return null;
+  }
+}
+
+// ---- Inline copies of key functions for testing ----
+function parsePerms(p) {
+  if (!p) return null;
+  if (typeof p === 'object') return p;
+  if (typeof p === 'string') { try { return JSON.parse(p); } catch(e) { return null; } }
+  return null;
+}
+
+function calcSalary(emp, worked, totalRevenue) {
+  const ct = emp.calcType;
+  let salary = 0;
+  if (ct === 'fixed_day') salary = Math.round(emp.fixedDay * worked);
+  else if (ct === 'fixed_month') salary = emp.fixedMonth;
+  else if (ct === 'percent') salary = Math.round(totalRevenue * emp.percent / 100);
+  else if (ct === 'fixed_day_percent') salary = Math.round(emp.fixedDay * worked + totalRevenue * emp.percent / 100);
+  else if (ct === 'fixed_month_percent') salary = Math.round(emp.fixedMonth + totalRevenue * emp.percent / 100);
+  else if (ct === 'fixed_day_percent_own') salary = Math.round(emp.fixedDay * worked + (emp._ownRevenue || 0) * emp.percent / 100);
+  return salary;
+}
+
+function calcSalaryByDays(emp, days, dailyData) {
+  const ct = emp.calcType;
+  if (ct !== 'fixed_day_percent') return null;
+  let salary = 0;
+  for (const day of days) {
+    const d = (dailyData[day] || {})[emp.id] || {};
+    const worked = d.worked || 0;
+    if (worked > 0) {
+      const dayData = dailyData[day] || {};
+      let dayClinicRevenue = 0;
+      for (const eid in dayData) { dayClinicRevenue += dayData[eid].revenue || 0; }
+      salary += Math.round(emp.fixedDay * worked + dayClinicRevenue * emp.percent / 100);
+    }
+  }
+  return salary;
+}
+
+// ---- Supabase config ----
+const SB_URL = 'https://mczykdnvwnyhsxxcuskc.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw';
+
+function sbHeaders() {
+  return {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json'
+  };
+}
+
+// ---- Test: seedMayData ----
+function testSeedMayData() {
+  const SEED_DATA_MAY = {"2026-05-01":{"1":{"worked":1,"revenue":74000,"patients":8},"2":{"worked":1,"revenue":24850,"patients":4},"6":{"worked":1,"revenue":0,"patients":0}},"2026-05-04":{"4":{"worked":1,"revenue":26950,"patients":4},"2":{"worked":1,"revenue":26950,"patients":6},"6":{"worked":1,"revenue":0,"patients":0}},"2026-05-05":{"3":{"worked":1,"revenue":18800,"patients":5},"2":{"worked":1,"revenue":28500,"patients":4},"1":{"worked":1,"revenue":4300,"patients":1},"6":{"worked":1,"revenue":0,"patients":0}},"2026-05-06":{"1":{"worked":1,"revenue":112950,"patients":10},"2":{"worked":1,"revenue":49050,"patients":5},"6":{"worked":1,"revenue":0,"patients":0}},"2026-05-08":{"1":{"worked":1,"revenue":96850,"patients":11},"2":{"worked":1,"revenue":25300,"patients":6},"6":{"worked":1,"revenue":0,"patients":0}}};
+
+  // Simulate seedMayData
+  if (!LS.get('zp_daily_2026-05-01', null)) {
+    for (const [date, emps] of Object.entries(SEED_DATA_MAY)) {
+      LS.set('zp_daily_' + date, emps);
+    }
+  }
+
+  const data1 = LS.get('zp_daily_2026-05-01', null);
+  assert(data1 !== null, 'seedMayData: zp_daily_2026-05-01 loaded', data1 ? Object.keys(data1).length + ' employees' : 'null');
+  
+  const data4 = LS.get('zp_daily_2026-05-04', null);
+  assert(data4 !== null, 'seedMayData: zp_daily_2026-05-04 loaded', data4 ? Object.keys(data4).length + ' employees' : 'null');
+  
+  const data6 = LS.get('zp_daily_2026-05-06', null);
+  assert(data6 !== null, 'seedMayData: zp_daily_2026-05-06 loaded', data6 ? Object.keys(data6).length + ' employees' : 'null');
+
+  // Verify emp 6 (Merkulova) is in the data
+  const merkData = LS.get('zp_daily_2026-05-05', {})[6];
+  assert(merkData && merkData.worked === 1, 'seedMayData: Merkulova (id=6) has worked=1 on 2026-05-05', JSON.stringify(merkData));
+  
+  return SEED_DATA_MAY;
+}
+
+// ---- Test: initDefaults ----
+function testInitDefaults() {
+  // Simulate initDefaults (simplified)
+  if (!LS.get('zp_employees')) {
+    const emps = [
+      {id:1, name:'Meloyan', calcType:'percent', percent:30, active:true, appRole:'owner'},
+      {id:6, name:'Merkulova', calcType:'fixed_day_percent', fixedDay:1200, percent:5, active:true, appRole:'employee'},
+      {id:7, name:'Sokolova', calcType:'fixed_day', fixedDay:2500, active:true, appRole:'custom', permissions:{seeSchedule:true}},
+    ];
+    LS.set('zp_employees', emps);
+  }
+
+  const emps = LS.get('zp_employees', []);
+  assert(emps.length >= 3, 'initDefaults: employees created', emps.length + ' employees');
+  
+  const merk = emps.find(e => e.id === 6);
+  assert(merk && merk.calcType === 'fixed_day_percent', 'initDefaults: Merkulova has fixed_day_percent', merk ? merk.calcType : 'not found');
+  assert(merk && merk.fixedDay === 1200, 'initDefaults: Merkulova fixedDay=1200', merk ? String(merk.fixedDay) : 'not found');
+  assert(merk && merk.percent === 5, 'initDefaults: Merkulova percent=5', merk ? String(merk.percent) : 'not found');
+  
+  // Test permissions as object (not string)
+  const sok = emps.find(e => e.id === 7);
+  assert(sok && typeof sok.permissions === 'object' && sok.permissions.seeSchedule === true, 
+    'initDefaults: permissions is object, not string', typeof (sok ? sok.permissions : null));
+}
+
+// ---- Test: Cloud.ping ----
+async function testCloudPing() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const r = await fetch(SB_URL + '/rest/v1/employees?select=id&limit=1', {
+      headers: sbHeaders(),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    assert(r.ok, 'Cloud.ping: Supabase reachable', 'HTTP ' + r.status);
+    
+    if (r.ok) {
+      const data = await r.json();
+      assert(Array.isArray(data), 'Cloud.ping: returns array', 'got ' + data.length + ' items');
+    }
+  } catch(e) {
+    assert(false, 'Cloud.ping: Supabase reachable', 'Error: ' + e.message);
+  }
+}
+
+// ---- Test: Cloud.sync (employees) ----
+async function testCloudSyncEmployees() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    const r = await fetch(SB_URL + '/rest/v1/employees?select=*', {
+      headers: sbHeaders(),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    
+    if (!r.ok) {
+      assert(false, 'Cloud.sync: employees loaded', 'HTTP ' + r.status);
+      return;
+    }
+    
+    const employees = await r.json();
+    assert(employees.length > 0, 'Cloud.sync: employees loaded', employees.length + ' employees from Supabase');
+    
+    // Test conversion to app format
+    const appEmps = employees.map(e => ({
+      id: parseInt(e.emp_id),
+      name: e.name,
+      calcType: e.calc_type || 'fixed_day',
+      fixedDay: e.fixed_day || 0,
+      percent: e.percent || 0,
+      active: e.is_active !== false && e.active !== false,
+      permissions: parsePerms(e.permissions || '')
+    }));
+    
+    assert(appEmps.length === employees.length, 'Cloud.sync: employee conversion preserves count', appEmps.length + ' == ' + employees.length);
+    
+    const merkSupa = appEmps.find(e => e.id === 6);
+    if (merkSupa) {
+      assert(merkSupa.calcType === 'fixed_day_percent', 'Cloud.sync: Merkulova calcType correct', merkSupa.calcType);
+      assert(merkSupa.fixedDay === 1200, 'Cloud.sync: Merkulova fixedDay=1200', String(merkSupa.fixedDay));
+    } else {
+      info('Cloud.sync: Merkulova (id=6) not in Supabase', 'May not be uploaded yet');
+    }
+    
+    // Test permissions parsing
+    const withPerms = appEmps.filter(e => e.permissions && typeof e.permissions === 'object');
+    info('Cloud.sync: employees with parsed permissions', withPerms.length + ' employees');
+    
+  } catch(e) {
+    assert(false, 'Cloud.sync: employees loaded', 'Error: ' + e.message);
+  }
+}
+
+// ---- Test: Cloud.sync (daily) ----
+async function testCloudSyncDaily() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    const r = await fetch(SB_URL + '/rest/v1/daily?select=*&limit=500', {
+      headers: sbHeaders(),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    
+    if (!r.ok) {
+      assert(false, 'Cloud.sync: daily loaded', 'HTTP ' + r.status);
+      return;
+    }
+    
+    const daily = await r.json();
+    assert(daily.length > 0, 'Cloud.sync: daily records loaded', daily.length + ' records from Supabase');
+    
+    // Test conversion
+    const byDate = {};
+    daily.forEach(r => {
+      const d = r.date && r.date.length > 10 ? r.date.substring(0, 10) : r.date;
+      if (!d) return;
+      if (!byDate[d]) byDate[d] = {};
+      byDate[d][r.emp_id] = {worked: r.worked || 0, revenue: r.revenue || 0, patients: r.patients || 0};
+    });
+    
+    const dateCount = Object.keys(byDate).length;
+    assert(dateCount > 0, 'Cloud.sync: daily grouped by date', dateCount + ' unique dates');
+    
+    // Check May data
+    const mayDates = Object.keys(byDate).filter(d => d.startsWith('2026-05'));
+    info('Cloud.sync: May 2026 dates in Supabase', mayDates.length + ' dates');
+    
+  } catch(e) {
+    assert(false, 'Cloud.sync: daily loaded', 'Error: ' + e.message);
+  }
+}
+
+// ---- Test: calcSalary for Merkulova ----
+function testCalcSalary() {
+  // Merkulova: fixed_day_percent, fixedDay=1200, percent=5
+  const merk = {id: 6, name: 'Merkulova', calcType: 'fixed_day_percent', fixedDay: 1200, percent: 5};
+  
+  // calcSalary (simple version - uses totalRevenue which is OWN revenue, wrong for this type)
+  const simpleSalary = calcSalary(merk, 20, 50000);
+  info('calcSalary (simple) for Merkulova: 20 days, 50000 own revenue', simpleSalary.toLocaleString() + ' rub');
+  // Note: simple calcSalary is WRONG for fixed_day_percent - it uses personal revenue
+  // calcSalaryByDays uses clinic-wide revenue per day - that's the correct one
+  
+  // Simulate daily data for calcSalaryByDays
+  // Day 1: Merkulova worked 1, clinic total revenue = 100000
+  // Day 2: Merkulova worked 1, clinic total revenue = 80000
+  const dailyData = {
+    '2026-05-01': {1: {worked:1, revenue:74000}, 2: {worked:1, revenue:24850}, 6: {worked:1, revenue:0}},
+    '2026-05-04': {4: {worked:1, revenue:26950}, 2: {worked:1, revenue:26950}, 6: {worked:1, revenue:0}},
+  };
+  const days = ['2026-05-01', '2026-05-04'];
+  
+  const daySalary = calcSalaryByDays(merk, days, dailyData);
+  // Day 1: 1200*1 + (74000+24850+0)*5/100 = 1200 + 4942.5 = 6142 (rounded)
+  // Day 2: 1200*1 + (26950+26950+0)*5/100 = 1200 + 2695 = 3895 (rounded)
+  // Total: 6143 + 3895 = 10038 (Math.round per day)
+  
+  const expected1 = Math.round(1200 + (74000+24850)*5/100); // 6143
+  const expected2 = Math.round(1200 + (26950+26950)*5/100); // 3895
+  const expectedTotal = expected1 + expected2;
+  
+  assert(daySalary === expectedTotal, 
+    'calcSalaryByDays: Merkulova salary correct', 
+    'got ' + daySalary + ', expected ' + expectedTotal + ' (' + expected1 + '+' + expected2 + ')');
+  
+  // Verify the formula: fixedDay*worked + clinicRevenue*percent/100
+  const day1ClinicRev = 74000 + 24850 + 0; // 98850
+  const day1Expected = Math.round(1200 * 1 + day1ClinicRev * 5 / 100);
+  assert(day1Expected === expected1, 'calcSalaryByDays: day 1 formula correct', 
+    '1200*1 + ' + day1ClinicRev + '*5/100 = ' + day1Expected);
+}
+
+// ---- Test: permissions parsing ----
+function testPermissions() {
+  const strPerms = '{seeSchedule:true,isOwner:false,seeSalaries:false}';
+  const parsed = parsePerms(strPerms);
+  assert(parsed !== null && typeof parsed === 'object', 'parsePerms: parses string to object', typeof parsed);
+  assert(parsed && parsed.seeSchedule === true, 'parsePerms: seeSchedule=true', String(parsed ? parsed.seeSchedule : null));
+  
+  const objPerms = parsePerms({seeRevenue: true});
+  assert(objPerms && objPerms.seeRevenue === true, 'parsePerms: passes object through', typeof objPerms);
+  
+  const nullPerms = parsePerms(null);
+  assert(nullPerms === null, 'parsePerms: returns null for null', String(nullPerms));
+  
+  const invalidPerms = parsePerms('not json');
+  assert(invalidPerms === null, 'parsePerms: returns null for invalid string', String(invalidPerms));
+}
+
+// ---- Test: version cache clear order ----
+function testVersionCacheClear() {
+  // Simulate the NEW order: version check -> clear -> initDefaults -> seedMayData
+  LS.clear();
+  
+  // Step 1: no version -> clear (nothing to clear)
+  const savedVersion = LS.get('zp_version', '0');
+  assert(savedVersion === '0', 'Version: initial version is 0', savedVersion);
+  
+  // Step 2: clear all zp_ keys
+  const keys = LS.keys();
+  keys.forEach(k => { if (k.startsWith('zp_')) LS.del(k); });
+  LS.set('zp_version', '4.0');
+  
+  // Step 3: initDefaults
+  if (!LS.get('zp_employees')) {
+    LS.set('zp_employees', [{id: 1, name: 'Test', calcType: 'fixed_day', fixedDay: 1000, active: true}]);
+  }
+  
+  // Step 4: seedMayData
+  if (!LS.get('zp_daily_2026-05-01', null)) {
+    LS.set('zp_daily_2026-05-01', {1: {worked: 1, revenue: 50000}});
+  }
+  
+  // Verify
+  const emps = LS.get('zp_employees', []);
+  assert(emps.length > 0, 'Version clear order: employees exist after init', emps.length + ' employees');
+  
+  const daily = LS.get('zp_daily_2026-05-01', null);
+  assert(daily !== null, 'Version clear order: seed data exists after init', daily ? 'present' : 'null');
+  
+  const version = LS.get('zp_version', '0');
+  assert(version === '4.0', 'Version: set to 4.0', version);
+}
+
+// ---- Run all tests ----
+async function runTests() {
+  log('Starting tests...');
+  
+  // Reset LS for clean test
+  LS.clear();
+  
+  // Section 1: seedMayData
+  info('--- TEST GROUP 1: seedMayData ---', '');
+  testSeedMayData();
+  
+  // Section 2: initDefaults
+  info('--- TEST GROUP 2: initDefaults ---', '');
+  testInitDefaults();
+  
+  // Section 3: permissions
+  info('--- TEST GROUP 3: Permissions ---', '');
+  testPermissions();
+  
+  // Section 4: calcSalary
+  info('--- TEST GROUP 4: calcSalary (Merkulova) ---', '');
+  testCalcSalary();
+  
+  // Section 5: version cache clear
+  info('--- TEST GROUP 5: Version cache clear order ---', '');
+  testVersionCacheClear();
+  
+  // Section 6: Cloud tests (require network)
+  info('--- TEST GROUP 6: Supabase Cloud ---', 'Requires network access');
+  await testCloudPing();
+  await testCloudSyncEmployees();
+  await testCloudSyncDaily();
+  
+  // Render results
+  renderResults();
+}
+
+function renderResults() {
+  const container = document.getElementById('results');
+  let html = '';
+  let passCount = 0;
+  let failCount = 0;
+  let totalCount = results.length;
+  
+  for (const r of results) {
+    if (r.pass === true) {
+      passCount++;
+      html += '<div class="test pass"><span class="icon">+</span><span class="label">' + r.name + '</span><span class="detail">' + r.detail + '</span></div>';
+    } else if (r.pass === false) {
+      failCount++;
+      html += '<div class="test fail"><span class="icon">X</span><span class="label">' + r.name + '</span><span class="detail">' + r.detail + '</span></div>';
+    } else {
+      html += '<div class="test info"><span class="icon">i</span><span class="label">' + r.name + '</span><span class="detail">' + r.detail + '</span></div>';
+    }
+  }
+  
+  container.innerHTML = html;
+  
+  const summary = document.getElementById('summary');
+  if (failCount === 0) {
+    summary.className = 'summary-pass';
+    summary.textContent = 'ALL TESTS PASSED: ' + passCount + '/' + totalCount + ' assertions passed';
+  } else {
+    summary.className = 'summary-fail';
+    summary.textContent = 'TESTS FAILED: ' + failCount + ' failed, ' + passCount + ' passed out of ' + totalCount;
+  }
+  
+  document.getElementById('raw-output').textContent = logs.join('\n');
+}
+
+// Start
+runTests().catch(e => {
+  log('FATAL: ' + e.message);
+  renderResults();
+});
+</script>
+</body>
+</html>

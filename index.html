@@ -7,6 +7,9 @@
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <title>Зарплаты — Земский доктор-стоматолог</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:700}
 :root{
@@ -373,6 +376,16 @@ function featherReplace(){
 }
 window.featherReplace=featherReplace;
 
+// Safe permissions parser — handles both string and object formats
+function parsePerms(p){
+  if(!p)return null;
+  if(typeof p==='object')return p;
+  if(typeof p==='string'){
+    try{return JSON.parse(p)}catch(e){return null}
+  }
+  return null;
+}
+
 // ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
 
 // Polyfill: AbortSignal.timeout for Safari/iOS
@@ -480,7 +493,7 @@ const Cloud={
           appRole:e.app_role||'',
           login:e.login||'',
           pass:e.pass||'',
-          permissions:e.permissions||''
+          permissions:parsePerms(e.permissions||e.app_permissions||'')
         }));
         LS.set('zp_employees',appEmps);
       }
@@ -537,7 +550,7 @@ const Cloud={
           if(!byMonth[mKey])byMonth[mKey]={};
           if(!byMonth[mKey][r.emp_id])byMonth[mKey][r.emp_id]={};
           const day=parseInt(parts[2]);
-          const status=r.start_time||r.end_time?'working':'off';
+          const status=r.start_time||r.end_time?'Р':'В';
           byMonth[mKey][r.emp_id][day]=status;
         });
         Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_schedule_'+m,v));
@@ -793,17 +806,17 @@ function initDefaults(){
       {id:4,name:'Сидорейко Илья Михайлович',position:'Врач-терапевт',calcType:'percent',fixedDay:0,fixedMonth:0,percent:25,active:true},
       {id:5,name:'Громов Ростислав Евгеньевич',position:'Врач-хирург',calcType:'percent',fixedDay:0,fixedMonth:0,percent:30,active:true},
       {id:6,name:'Меркулова Ангелина Олеговна',position:'Медсестра',calcType:'fixed_day_percent',fixedDay:1200,fixedMonth:0,percent:5,active:true,appRole:'employee'},
-      {id:7,name:'Соколова Елизавета Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Liza',pass:'admin1',permissions:'{seeSchedule:true,isOwner:false,seeSalaries:false,seeRevenue:true,canFillReport:true,seeExpenses:true,canInput:true}'},
+      {id:7,name:'Соколова Елизавета Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Liza',pass:'admin1',permissions:{seeSchedule:true,isOwner:false,seeSalaries:false,seeRevenue:true,canFillReport:true,seeExpenses:true,canInput:true}},
       {id:8,name:'Алферова Татьяна Алексеевна',position:'Ассистент',calcType:'fixed_day',fixedDay:2000,fixedMonth:0,percent:0,active:true},
       {id:9,name:'Белова Ирина Юрьевна',position:'Ассистент',calcType:'fixed_day',fixedDay:2800,fixedMonth:0,percent:0,active:true},
-      {id:10,name:'Киреева Ирина Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Irina',pass:'admin2',permissions:'{seeExpenses:true,canInput:true,seeRevenue:true,canFillReport:true,seeSchedule:true,isOwner:false,seeSalaries:false}'},
+      {id:10,name:'Киреева Ирина Алексеевна',position:'Администратор',calcType:'fixed_day',fixedDay:2500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Irina',pass:'admin2',permissions:{seeExpenses:true,canInput:true,seeRevenue:true,canFillReport:true,seeSchedule:true,isOwner:false,seeSalaries:false}},
       {id:11,name:'Собиров Азим',position:'Подмена',calcType:'fixed_day',fixedDay:5000,fixedMonth:0,percent:0,active:true,appRole:'employee'},
       {id:12,name:'Максименко Надежда Петровна',position:'Другое',calcType:'fixed_month',fixedDay:0,fixedMonth:12000,percent:0,active:true,appRole:'employee'},
       {id:13,name:'Москалева Ольга Алексеевна',position:'Бухгалтер',calcType:'fixed_month',fixedDay:0,fixedMonth:30000,percent:0,active:true,appRole:'employee'},
-      {id:14,name:'Азарко Оксана Владимировна',position:'Администратор',calcType:'fixed_month',fixedDay:0,fixedMonth:30000,percent:0,active:true,appRole:'custom',login:'Azarko',pass:'admin3',permissions:'{seeRevenue:true,canFillReport:true,canInput:true,seeExpenses:true,seeSchedule:true,isOwner:false,seeSalaries:false}'},
+      {id:14,name:'Азарко Оксана Владимировна',position:'Администратор',calcType:'fixed_month',fixedDay:0,fixedMonth:30000,percent:0,active:true,appRole:'custom',login:'Azarko',pass:'admin3',permissions:{seeRevenue:true,canFillReport:true,canInput:true,seeExpenses:true,seeSchedule:true,isOwner:false,seeSalaries:false}},
       {id:15,name:'Титяева Оксана Дмитриевна',position:'Ассистент',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true},
       {id:16,name:'Скобелева Юлия Сергеевна',position:'Ассистент',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true},
-      {id:17,name:'Линникова Вероника Максимовна',position:'Администратор',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Vika',pass:'admin4',permissions:'{canFillReport:true,seeRevenue:true,canInput:true,seeExpenses:true,seeSalaries:false,seeSchedule:true,isOwner:false}'}
+      {id:17,name:'Линникова Вероника Максимовна',position:'Администратор',calcType:'fixed_day',fixedDay:1500,fixedMonth:0,percent:0,active:true,appRole:'custom',login:'Vika',pass:'admin4',permissions:{canFillReport:true,seeRevenue:true,canInput:true,seeExpenses:true,seeSalaries:false,seeSchedule:true,isOwner:false}}
     ];
     LS.set('zp_employees',emps);
   }
@@ -814,25 +827,23 @@ function initDefaults(){
     LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
   }
 }
-initDefaults();
-// try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
-
-// Автоочистка при обновлении версии
-const APP_VERSION='3.2';
+const APP_VERSION='4.0';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
-  // Полная очистка кэша при обновлении — Supabase источник правды
-  for(let i=localStorage.length-1;i>=0;i--){
-    const k=localStorage.key(i);
-    if(k.startsWith('zp_'))localStorage.removeItem(k);
-  }
+  // Собираем ключи перед удалением (не итерировать localStorage во время модификации)
+  const keysToRemove=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_'))keysToRemove.push(k)}
+  keysToRemove.forEach(k=>localStorage.removeItem(k));
   LS.set('zp_version',APP_VERSION);
   console.log('App updated to v'+APP_VERSION+', full cache cleaned');
 }
-// Всегда принудительно обновляем creds при загрузке (Supabase источник правды)
+// Всегда принудительно обновляем creds
 LS.set('zp_creds',{owner:{login:'Karen',pass:'Karen1985'},manager:{login:'manager',pass:'manager123'},admin:{login:'admin',pass:'admin123'}});
 
-// Встроенные данные за май (оригинал) — если в кэше пусто
+// Инициализация ПОСЛЕ очистки кэша
+initDefaults();
+
+// Встроенные данные за май — если в кэше пусто
 try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
 
 function seedMayData(){
@@ -1030,8 +1041,7 @@ function doLogin(){
   else state.tab='report';
   render();
   // Автозагрузка из облака при входе
-  if(Cloud.config.url&&Cloud.connected){Cloud.sync().then(ok=>{if(ok)render()})}
-  else{Cloud.init().then(()=>{Cloud.sync().then(ok=>{if(ok)render()})})}
+  Cloud.init().then(()=>{Cloud.sync().then(ok=>{if(ok)render()})})
 
 }
 
@@ -1491,7 +1501,7 @@ function exportCSV(){
   for(const emp of emps){
     let tw=0,tp=0,trv=0;
     for(const day of days){const d=(LS.get('zp_daily_'+day,{})[emp.id]||{});tw+=d.worked||0;tp+=d.patients||0;trv+=d.revenue||0}
-    const sal=calcSalary({...emp,_ownRevenue:trv},tw,trv);
+    const sal=emp.calcType==='fixed_day_percent'?(calcSalaryByDays(emp,days)||0):calcSalary({...emp,_ownRevenue:trv},tw,trv);
     const adv=advances[emp.id]||0;
     const crd=cards[emp.id]||0;
     csv+=`${emp.name};${emp.position};${tw};${tp};${trv};${sal};${adv};${crd};${sal-adv-crd}\n`;
@@ -2452,7 +2462,7 @@ function bindSettings(){
     for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_'))keys.push(k)}
     keys.forEach(k=>localStorage.removeItem(k));
     initDefaults();
-    // try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
+    try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
     toast('Все данные очищены');render();
   };
   const cloudCheck=document.getElementById('cloud-check');
