@@ -412,7 +412,7 @@ const Cloud={
     try{
       const r=await fetch(this._restUrl('employees')+'?select=id&limit=1',{
         headers:this._headers(),
-        signal:AbortSignal.timeout(8000)
+        signal:AbortSignal.timeout(15000)
       });
       if(r.ok){this.connected=true;this.errorCount=0;return{ok:true}}
       return{ok:false,error:'HTTP '+r.status};
@@ -437,19 +437,34 @@ const Cloud={
     this._updateIcon();
     try{
       const headers=this._headers();
-      // Fetch all data from Supabase
-      const [empRes,dailyRes,advRes,schedRes]=await Promise.all([
-        fetch(this._restUrl('employees')+'?select=*',{headers,signal:AbortSignal.timeout(15000)}),
-        fetch(this._restUrl('daily')+'?select=*',{headers,signal:AbortSignal.timeout(15000)}),
-        fetch(this._restUrl('advances')+'?select=*',{headers,signal:AbortSignal.timeout(15000)}),
-        fetch(this._restUrl('schedule')+'?select=*',{headers,signal:AbortSignal.timeout(15000)})
-      ]);
-      if(!empRes.ok||!dailyRes.ok||!advRes.ok||!schedRes.ok){
-        toast('☁️ Ошибка загрузки данных');return false;
+      const timeout=30000; // 30 секунд для мобильных
+      // Загружаем по очереди (не параллельно) — надёжнее на мобильных
+      
+      // 1. Employees
+      const empRes=await fetch(this._restUrl('employees')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
+      if(!empRes.ok){toast('☁️ Ошибка загрузки сотрудников');return false}
+      const employees=await empRes.json();
+
+      // 2. Daily (порциями по 500)
+      let daily=[];
+      let offset=0;
+      while(true){
+        const dr=await fetch(this._restUrl('daily')+'?select=*&order=date&offset='+offset+'&limit=500',{headers,signal:AbortSignal.timeout(timeout)});
+        if(!dr.ok)break;
+        const batch=await dr.json();
+        if(batch.length===0)break;
+        daily=daily.concat(batch);
+        offset+=batch.length;
+        if(batch.length<500)break;
       }
-      const[employees,daily,advances,schedule]=await Promise.all([
-        empRes.json(),dailyRes.json(),advRes.json(),schedRes.json()
-      ]);
+
+      // 3. Advances
+      const advRes=await fetch(this._restUrl('advances')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
+      const advances=advRes.ok?await advRes.json():[];
+
+      // 4. Schedule
+      const schedRes=await fetch(this._restUrl('schedule')+'?select=*',{headers,signal:AbortSignal.timeout(timeout)});
+      const schedule=schedRes.ok?await schedRes.json():[];
 
       // REPLACE employees — convert Supabase format to app format
       if(employees&&employees.length>0){
