@@ -163,7 +163,15 @@ function writeSheet(sheetName, data) {
       if (val === undefined || val === null) return '';
       // Сериализуем объекты/массивы в JSON (например permissions)
       if (typeof val === 'object') return JSON.stringify(val);
-      // Force date-like strings to stay as text (prevent DATE_AS_TEXT conversion)
+      // Нормализация дат: убираем UTC-суффикс и T00:00
+      if (typeof val === 'string' && /\d{4}-\d{2}-\d{2}T/.test(val)) {
+        val = val.substring(0, 10);
+      }
+      // Нормализация месяцев: убираем UTC из "2026-04-30T21:00:00.000Z"
+      if (typeof val === 'string' && h === 'month' && /\d{4}-\d{2}-\d{2}T/.test(val)) {
+        val = val.substring(0, 7);
+      }
+      // Force date-like strings to stay as text
       if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
         return val;
       }

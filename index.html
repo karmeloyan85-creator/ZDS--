@@ -379,12 +379,12 @@ window.featherReplace=featherReplace;
 if(!AbortSignal.timeout){AbortSignal.timeout=function(ms){const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal}};
 const Cloud={
   defaults:{
-    url:'https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec',
-    key:'zk2026'
+    url:'https://mczykdnvwnyhsxxcuskc.supabase.co',
+    key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw'
   },
   config:{
-    url:LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec'),
-    key:LS.get('zp_cloud_key','zk2026')
+    url:LS.get('zp_cloud_url','https://mczykdnvwnyhsxxcuskc.supabase.co'),
+    key:LS.get('zp_cloud_key','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jenlrZG52d255aHN4eGN1c2tjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMTcxNjUsImV4cCI6MjA5NjY5MzE2NX0.Rpbuzw1HMesGR2Ngah-8Ef8stU6azJrunD5XQF0RFfw')
   },
   connected:false,
   lastSync:null,
@@ -392,14 +392,30 @@ const Cloud={
   errorCount:0,
   _cache:{},
   _syncTimer:null,
+  _syncQueue:[],
+
+  _headers(){
+    return{
+      'apikey':this.config.key,
+      'Authorization':'Bearer '+this.config.key,
+      'Content-Type':'application/json',
+      'Prefer':'return=minimal'
+    };
+  },
+
+  _restUrl(table){
+    return this.config.url+'/rest/v1/'+table;
+  },
 
   async ping(){
     if(!this.config.url)return{ok:false,error:'URL не настроен'};
     try{
-      const r=await fetch(this.config.url+'?action=ping',{signal:AbortSignal.timeout(8000)});
-      const j=await r.json();
-      if(j.status==='ok'){this.connected=true;this.errorCount=0;return{ok:true,data:j.data}}
-      return{ok:false,error:j.message||'Ошибка ответа'};
+      const r=await fetch(this._restUrl('employees')+'?select=id&limit=1',{
+        headers:this._headers(),
+        signal:AbortSignal.timeout(8000)
+      });
+      if(r.ok){this.connected=true;this.errorCount=0;return{ok:true}}
+      return{ok:false,error:'HTTP '+r.status};
     }catch(e){
       this.connected=false;this.errorCount++;
       return{ok:false,error:'Не удалось подключиться'};
@@ -407,36 +423,12 @@ const Cloud={
   },
 
   async init(){
-    this.config.url=LS.get('zp_cloud_url','https://script.google.com/macros/s/AKfycbwJnLJ3v796lp43-zpF-5cGoKiSiFwZkOY8uZ48Cbsw7jMkWGYT1xi_uu4LYRgzmioXXA/exec');
-    this.config.key=LS.get('zp_cloud_key','zk2026');
+    this.config.url=LS.get('zp_cloud_url',this.defaults.url);
+    this.config.key=LS.get('zp_cloud_key',this.defaults.key);
     if(!this.config.url)return;
     const p=await this.ping();
     if(p.ok)this._startAutoSync();
     this._updateIcon();
-  },
-
-  async load(type,params){
-    if(!this.config.url)return null;
-    try{
-      let url=this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key);
-      if(params){for(const[k,v] of Object.entries(params))url+='&'+k+'='+encodeURIComponent(v)}
-      const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
-      const j=await r.json();
-      if(j.status==='ok')return j.data;
-      toast('☁️ Ошибка загрузки: '+j.message);return null;
-    }catch(e){toast('☁️ Ошибка сети при загрузке');return null}
-  },
-
-  async save(type,data,replace){
-    if(!this.config.url)return false;
-    try{
-      const body={data,replace:!!replace};
-      const url=this.config.url+'?action='+type+'&key='+encodeURIComponent(this.config.key);
-      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow',signal:AbortSignal.timeout(60000)});
-      const j=await r.json();
-      if(j.status==='ok')return true;
-      toast('☁️ Ошибка сохранения: '+j.message);return false;
-    }catch(e){toast('☁️ Ошибка сети при сохранении');return false}
   },
 
   async sync(){
@@ -444,20 +436,60 @@ const Cloud={
     this.syncing=true;
     this._updateIcon();
     try{
-      const data=await this.load('read_all');
-      if(!data)return false;
+      const headers=this._headers();
+      // Fetch all data from Supabase
+      const [empRes,dailyRes,advRes,schedRes]=await Promise.all([
+        fetch(this._restUrl('employees')+'?select=*',{headers,signal:AbortSignal.timeout(15000)}),
+        fetch(this._restUrl('daily')+'?select=*',{headers,signal:AbortSignal.timeout(15000)}),
+        fetch(this._restUrl('advances')+'?select=*',{headers,signal:AbortSignal.timeout(15000)}),
+        fetch(this._restUrl('schedule')+'?select=*',{headers,signal:AbortSignal.timeout(15000)})
+      ]);
+      if(!empRes.ok||!dailyRes.ok||!advRes.ok||!schedRes.ok){
+        toast('☁️ Ошибка загрузки данных');return false;
+      }
+      const[employees,daily,advances,schedule]=await Promise.all([
+        empRes.json(),dailyRes.json(),advRes.json(),schedRes.json()
+      ]);
 
-      // REPLACE employees (облако = источник правды)
-      if(data.employees){LS.set('zp_employees',data.employees)}
+      // REPLACE employees — convert Supabase format to app format
+      if(employees&&employees.length>0){
+        const appEmps=employees.map(e=>({
+          id:parseInt(e.emp_id),
+          name:e.name,
+          position:e.position||'',
+          calcType: e.rate>=100?'fixed_day':(e.rate>=1000?'fixed_month':'percent'),
+          fixedDay:e.rate>=100&&e.rate<1000?e.rate:0,
+          fixedMonth:e.rate>=1000?e.rate:0,
+          percent:e.rate<100?e.rate:0,
+          active:e.is_active!==false,
+          appRole:'none'
+        }));
+        // Preserve existing appRole/login/pass/permissions from localStorage
+        const oldEmps=LS.get('zp_employees',[]);
+        appEmps.forEach(ae=>{
+          const old=oldEmps.find(o=>o.id===ae.id);
+          if(old){
+            if(old.appRole)ae.appRole=old.appRole;
+            if(old.login)ae.login=old.login;
+            if(old.pass)ae.pass=old.pass;
+            if(old.permissions)ae.permissions=old.permissions;
+            if(old.calcType)ae.calcType=old.calcType;
+            if(old.fixedDay!==undefined)ae.fixedDay=old.fixedDay;
+            if(old.fixedMonth!==undefined)ae.fixedMonth=old.fixedMonth;
+            if(old.percent!==undefined)ae.percent=old.percent;
+          }
+        });
+        LS.set('zp_employees',appEmps);
+      }
 
-      // REPLACE daily: clear old cache first, then write normalized cloud data
-      if(data.daily){
+      // REPLACE daily
+      if(daily){
         const keysToRemove=[];
         for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_daily_'))keysToRemove.push(k)}
         keysToRemove.forEach(k=>localStorage.removeItem(k));
 
         const byDate={};
-        data.daily.forEach(r=>{
+        daily.forEach(r=>{
           const d=this.normDate(r.date);
           if(!d)return;
           if(!byDate[d])byDate[d]={};
@@ -466,47 +498,43 @@ const Cloud={
         Object.entries(byDate).forEach(([d,v])=>LS.set('zp_daily_'+d,v));
       }
 
-      // REPLACE advances: clear old, write new
-      if(data.advances){
+      // REPLACE advances
+      if(advances){
         const keysToRemove=[];
         for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_advances_'))keysToRemove.push(k)}
         keysToRemove.forEach(k=>localStorage.removeItem(k));
 
         const byMonth={};
-        data.advances.forEach(r=>{
+        advances.forEach(r=>{
           if(!byMonth[r.month])byMonth[r.month]={};
           byMonth[r.month][r.emp_id]=r.amount||0;
         });
         Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_advances_'+m,v));
       }
 
-      // REPLACE schedule: clear old, write new
-      if(data.schedule){
+      // REPLACE schedule
+      if(schedule){
         const keysToRemove=[];
         for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('zp_schedule_'))keysToRemove.push(k)}
         keysToRemove.forEach(k=>localStorage.removeItem(k));
 
         const byMonth={};
-        data.schedule.forEach(r=>{
+        schedule.forEach(r=>{
           const parts=r.date.split('-');
           const mKey=parts[0]+'_'+parts[1];
           if(!byMonth[mKey])byMonth[mKey]={};
           if(!byMonth[mKey][r.emp_id])byMonth[mKey][r.emp_id]={};
           const day=parseInt(parts[2]);
-          byMonth[mKey][r.emp_id][day]=r.status;
+          const status=r.start_time||r.end_time?'working':'off';
+          byMonth[mKey][r.emp_id][day]=status;
         });
         Object.entries(byMonth).forEach(([m,v])=>LS.set('zp_schedule_'+m,v));
-      }
-
-      if(data.settings){
-        // zp_settings — не перезаписываем локальные
       }
 
       this.connected=true;
       this.lastSync=new Date().toISOString();
       this.errorCount=0;
       this._syncQueue=[];
-      // НЕ отправляем данные обратно — облако источник правды
       toast('☁️ Данные загружены из облака');
       return true;
     }catch(e){
@@ -531,9 +559,22 @@ const Cloud={
     this.syncing=true;
     this._updateIcon();
     try{
+      const headers=this._headers();
+      const deleteHeaders={...headers,'Prefer':'return=minimal'};
+
       const employees=LS.get('zp_employees',[]);
 
-      const daily=[];
+      // Convert app employees to Supabase format
+      const sbEmployees=employees.map(e=>({
+        emp_id:String(e.id),
+        name:e.name,
+        position:e.position||'',
+        rate:e.rate||e.percent||e.fixedDay||e.fixedMonth||0,
+        is_active:e.active!==false
+      }));
+
+      // Collect daily records
+      const sbDaily=[];
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
         if(k.startsWith('zp_daily_')){
@@ -541,24 +582,26 @@ const Cloud={
           if(!date)continue;
           const d=LS.get(k,{});
           Object.entries(d).forEach(([eid,v])=>{
-            daily.push({date,emp_id:parseInt(eid),worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
+            sbDaily.push({date,emp_id:eid,worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
           });
         }
       }
 
-      const advances=[];
+      // Collect advances
+      const sbAdvances=[];
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
         if(k.startsWith('zp_advances_')){
           const month=k.replace('zp_advances_','');
           const a=LS.get(k,{});
           Object.entries(a).forEach(([eid,v])=>{
-            advances.push({emp_id:parseInt(eid),month,amount:v||0});
+            sbAdvances.push({emp_id:eid,month,amount:v||0});
           });
         }
       }
 
-      const schedule=[];
+      // Collect schedule
+      const sbSchedule=[];
       for(let i=0;i<localStorage.length;i++){
         const k=localStorage.key(i);
         if(k.startsWith('zp_schedule_')){
@@ -567,21 +610,34 @@ const Cloud={
           const sch=LS.get(k,{});
           Object.entries(sch).forEach(([eid,days])=>{
             Object.entries(days).forEach(([day,status])=>{
-              schedule.push({emp_id:parseInt(eid),date:month+'-'+String(day).padStart(2,'0'),status});
+              sbSchedule.push({emp_id:eid,date:month+'-'+String(day).padStart(2,'0'),start_time:status==='off'?'':'09:00',end_time:status==='off'?'':'18:00'});
             });
           });
         }
       }
 
-      // Выгружаем данные через bulk_write с полной заменой (не upsert)
-      const result=await this.save('bulk_write',{employees,daily,advances,schedule},true);
-      if(result){
-        this.connected=true;
-        this.lastSync=new Date().toISOString();
-        this._syncQueue=[];
-        toast('☁️ Данные выгружены в облако ('+daily.length+' записей)');
-      }
-      return result;
+      // Bulk replace: delete all then insert
+      await Promise.all([
+        fetch(this._restUrl('employees')+'?emp_id=neq.null',{method:'DELETE',headers:deleteHeaders}),
+        fetch(this._restUrl('daily')+'?id=gt.0',{method:'DELETE',headers:deleteHeaders}),
+        fetch(this._restUrl('advances')+'?id=gt.0',{method:'DELETE',headers:deleteHeaders}),
+        fetch(this._restUrl('schedule')+'?id=gt.0',{method:'DELETE',headers:deleteHeaders})
+      ]);
+
+      // Insert all data
+      const insertHeaders={...headers,'Prefer':'resolution=merge-duplicates,return=minimal'};
+      await Promise.all([
+        sbEmployees.length>0?fetch(this._restUrl('employees'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbEmployees)}):Promise.resolve(),
+        sbDaily.length>0?fetch(this._restUrl('daily'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbDaily)}):Promise.resolve(),
+        sbAdvances.length>0?fetch(this._restUrl('advances'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbAdvances)}):Promise.resolve(),
+        sbSchedule.length>0?fetch(this._restUrl('schedule'),{method:'POST',headers:insertHeaders,body:JSON.stringify(sbSchedule)}):Promise.resolve()
+      ]);
+
+      this.connected=true;
+      this.lastSync=new Date().toISOString();
+      this._syncQueue=[];
+      toast('☁️ Данные выгружены в облако ('+sbDaily.length+' записей)');
+      return true;
     }catch(e){
       toast('☁️ Ошибка выгрузки');return false;
     }finally{
@@ -590,47 +646,51 @@ const Cloud={
     }
   },
 
+  async _sendOne(key){
+    if(this.syncing)return;
+    try{
+      const headers=this._headers();
+      const upsertHeaders={...headers,'Prefer':'resolution=merge-duplicates,return=minimal'};
+      if(key.startsWith('zp_daily_')){
+        const date=key.replace('zp_daily_','');
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,v])=>{
+          records.push({date,emp_id:eid,worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
+        });
+        if(records.length>0)await fetch(this._restUrl('daily'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key.startsWith('zp_advances_')){
+        const month=key.replace('zp_advances_','');
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,v])=>{
+          records.push({emp_id:eid,month,amount:v||0});
+        });
+        if(records.length>0)await fetch(this._restUrl('advances'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key.startsWith('zp_schedule_')){
+        const data=LS.get(key,{});
+        const records=[];
+        Object.entries(data).forEach(([eid,days])=>{
+          Object.entries(days).forEach(([day,status])=>{
+            const md=key.replace('zp_schedule_','');
+            const date=md.replace('_','-')+'-'+String(day).padStart(2,'0');
+            records.push({emp_id:eid,date,start_time:status==='off'?'':'09:00',end_time:status==='off'?'':'18:00'});
+          });
+        });
+        if(records.length>0)await fetch(this._restUrl('schedule'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }else if(key==='zp_employees'){
+        const emps=LS.get('zp_employees',[]);
+        const records=emps.map(e=>({
+          emp_id:String(e.id),name:e.name,position:e.position||'',
+          rate:e.rate||e.percent||e.fixedDay||e.fixedMonth||0,is_active:e.active!==false
+        }));
+        if(records.length>0)await fetch(this._restUrl('employees'),{method:'POST',headers:upsertHeaders,body:JSON.stringify(records)});
+      }
+      this._syncQueue=this._syncQueue.filter(k=>k!==key);
+      this._updateIcon();
+    }catch(e){}
+  },
 
-    async _sendOne(key){
-      if(this.syncing)return;
-      try{
-        if(key.startsWith('zp_daily_')){
-          const date=key.replace('zp_daily_','');
-          const data=LS.get(key,{});
-          const daily=[];
-          Object.entries(data).forEach(([eid,v])=>{
-            daily.push({date,emp_id:parseInt(eid),worked:v.worked||0,revenue:v.revenue||0,patients:v.patients||0});
-          });
-          if(daily.length>0) await this.save('write_daily',daily,false);
-        }else if(key.startsWith('zp_advances_')){
-          const month=key.replace('zp_advances_','');
-          const data=LS.get(key,{});
-          const advances=[];
-          Object.entries(data).forEach(([eid,v])=>{
-            advances.push({emp_id:parseInt(eid),month,amount:v||0});
-          });
-          if(advances.length>0) await this.save('write_advances',advances,false);
-        }else if(key.startsWith('zp_schedule_')){
-          const data=LS.get(key,{});
-          const schedule=[];
-          Object.entries(data).forEach(([eid,days])=>{
-            Object.entries(days).forEach(([day,status])=>{
-              const md=key.replace('zp_schedule_','');
-              const date=md.replace('_','-')+'-'+String(day).padStart(2,'0');
-              schedule.push({emp_id:parseInt(eid),date,status});
-            });
-          });
-          if(schedule.length>0) await this.save('write_schedule',schedule,false);
-        }else if(key==='zp_employees'){
-          const emps=LS.get('zp_employees',[]);
-          if(emps.length>0) await this.save('write_employees',emps,false);
-        }
-        this._syncQueue=this._syncQueue.filter(k=>k!==key);
-        this._updateIcon();
-      }catch(e){}
-    },
-
-      _syncQueue:[],
   queueSync(key){
     if(!this.config.url||!this.connected)return;
     if(!this._syncQueue.includes(key)){
@@ -646,8 +706,7 @@ const Cloud={
   },
 
   _startAutoSync(){
-    // Фоновая синхронизация ОТКЛЮЧЕНА — затирает локальные вводы
-    // Синхронизация только: при входе (загрузка) + при сохранении (выгрузка)
+    // Background sync OFF — only sync on login (pull) + on save (push)
   },
 
   _updateIcon(){
@@ -727,7 +786,7 @@ initDefaults();
 // try{seedMayData()}catch(e){console.warn('seedMayData:',e)}
 
 // Автоочистка при обновлении версии
-const APP_VERSION='2.5';
+const APP_VERSION='3.0';
 const savedVersion=LS.get('zp_version','0');
 if(savedVersion!==APP_VERSION){
   // Очищаем только daily данные и advances — сотрудники оставляем
@@ -2236,11 +2295,11 @@ function renderSettings(){
     </div>
 
     <div class="settings-section">
-      <h4>☁️ Облачное хранилище</h4>
+      <h4>☁️ Облачное хранилище (Supabase)</h4>
       <div class="cloud-config">
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Синхронизация данных через Google Sheets. Приложение работает без интернета — данные кэшируются локально.</p>
-        <div class="cc-row"><label>URL Apps Script</label><input type="text" id="cloud-url" value="${Cloud.config.url||''}" placeholder="https://script.google.com/macros/s/.../exec"></div>
-        <div class="cc-row"><label>API-ключ</label><input type="password" id="cloud-key" value="${Cloud.config.key||''}" placeholder="Ключ из Apps Script"></div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Синхронизация данных через Supabase. Приложение работает без интернета — данные кэшируются локально.</p>
+        <div class="cc-row"><label>Supabase URL</label><input type="text" id="cloud-url" value="${Cloud.config.url||''}" placeholder="https://xxxxx.supabase.co"></div>
+        <div class="cc-row"><label>Anon Key</label><input type="password" id="cloud-key" value="${Cloud.config.key||''}" placeholder="eyJhbGci..."></div>
         <div class="cc-btns">
           <button class="btn btn-outline btn-sm" id="cloud-check"><i data-feather="search"></i> Проверить</button>
           <button class="btn btn-primary btn-sm" id="cloud-save-config"><i data-feather="check"></i> Сохранить настройки</button>
@@ -2344,7 +2403,7 @@ function bindSettings(){
   const cloudCheck=document.getElementById('cloud-check');
   if(cloudCheck)cloudCheck.onclick=async()=>{
     const url=document.getElementById('cloud-url').value.trim();
-    if(!url){toast('Введите URL Apps Script');return}
+    if(!url){toast('Введите Supabase URL');return}
     cloudCheck.disabled=true;cloudCheck.textContent='⏳ Проверка...';
     const oldUrl=Cloud.config.url;Cloud.config.url=url.replace(/\/$/,'');
     const p=await Cloud.ping();
@@ -2404,11 +2463,10 @@ function bindSettings(){
 
 window.logout=logout;
 
-// Автоочистка старых настроек облака (одноразовая) (одноразовая)
+// Auto-clear old Google Apps Script cloud config (one-time)
 (function(){
-  const oldUrl='AKfycbyDQgCW5ypwGIJTbJ_yOKvRdO6lZU-skpztrET_4PIS7dh8lCOiuBKmajoy0ofqMAfI';
   const saved=LS.get('zp_cloud_url','');
-  if(saved && saved.includes(oldUrl)){LS.del('zp_cloud_url');LS.del('zp_cloud_key');console.log('Cloud config auto-cleared')}
+  if(saved && saved.includes('script.google.com')){LS.del('zp_cloud_url');LS.del('zp_cloud_key');console.log('Old GAS cloud config auto-cleared')}
 })();
 
 // Инициализация облачного хранилища
