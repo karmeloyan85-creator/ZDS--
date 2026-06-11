@@ -1112,6 +1112,8 @@ function getTabs(){
     if(emp.permissions.canFillReport){
       tabs.push({id:'monthly',icon:'<i data-feather="dollar-sign" data-icon-color="#22C55E"></i>',label:'Расчёт за месяц'});
     }
+    // Schedule: view only for admins, editable only for owner/manager
+    tabs.push({id:'schedule',icon:'<i data-feather="calendar" data-icon-color="#F59E0B"></i>',label:'График'});
   }
   return tabs;
 }
@@ -1753,8 +1755,9 @@ function bindSchedule(){
     render();
   };
 
-  const statusCycle=['Р','О','В','П'];
+  const canEdit=state.role==='owner'||state.role==='manager';
   document.querySelectorAll('.shift-cell').forEach(cell=>{
+    if(canEdit){
     cell.onclick=()=>{
       const empId=parseInt(cell.dataset.emp);
       const day=parseInt(cell.dataset.day);
@@ -1772,9 +1775,10 @@ function bindSchedule(){
       LS.set(scheduleKey,schedule);
       render();
     };
+    } // end if(canEdit)
   });
 
-  if(save){
+  if(save&&canEdit){
     save.onclick=()=>{
       cloudSet('zp_schedule_'+state.month.replace('-','_'),LS.get('zp_schedule_'+state.month.replace('-','_'),{}));
       toast('График сохранён');
